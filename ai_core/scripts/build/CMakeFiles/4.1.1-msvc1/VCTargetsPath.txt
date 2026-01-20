@@ -1,0 +1,5 @@
+<<<<<<< HEAD
+C:/Program Files/Microsoft Visual Studio/18/Community/MSBuild/Microsoft/VC/v180
+=======
+C:/Program Files/Microsoft Visual Studio/18/Community/MSBuild/Microsoft/VC/v180
+>>>>>>> d6de685d2c7b77476426b95b7cfd6d529b95af6d
