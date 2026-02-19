@@ -1,8 +1,0 @@
-<<<<<<< HEAD
-﻿1>------ Build started: Project: VCTargetsPath, Configuration: Debug|x64 ------
-1>  VCTargetsPath=C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\
-=======
-﻿1>------ Build started: Project: VCTargetsPath, Configuration: Debug|x64 ------
-1>  VCTargetsPath=C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\
->>>>>>> d6de685d2c7b77476426b95b7cfd6d529b95af6d
-========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========

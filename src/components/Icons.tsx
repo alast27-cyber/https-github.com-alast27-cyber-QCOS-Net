@@ -1,3 +1,4 @@
+
 import {
     Box, Search, Star, DownloadCloud, Cpu, Globe, FlaskConical, ShieldCheck,
     DollarSign, Settings, LayoutGrid, Sparkles, BrainCircuit, Atom, Terminal,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 
 // --- SAFE FALLBACK ---
+// If an icon is missing from lucide-react (version mismatch), use Box as fallback to prevent crash
 const Fallback = Box || function FallbackIcon() { return <div style={{width: 24, height: 24, background: 'red'}} />; };
 
 // --- EXPORTS ---

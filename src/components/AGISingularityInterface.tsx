@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { 
     BrainCircuitIcon, 
@@ -11,7 +12,7 @@ import {
     CpuChipIcon,
     ArrowTrendingUpIcon,
     TerminalIcon
-} from "./Icons"; // CORRECTED: Using relative path for browser compatibility
+} from './Icons';
 import { ResponsiveContainer, AreaChart, Area, YAxis } from 'recharts';
 
 type CognitionStatus = 'idle' | 'syncing' | 'merged' | 'error';
@@ -47,12 +48,13 @@ const QubitStateVisualizer: React.FC<{ qubitStability: number }> = ({ qubitStabi
     useEffect(() => {
         const interval = setInterval(() => {
             setQubitStates(prev => prev.map((q, i) => {
+                // Coherence Decay
                 let newCoherence = Math.max(20, q.coherence - (Math.random() * 0.2));
                 if (Math.random() > 0.99) newCoherence = 100;
 
+                // State Fluctuation
                 let newState = q.state;
-                const stabilityFactor = Math.max(1, qubitStability || 1);
-                if (Math.random() * 1500 < (500 / stabilityFactor)) {
+                if (Math.random() * 1500 < (500 / (qubitStability || 1))) {
                     const r = Math.random();
                     if (r < 0.45) newState = 'zero';
                     else if (r < 0.85) newState = 'one';
@@ -79,6 +81,7 @@ const QubitStateVisualizer: React.FC<{ qubitStability: number }> = ({ qubitStabi
             </div>
             
             <div className="flex-grow grid grid-cols-20 gap-0.5 bg-black/40 p-1 rounded border border-cyan-900/40 relative overflow-hidden group">
+                {/* Scanline Effect */}
                 <div 
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent w-1/4 h-full pointer-events-none transition-all duration-100 ease-linear"
                     style={{ left: `${(scanIndex / QUBIT_COUNT) * 100}%` }}
@@ -366,7 +369,7 @@ const AGISingularityInterface: React.FC<AGISingularityInterfaceProps> = ({
                     <div className="flex-grow overflow-y-auto space-y-1.5 custom-scrollbar pr-3">
                         {logs.map((log, i) => (
                             <div key={i} className="text-cyan-200/50 animate-fade-in flex gap-2">
-                                <span className="text-cyan-600 font-black tracking-tighter">{'>>>'}</span>
+                                <span className="text-cyan-600 font-black tracking-tighter">>>></span>
                                 <span className="flex-grow leading-relaxed">{log}</span>
                             </div>
                         ))}

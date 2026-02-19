@@ -26,7 +26,7 @@ import {
   XIcon, BrainCircuitIcon, CpuChipIcon, ServerCogIcon, GlobeIcon, 
   ShieldCheckIcon, LayersIcon, BeakerIcon, AtomIcon, GridIcon,
   RefreshCwIcon, ActivityIcon, SparklesIcon, NetworkIcon, 
-  RocketLaunchIcon, BoxIcon
+  RocketLaunchIcon, BoxIcon, MaximizeIcon, MinimizeIcon
 } from './components/Icons';
 
 // Utils & Types
@@ -75,16 +75,11 @@ const EntanglementBeams: React.FC<{ active: boolean; isLinked?: boolean }> = ({ 
 const DashboardContent: React.FC = () => {
   const { isAuthenticated, adminLevel } = useAuth();
   const { addToast } = useToast();
-  
-  // FIX: Access qllm and entanglementMesh safely with defaults to prevent the 'efficiencyBoost' undefined crash
-  const simulation = useSimulation();
-  const systemStatus = simulation.systemStatus || initialSystemHealth;
-  const qllm = simulation.qllm || { efficiencyBoost: 0 };
-  const entanglementMesh = simulation.entanglementMesh || { isUniverseLinkedToQLang: false };
-  const startAllSimulations = simulation.startAllSimulations || (() => {});
+  const { systemStatus, startAllSimulations, qllm, entanglementMesh } = useSimulation();
   
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false); 
+  const [isImmersive, setIsImmersive] = useState(false);
 
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const dashboardRef = useRef<HTMLDivElement>(null);
@@ -154,10 +149,9 @@ const DashboardContent: React.FC = () => {
       'GQML Stream (Live)', 'Quantum Entanglement Feed', 'LHC Collision Data', 'NASA Exoplanet Archive'
   ]);
 
-  // FIX: Generate unique IDs for log entries to prevent the duplicate key error
+
   const addLog = useCallback((level: LogEntry['level'], msg: string) => {
-    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    setLogs(prev => [{ id, time: new Date().toLocaleTimeString(), level, msg }, ...prev].slice(0, 50));
+    setLogs(prev => [{ id: Date.now(), time: new Date().toLocaleTimeString(), level, msg }, ...prev].slice(0, 50));
   }, []);
 
   const handlePanelSelect = useCallback((panelId: string) => {
@@ -192,7 +186,9 @@ const DashboardContent: React.FC = () => {
   const { listeningState, toggleListening, isSupported } = useVoiceCommands([
       { command: ['open agent q', 'agent q', 'help'], callback: () => !isAgentQOpen && toggleAgentQ() },
       { command: ['reset view', 'minimize'], callback: () => setMaximizePanelId(null) },
-      { command: ['switch deck', 'next page', 'swap view'], callback: () => setDashboardDeck(prev => prev === 'primary' ? 'secondary' : 'primary') }
+      { command: ['switch deck', 'next page', 'swap view'], callback: () => setDashboardDeck(prev => prev === 'primary' ? 'secondary' : 'primary') },
+      { command: ['immersive mode', 'cinema mode'], callback: () => setIsImmersive(true) },
+      { command: ['standard mode', 'exit immersive'], callback: () => setIsImmersive(false) }
   ]);
 
   const faceData = usePanelContent({
@@ -300,8 +296,7 @@ const DashboardContent: React.FC = () => {
   return (
     <div ref={dashboardRef} className="relative w-screen h-screen bg-black text-cyan-100 font-mono overflow-hidden flex flex-col perspective-viewport">
       <AnimatedBackground />
-      {/* SAFE ACCESS: Null check qllm.efficiencyBoost to prevent production crashes */}
-      <EntanglementBeams active={(qllm?.efficiencyBoost || 0) > 1} isLinked={entanglementMesh.isUniverseLinkedToQLang} />
+      <EntanglementBeams active={qllm.efficiencyBoost > 1} isLinked={entanglementMesh.isUniverseLinkedToQLang} />
       
       <div className="lattice-overlay"></div>
 
@@ -323,7 +318,10 @@ const DashboardContent: React.FC = () => {
       />
 
       <div 
-        className={`flex-grow h-0 grid grid-cols-12 gap-6 p-6 transition-all duration-700 overflow-hidden z-20 floating-hologram ${hudVisibility}`}
+        className={`
+            grid grid-cols-12 gap-6 p-6 transition-all duration-700 overflow-hidden z-20 floating-hologram ${hudVisibility}
+            ${isImmersive ? 'h-[35vh] mt-auto items-end' : 'flex-grow h-0'}
+        `}
         style={{ transform: `rotateY(${tilt.x}deg) rotateX(${tilt.y}deg)` }}
       >
           <div className="col-span-12 lg:col-span-4 h-full relative" style={{ perspective: '3000px' }}>
@@ -418,14 +416,21 @@ const DashboardContent: React.FC = () => {
                  <GridIcon className="w-3 h-3" />
                  {dashboardDeck === 'primary' ? 'Shift to Science Deck' : 'Shift to System Deck'}
               </button>
+
+              <button 
+                onClick={() => setIsImmersive(!isImmersive)}
+                className={`holographic-projection px-4 py-2 text-[10px] font-black uppercase tracking-widest border rounded-full transition-all flex items-center gap-2 ${isImmersive ? 'bg-green-900/20 border-green-500/40 text-green-300' : 'bg-cyan-900/10 border-cyan-500/40 text-cyan-300'}`}
+              >
+                  {isImmersive ? <MinimizeIcon className="w-3 h-3" /> : <MaximizeIcon className="w-3 h-3" />}
+                  {isImmersive ? 'Expand View' : 'Cinematic View'}
+              </button>
           </div>
 
           <div className="flex items-center gap-6">
                <div className="flex gap-6 text-[10px] font-mono text-cyan-600 bg-black/40 px-6 py-2 rounded-full border border-cyan-900/30">
                    <div className="flex items-center gap-2">
                        <CpuChipIcon className="w-3 h-3" />
-                       {/* SAFE ACCESS: Null check neuralLoad for performance monitoring */}
-                       LOAD: <span className={(systemStatus?.neuralLoad || 0) > 80 ? 'text-red-400' : 'text-green-400'}>{(systemStatus?.neuralLoad || 0).toFixed(1)}%</span>
+                       LOAD: <span className={systemStatus.neuralLoad > 80 ? 'text-red-400' : 'text-green-400'}>{(systemStatus.neuralLoad || 0).toFixed(1)}%</span>
                    </div>
                    <div className="flex items-center gap-2">
                        <ActivityIcon className="w-3 h-3" />

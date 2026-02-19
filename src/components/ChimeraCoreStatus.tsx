@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { CpuChipIcon, ShieldCheckIcon, SparklesIcon } from './Icons';
 
@@ -22,7 +23,7 @@ const ChimeraCoreStatus: React.FC = () => {
                 <h4 className="font-bold text-cyan-200">Chimera AI Core Status</h4>
             </div>
             <div>
-                <p className="flex justify-between text-cyan-400"><span>Cognitive Load</span> <span className="text-white">{metrics.load.toFixed(1)}%</span></p>
+                <p className="flex justify-between text-cyan-400"><span>Cognitive Load</span> <span className="text-white">{(metrics.load || 0).toFixed(1)}%</span></p>
                 <div className="w-full h-1 bg-cyan-900/50 rounded-full mt-1"><div className="h-1 bg-cyan-400 rounded-full" style={{width: `${metrics.load}%`}}></div></div>
             </div>
             <div>

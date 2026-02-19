@@ -22,16 +22,9 @@ export default defineConfig(({ mode }) => {
         'process.env.LEX_FRIDMAN_VOICE_ID': JSON.stringify(env.LEX_FRIDMAN_VOICE_ID)
       },
       resolve: {
-        alias: {
-          // Points @ to the src directory for cleaner imports
-          '@': path.resolve(__dirname, './src'),
-          '@components': path.resolve(__dirname, './src/components'),
-          '@hooks': path.resolve(__dirname, './src/hooks'),
-          '@utils': path.resolve(__dirname, './src/utils'),
-          '@context': path.resolve(__dirname, './src/context'),
-          '@services': path.resolve(__dirname, './src/services'),
-          '@types': path.resolve(__dirname, './src/types'),
-        },
+        alias: [
+          { find: '@', replacement: path.resolve(__dirname, 'src') }
+        ],
         extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
       }
     };

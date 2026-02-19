@@ -8,16 +8,14 @@ import {
     ActivityIcon, 
     RocketLaunchIcon, 
     RefreshCwIcon, 
-    ShieldCheckIcon,
-    CpuChipIcon,
-    ChartBarIcon,
-    ServerCogIcon,
-    DownloadCloudIcon,
-    QuantumNetworkIcon,
-    MaximizeIcon,
-    ChevronLeftIcon,
-    CheckCircle2Icon,
-    ChipsIcon
+    ShieldCheckIcon, 
+    CpuChipIcon, 
+    ChartBarIcon, 
+    ServerCogIcon, 
+    DownloadCloudIcon, 
+    MaximizeIcon, 
+    ChevronLeftIcon, 
+    CheckCircle2Icon
 } from './Icons';
 import { URIAssignment } from '../types';
 
@@ -167,7 +165,7 @@ const ChipsQuantumInternetPanel: React.FC<ChipsQuantumInternetPanelProps> = ({ u
 
     if (activeSubPanel) {
         return (
-            <GlassPanel title={<div className="flex items-center"><ChipsIcon className="w-5 h-5 mr-2 text-cyan-400" /> Chips Quantum Internet</div>}>
+            <GlassPanel title={<div className="flex items-center"><CpuChipIcon className="w-5 h-5 mr-2 text-cyan-400" /> Chips Quantum Internet</div>}>
                 <div className="p-2 h-full">
                     <SubPanelContent id={activeSubPanel} onBack={handleBack} />
                 </div>
@@ -180,7 +178,7 @@ const ChipsQuantumInternetPanel: React.FC<ChipsQuantumInternetPanelProps> = ({ u
             title={
                 <div className="flex justify-between items-center w-full">
                     <div className="flex items-center">
-                        {isFlipped ? <GlobeIcon className="w-5 h-5 mr-2 text-purple-400" /> : <ChipsIcon className="w-5 h-5 mr-2 text-cyan-400" />}
+                        {isFlipped ? <GlobeIcon className="w-5 h-5 mr-2 text-purple-400" /> : <CpuChipIcon className="w-5 h-5 mr-2 text-cyan-400" />}
                         <span>{isFlipped ? 'Chips Back Office' : 'Chips Quantum Internet'}</span>
                     </div>
                     <button 

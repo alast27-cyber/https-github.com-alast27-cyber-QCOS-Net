@@ -123,7 +123,7 @@ const AnimatedBackground: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  return <canvas ref={canvasRef} id="animated-bg" className="opacity-60" />;
+  return <canvas ref={canvasRef} id="animated-bg" className="opacity-60 fixed inset-0 pointer-events-none" />;
 };
 
 export default AnimatedBackground;

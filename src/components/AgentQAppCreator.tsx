@@ -61,12 +61,22 @@ const AgentQAppCreator: React.FC<AgentQAppCreatorProps> = ({ onGenerateApp, onDe
 
     // --- Helpers ---
     const extractStateFromCode = (code: string) => {
+        if (!code) return {};
         const initialStateRegex = /const \[(\w+), set\w+\] = useState\((.*?)\);/g;
         let match;
         const newInitialState: { [key: string]: any } = {};
         while ((match = initialStateRegex.exec(code)) !== null) {
-            const stateVar = match[1]; const rawInitialValue = match[2];
-            try { newInitialState[stateVar!] = JSON.parse(rawInitialValue); } catch (e) { newInitialState[stateVar!] = rawInitialValue.replace(/['"]/g, ''); }
+            const stateVar = match[1]; 
+            const rawInitialValue = match[2];
+            try { 
+                if (rawInitialValue) {
+                    newInitialState[stateVar!] = JSON.parse(rawInitialValue.replace(/'/g, '"')); 
+                }
+            } catch (e) { 
+                if (rawInitialValue) {
+                    newInitialState[stateVar!] = rawInitialValue.replace(/^['"`]|['"`]$/g, ''); 
+                }
+            }
         }
         return newInitialState;
     };
