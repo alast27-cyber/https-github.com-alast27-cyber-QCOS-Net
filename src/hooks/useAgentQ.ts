@@ -202,7 +202,12 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
     const handleSendMessage = useCallback(async (input: string, attachedFile: File | null = null) => {
         if ((!input.trim() && !attachedFile) || isLoading) return;
 
-        setMessages(prev => [...prev, { sender: 'user', text: input.trim(), attachment: attachedFile ? { name: attachedFile.name } : undefined }]);
+        setMessages(prev => [...prev, { 
+            id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            sender: 'user', 
+            text: input.trim(), 
+            attachment: attachedFile ? { name: attachedFile.name } : undefined 
+        }]);
         setIsLoading(true);
         setLastActivity(Date.now());
 
@@ -217,10 +222,18 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
             });
             
             const text = response.text || "Communication established.";
-            setMessages(prev => [...prev, { sender: 'ai', text }]);
+            setMessages(prev => [...prev, { 
+                id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                sender: 'ai', 
+                text 
+            }]);
             speak(text);
         } catch (error) {
-            setMessages(prev => [...prev, { sender: 'system', text: "Signal degradation detected. Retrying handshake..." }]);
+            setMessages(prev => [...prev, { 
+                id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                sender: 'system', 
+                text: "Signal degradation detected. Retrying handshake..." 
+            }]);
         } finally {
             setIsLoading(false);
         }

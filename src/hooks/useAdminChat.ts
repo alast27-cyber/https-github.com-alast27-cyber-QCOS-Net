@@ -15,6 +15,7 @@ export const useAdminChat = () => {
 
     setIsLoading(true);
     const newMessage: Message = { 
+        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         sender: 'user', 
         text: text.trim(), 
         timestamp: Date.now(),
@@ -26,6 +27,7 @@ export const useAdminChat = () => {
         // Simulate Kernel Response
         setTimeout(() => {
             setConsoleMessages(prev => [...prev, { 
+                id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 sender: 'system', 
                 text: `[KERNEL] Command processed: ${text.substring(0, 20)}${text.length > 20 ? '...' : ''}\nStatus: OK\nResponse: Logic gates synchronized.`, 
                 timestamp: Date.now() 
@@ -37,6 +39,7 @@ export const useAdminChat = () => {
         // Simulate Admin Response
         setTimeout(() => {
             setChatMessages(prev => [...prev, { 
+                id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 sender: 'ai', 
                 text: `Operator priority acknowledged. System vitals are nominal. How can I assist further with your current project?`, 
                 timestamp: Date.now() 

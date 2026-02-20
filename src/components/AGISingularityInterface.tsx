@@ -369,7 +369,7 @@ const AGISingularityInterface: React.FC<AGISingularityInterfaceProps> = ({
                     <div className="flex-grow overflow-y-auto space-y-1.5 custom-scrollbar pr-3">
                         {logs.map((log, i) => (
                             <div key={i} className="text-cyan-200/50 animate-fade-in flex gap-2">
-                                <span className="text-cyan-600 font-black tracking-tighter">>>></span>
+                                <span className="text-cyan-600 font-black tracking-tighter">{">>>"}</span>
                                 <span className="flex-grow leading-relaxed">{log}</span>
                             </div>
                         ))}

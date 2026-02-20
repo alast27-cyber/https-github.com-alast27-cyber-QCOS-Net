@@ -368,7 +368,7 @@ const EntanglementScriptForge: React.FC = () => {
 
             const newCode = response.text || '// Generation failed';
             const newScript: NeuralScript = {
-                id: `script-${Date.now()}`,
+                id: `script-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 name: prompt.substring(0, 20) + '...',
                 category: 'Remote Control',
                 targetType: 'Custom Node',

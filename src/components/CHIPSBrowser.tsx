@@ -342,7 +342,7 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
             const initContext = analyzeQuantumContext(startUri, initialApp ? initialApp.name : 'New Tab');
             
             const newTab: BrowserTab = {
-                id: `tab-${Date.now()}`,
+                id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 title: initialApp ? initialApp.name : 'New Tab',
                 uri: startUri,
                 history: [startUri],
@@ -369,7 +369,7 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
         const initContext = analyzeQuantumContext(startUri, 'New Tab');
         
         const newTab: BrowserTab = {
-            id: `tab-${Date.now()}`,
+            id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             title: 'New Tab',
             uri: startUri,
             history: [startUri],
@@ -389,7 +389,7 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
             if (newTabs.length === 0) {
                 const initContext = analyzeQuantumContext(NEW_TAB_URI, 'New Tab');
                 const emptyTab: BrowserTab = {
-                    id: `tab-${Date.now()}`,
+                    id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     title: 'New Tab',
                     uri: NEW_TAB_URI,
                     history: [NEW_TAB_URI],

@@ -202,7 +202,7 @@ const AgentQ: React.FC<AgentQProps> = ({
                   
                   return (
                     <div 
-                        key={idx} 
+                        key={msg.id || idx} 
                         className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
                     >
                         <div 

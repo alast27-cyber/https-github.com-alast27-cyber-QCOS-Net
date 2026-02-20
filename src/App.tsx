@@ -151,7 +151,7 @@ const DashboardContent: React.FC = () => {
 
 
   const addLog = useCallback((level: LogEntry['level'], msg: string) => {
-    setLogs(prev => [{ id: Date.now(), time: new Date().toLocaleTimeString(), level, msg }, ...prev].slice(0, 50));
+    setLogs(prev => [{ id: Date.now() + Math.random(), time: new Date().toLocaleTimeString(), level, msg }, ...prev].slice(0, 50));
   }, []);
 
   const handlePanelSelect = useCallback((panelId: string) => {
@@ -448,8 +448,6 @@ const DashboardContent: React.FC = () => {
       </div>
 
       <AdminChat 
-        isOpen={isAdminChatOpen} 
-        onToggle={toggleAdminChat} 
         triggerClassName={`fixed bottom-4 left-[28rem] z-50 pointer-events-auto group transition-opacity duration-500 ${hudVisibility}`}
         {...adminChatProps} 
       />

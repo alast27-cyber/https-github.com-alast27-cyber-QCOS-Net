@@ -141,7 +141,7 @@ const QuantumToWebGatewayEnhancedPanel: React.FC<QuantumToWebGatewayEnhancedPane
     const handleAddDataSource = () => {
         if (newSource.name && newSource.url) {
             const newSourceName = newSource.name;
-            setDataSources([...dataSources, { ...newSource, id: `ds${Date.now()}`, dataTypes: ['text'], status: 'healthy' }]);
+            setDataSources([...dataSources, { ...newSource, id: `ds${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, dataTypes: ['text'], status: 'healthy' }]);
             setNewSource({ name: '', url: '', schedule: 'daily' });
             onConnect(newSourceName);
         }
@@ -150,7 +150,7 @@ const QuantumToWebGatewayEnhancedPanel: React.FC<QuantumToWebGatewayEnhancedPane
     const handleRegisterApp = () => {
         if (newApp.name && newApp.chipsAddress.startsWith('CHIPS://') && !isRegistering) {
             setIsRegistering(true);
-            const newId = `app${Date.now()}`;
+            const newId = `app${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             const appSlug = newApp.name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
             const newAppEntry: GatewayApp = {
                 id: newId,

@@ -205,7 +205,7 @@ const CHIPSBrowserSDK: React.FC<CHIPSBrowserSDKProps> = ({ initialApp, onToggleA
         if (tabs.length === 0) {
             const startUri = initialApp?.q_uri || NEW_TAB_URI;
             const newTab: BrowserTab = {
-                id: `tab-${Date.now()}`,
+                id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 title: initialApp ? initialApp.name : 'New Tab',
                 uri: startUri,
                 history: [startUri],
@@ -230,7 +230,7 @@ const CHIPSBrowserSDK: React.FC<CHIPSBrowserSDKProps> = ({ initialApp, onToggleA
 
     const createTab = useCallback(() => {
         const newTab: BrowserTab = {
-            id: `tab-${Date.now()}`,
+            id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             title: 'New Tab',
             uri: NEW_TAB_URI,
             history: [NEW_TAB_URI],
@@ -249,7 +249,7 @@ const CHIPSBrowserSDK: React.FC<CHIPSBrowserSDKProps> = ({ initialApp, onToggleA
             const newTabs = prev.filter(t => t.id !== id);
             if (newTabs.length === 0) {
                 const emptyTab: BrowserTab = {
-                    id: `tab-${Date.now()}`,
+                    id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     title: 'New Tab',
                     uri: NEW_TAB_URI,
                     history: [NEW_TAB_URI],

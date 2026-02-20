@@ -77,7 +77,7 @@ const AdminChat: React.FC<AdminChatProps> = ({
                     const isUser = msg.sender === 'user';
                     let bubbleClasses = `max-w-[80%] p-2 rounded-lg text-sm ${isUser ? 'bg-amber-700/50 text-white' : (mode === 'console' ? 'bg-slate-700/50 text-amber-200' : 'bg-blue-700/50 text-blue-200')}`;
                     return (
-                      <div key={index} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+                      <div key={msg.id || index} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
                         <div className={bubbleClasses}>
                            {msg.text && <pre className="font-mono whitespace-pre-wrap">{msg.text}</pre>}
                            {msg.attachment && (

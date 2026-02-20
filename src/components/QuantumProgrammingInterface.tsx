@@ -45,8 +45,8 @@ MEASURE q -> c;
                 </div>
                 <div className="h-24 bg-black/60 border border-cyan-900/30 rounded p-2 font-mono text-[10px] text-gray-400 overflow-y-auto custom-scrollbar">
                     <div className="text-cyan-500 font-bold mb-1">OUTPUT CONSOLE</div>
-                    <div>> QVM Initialized.</div>
-                    <div>> Ready for execution.</div>
+                    <div>{">"} QVM Initialized.</div>
+                    <div>{">"} Ready for execution.</div>
                 </div>
             </div>
         </GlassPanel>

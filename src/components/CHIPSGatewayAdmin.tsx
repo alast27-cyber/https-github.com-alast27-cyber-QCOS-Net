@@ -195,7 +195,7 @@ const CHIPSGatewayAdmin: React.FC<CHIPSGatewayAdminProps> = ({ uriAssignments })
     const handleRegisterApp = () => {
         if (newApp.name && newApp.chipsAddress.startsWith('CHIPS://') && !isRegistering) {
             setIsRegistering(true);
-            const newId = `app${Date.now()}`;
+            const newId = `app${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             const appSlug = newApp.name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
             const newAppEntry: GatewayApp = {
                 id: newId,
@@ -222,7 +222,7 @@ const CHIPSGatewayAdmin: React.FC<CHIPSGatewayAdminProps> = ({ uriAssignments })
     const handleAddDataSource = () => {
         if (newSource.name && newSource.url) {
             setDataSources(prev => [...prev, {
-                id: `ds-${Date.now()}`,
+                id: `ds-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 name: newSource.name,
                 url: newSource.url,
                 schedule: newSource.schedule,
@@ -260,7 +260,7 @@ const CHIPSGatewayAdmin: React.FC<CHIPSGatewayAdminProps> = ({ uriAssignments })
                 if (index === steps.length - 1) {
                     setIsDeployingDomain(false);
                     setCustomDomains(prev => [...prev, {
-                        id: `cust-${Date.now()}`,
+                        id: `cust-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                         domain: domainForm.name,
                         target: domainForm.target,
                         dsr: 'Verified',

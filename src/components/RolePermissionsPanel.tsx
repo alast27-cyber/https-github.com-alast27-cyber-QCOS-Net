@@ -241,4 +241,61 @@ const RolePermissionsPanel: React.FC = () => {
             <div className="flex-grow bg-black/30 rounded-lg border border-cyan-900/50 flex flex-col overflow-hidden">
                 <div className="p-3 bg-cyan-950/30 border-b border-cyan-900/50 flex justify-between items-center">
                     <div className="flex flex-col">
-                        <h3 className="text-sm font-bold text-white flex items-center gap-
+                        <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                            <ShieldCheckIcon className="w-4 h-4" /> Permissions Matrix
+                        </h3>
+                        <div className="text-[10px] text-cyan-500/70">Configure access levels for {roles.find(r => r.id === selectedRoleId)?.name}</div>
+                    </div>
+                    <button 
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className={`px-3 py-1 rounded text-xs font-bold transition-all ${
+                            isSaving ? 'bg-gray-700 text-gray-400' : 'bg-cyan-600 text-white hover:bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.3)]'
+                        }`}
+                    >
+                        {isSaving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+
+                <div className="flex-grow overflow-y-auto p-4 custom-scrollbar">
+                    <div className="space-y-6">
+                        {PERMISSION_SCHEMA.map(category => (
+                            <div key={category.id} className="space-y-3">
+                                <div className="flex items-center gap-2 text-cyan-400 border-b border-cyan-900/30 pb-1">
+                                    <category.icon className="w-3 h-3" />
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">{category.label}</span>
+                                </div>
+                                <div className="grid grid-cols-1 gap-2">
+                                    {category.permissions.map(perm => (
+                                        <div key={perm.id} className="flex items-center justify-between p-2 bg-white/5 rounded border border-white/5 hover:border-cyan-900/30 transition-colors">
+                                            <div className="flex flex-col">
+                                                <span className="text-xs font-medium text-white">{perm.label}</span>
+                                                <span className="text-[9px] text-gray-500">{perm.description}</span>
+                                            </div>
+                                            <button 
+                                                onClick={() => togglePermission(perm.id)}
+                                                className={`w-8 h-4 rounded-full relative transition-colors ${
+                                                    roles.find(r => r.id === selectedRoleId)?.permissions.includes(perm.id)
+                                                        ? 'bg-cyan-600'
+                                                        : 'bg-gray-700'
+                                                }`}
+                                            >
+                                                <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${
+                                                    roles.find(r => r.id === selectedRoleId)?.permissions.includes(perm.id)
+                                                        ? 'left-4.5'
+                                                        : 'left-0.5'
+                                                }`} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default RolePermissionsPanel;

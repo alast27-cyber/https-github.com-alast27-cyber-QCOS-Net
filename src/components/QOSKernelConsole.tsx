@@ -60,7 +60,7 @@ const QOSKernelConsole: React.FC = () => {
     // --- Helpers ---
     const addLog = (module: LogEntry['module'], level: LogEntry['level'], message: string) => {
         setLogs(prev => [...prev.slice(-49), {
-            id: Date.now(),
+            id: Date.now() + Math.random(),
             timestamp: new Date().toLocaleTimeString(),
             module,
             level,

@@ -699,7 +699,7 @@ const ChipsDevPlatform: React.FC<ChipsDevPlatformProps> = ({ onAiAssist, onDeplo
 
     const handleCreateProject = (name: string, description: string, files: { [key: string]: string }) => {
         const newProject: Project = {
-            id: `proj_${Date.now()}`,
+            id: `proj_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             title: name,
             description,
             env: 'Development',

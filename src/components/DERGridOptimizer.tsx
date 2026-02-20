@@ -50,7 +50,7 @@ const DERGridOptimizer: React.FC = () => {
 
     // --- Helpers ---
     const addLog = (text: string, type: LogLine['type'] = 'info') => {
-        setLogs(prev => [...prev, { id: Date.now(), text, type }]);
+        setLogs(prev => [...prev, { id: Date.now() + Math.random(), text, type }]);
     };
 
     useEffect(() => {

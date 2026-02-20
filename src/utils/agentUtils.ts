@@ -9,6 +9,7 @@ export interface ChartData {
 }
 
 export interface Message {
+  id?: string;
   sender: 'user' | 'ai' | 'system';
   text: string;
   attachment?: {
@@ -187,9 +188,9 @@ export const processZipFile = async (file: File): Promise<string> => {
         return textExtensions.some(ext => filename.toLowerCase().endsWith(ext));
     };
 
-    zip.forEach((_, zipEntry) => {
+    zip.forEach((_: string, zipEntry: any) => {
         if (!zipEntry.dir && isTextFile(zipEntry.name)) {
-            const promise = zipEntry.async('string').then(content => {
+            const promise = zipEntry.async('string').then((content: string) => {
                 let finalContent = content;
                 if (content.length > 20000) {
                     finalContent = content.substring(0, 20000) + "\n... (file truncated due to size) ...";

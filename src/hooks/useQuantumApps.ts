@@ -133,7 +133,7 @@ export const useQuantumApps = (
     const handleFullDeployment = useCallback((appDetails: { name: string; description: string; code: string; uiStructure?: UIStructure }) => {
         const appName = appDetails.name || "Untitled App";
         const appDescription = appDetails.description || "User-deployed application.";
-        const appSlug = appName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || `app-${Date.now()}`;
+        const appSlug = appName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || `app-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const q_uri = `CHIPS://${appSlug}.qcos.apps/main`;
         const https_url = `https://qcos.apps.web/${appSlug}`;
         const timestamp = new Date().toLocaleTimeString('en-GB', { hour12: false });

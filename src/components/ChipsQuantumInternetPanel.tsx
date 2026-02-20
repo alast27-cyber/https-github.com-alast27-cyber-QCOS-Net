@@ -85,9 +85,9 @@ const SubPanelContent: React.FC<{ id: string; onBack: () => void; color?: string
                     </div>
                 </div>
                 <div className="text-xs text-gray-400 font-mono">
-                    <p>> Initiating handshake with neighbor nodes...</p>
-                    <p>> Syncing ledger state...</p>
-                    <p className="text-green-400">> Connection Secured (Quantum Entanglement Layer)</p>
+                    <p>{">"} Initiating handshake with neighbor nodes...</p>
+                    <p>{">"} Syncing ledger state...</p>
+                    <p className="text-green-400">{">"} Connection Secured (Quantum Entanglement Layer)</p>
                 </div>
             </div>
         );
