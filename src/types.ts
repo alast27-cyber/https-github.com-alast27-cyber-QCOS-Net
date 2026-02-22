@@ -17,6 +17,7 @@ export interface LogEntry {
 export type IconComponent = React.FC<{ className?: string }>;
 
 export interface UIStructure {
+  type: string;
   component: string;
   props?: { [key: string]: any };
   children?: (UIStructure | string)[];

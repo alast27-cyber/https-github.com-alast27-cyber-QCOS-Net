@@ -8,14 +8,14 @@ import {
 import { AppDefinition, URIAssignment, UIStructure } from '../types';
 
 interface QuantumAppExchangeProps {
-    apps: AppDefinition[];
-    onInstall: (id: string) => void;
-    onLaunch: (id: string) => void;
-    onDeployApp: (details: { name: string; description: string; code: string; uiStructure?: UIStructure }) => void;
-    uriAssignments: URIAssignment[];
-    onGenerateApp: (description: string) => Promise<{ files: { [path: string]: string }, uiStructure: UIStructure | null }>;
-    onUpdateApp: (files: { [path: string]: string }) => Promise<{ updatedFiles: { [path: string]: string }, summary: string }>;
-    onDebugApp: (files: { [path: string]: string }) => Promise<{ fixedFiles: { [path: string]: string }, summary: string, uiStructure: UIStructure | null }>;
+    apps?: AppDefinition[];
+    onInstall?: (id: string) => void;
+    onLaunch?: (id: string) => void;
+    onDeployApp?: (details: { name: string; description: string; code: string; uiStructure?: UIStructure }) => void;
+    uriAssignments?: URIAssignment[];
+    onGenerateApp?: (description: string) => Promise<{ files: { [path: string]: string }, uiStructure: UIStructure | null }>;
+    onUpdateApp?: (files: { [path: string]: string }) => Promise<{ updatedFiles: { [path: string]: string }, summary: string }>;
+    onDebugApp?: (files: { [path: string]: string }) => Promise<{ fixedFiles: { [path: string]: string }, summary: string, uiStructure: UIStructure | null }>;
     onSimulate?: (id: string) => void;
 }
 
@@ -97,7 +97,7 @@ const QuantumAppExchange: React.FC<QuantumAppExchangeProps> = ({ apps, onInstall
                                 </div>
 
                                 <button
-                                    onClick={() => app.status === 'installed' ? onLaunch(app.id) : onInstall(app.id)}
+                                    onClick={() => app.status === 'installed' ? onLaunch?.(app.id) : onInstall?.(app.id)}
                                     className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all duration-200 flex items-center gap-1.5
                                         ${app.status === 'installed' 
                                             ? 'bg-slate-800 text-cyan-400 hover:bg-slate-700' 

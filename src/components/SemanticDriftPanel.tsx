@@ -6,9 +6,11 @@ import { MagnifyingGlassIcon, ShieldCheckIcon, BugAntIcon, ZapIcon } from './Ico
 const SemanticDriftPanel: React.FC = () => {
   const [driftStatus, setDriftStatus] = useState('Nominal'); // 'Nominal', 'Minor Drift Detected', 'Critical Drift Detected'
   const [remediationStatus, setRemediationStatus] = useState('Idle'); // 'Idle', 'Initiating', 'Remediating', 'Complete'
+  const [lastCheck, setLastCheck] = useState('');
 
   // Mock effect to change drift status for demo
   React.useEffect(() => {
+      setLastCheck(new Date().toLocaleTimeString());
       const timer = setTimeout(() => {
           setDriftStatus('Minor Drift Detected');
       }, 10000);
@@ -45,7 +47,7 @@ const SemanticDriftPanel: React.FC = () => {
           <span className={`font-medium ${getStatusColor(driftStatus)}`}>{driftStatus}</span>
         </div>
         <p className="text-xs text-cyan-300 opacity-80">
-          Last Check: {new Date().toLocaleTimeString()} (QNN-powered anomaly detection)
+          Last Check: {lastCheck} (QNN-powered anomaly detection)
         </p>
 
         <div className="flex-grow"></div>
@@ -74,5 +76,7 @@ const SemanticDriftPanel: React.FC = () => {
     </GlassPanel>
   );
 };
+
+SemanticDriftPanel.displayName = 'SemanticDriftPanel';
 
 export default SemanticDriftPanel;

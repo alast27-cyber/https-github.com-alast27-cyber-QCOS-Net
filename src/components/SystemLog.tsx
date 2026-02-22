@@ -22,6 +22,7 @@ const LiveIndicator = () => (
         <span className="text-red-400 text-xs font-bold tracking-widest">LIVE</span>
     </div>
 );
+LiveIndicator.displayName = 'LiveIndicator';
 
 
 const SystemLog: React.FC<SystemLogProps> = ({ logs }) => {

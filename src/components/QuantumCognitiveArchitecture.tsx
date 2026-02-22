@@ -89,6 +89,7 @@ interface QuantumCognitiveArchitectureProps {
 }
 
 const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> = ({ onApplyPatch }) => {
+    const initialTime = useRef(Date.now());
     const { agentQProps } = useAgentQ({
         focusedPanelId: null,
         panelInfoMap: {},
@@ -330,7 +331,7 @@ const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> 
                     </div>
                     <div className="flex-grow bg-black/40 border border-yellow-800/30 rounded-lg p-3 overflow-hidden relative">
                         <MemoryMatrix 
-                            lastActivity={lastActivity || Date.now()} 
+                            lastActivity={lastActivity || initialTime.current} 
                             memorySummary="System Cognitive State"
                             interactive={true}
                             messages={messages} 

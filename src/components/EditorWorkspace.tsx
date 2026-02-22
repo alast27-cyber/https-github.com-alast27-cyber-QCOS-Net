@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { FileCodeIcon, PencilSquareIcon, TrashIcon, CheckCircle2Icon, XIcon, SparklesIcon, LoaderIcon, ArrowRightIcon } from './Icons';
 import { GoogleGenAI } from '@google/genai';
 import { generateContentWithRetry } from '../utils/gemini';
+
 import MonacoEditorWrapper from './MonacoEditorWrapper';
 
 const FileExplorer: React.FC<{ 

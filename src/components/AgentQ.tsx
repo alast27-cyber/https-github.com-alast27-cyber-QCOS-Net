@@ -53,6 +53,7 @@ const AgentQ: React.FC<AgentQProps> = ({
     currentContextName
 }) => {
   const { inquiry, systemStatus, universeConnections } = useSimulation();
+  const [defaultLastActivity] = useState(() => Date.now());
   const [input, setInput] = useState('');
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [showMemory, setShowMemory] = useState(false);
@@ -319,7 +320,7 @@ const AgentQ: React.FC<AgentQProps> = ({
   const memoryView = (
     <div className="flex-1 flex flex-col min-h-0 p-4">
         <MemoryMatrix 
-          lastActivity={lastActivity || Date.now()} 
+          lastActivity={lastActivity || defaultLastActivity} 
           memorySummary={memorySummary || "Core Cognitive State"} 
           messages={messages}
           interactive={true}

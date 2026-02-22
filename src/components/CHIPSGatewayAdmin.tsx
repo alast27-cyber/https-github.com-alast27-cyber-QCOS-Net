@@ -141,6 +141,7 @@ const CHIPSGatewayAdmin: React.FC<CHIPSGatewayAdminProps> = ({ uriAssignments })
     const [netLogs, setNetLogs] = useState<string[]>([]);
     const [netResponse, setNetResponse] = useState<string>('');
     const [netStatus, setNetStatus] = useState<'IDLE' | 'CONNECTING' | 'TRANSFER' | 'COMPLETE'>('IDLE');
+    const [oscilloscopeOffsets] = useState(() => [Math.random() * 20, Math.random() * 20]);
 
     // Merge live URI assignments with static system domains
     const domainRecords = useMemo(() => {
@@ -979,8 +980,8 @@ const CHIPSGatewayAdmin: React.FC<CHIPSGatewayAdminProps> = ({ uriAssignments })
                                         </div>
                                         {/* Simple Oscilloscope Visual */}
                                         <svg className="w-full h-full" preserveAspectRatio="none">
-                                            <path d={`M 0 50 Q 25 ${50 + Math.random() * 20} 50 50 T 100 50 T 150 50 T 200 50 T 250 50 T 300 50`} fill="none" stroke="#22d3ee" strokeWidth="2" className="animate-pulse" />
-                                            <path d={`M 0 50 Q 25 ${50 - Math.random() * 20} 50 50 T 100 50 T 150 50 T 200 50 T 250 50 T 300 50`} fill="none" stroke="#a855f7" strokeWidth="2" className="animate-pulse" style={{ animationDelay: '0.5s' }} />
+                                            <path d={`M 0 50 Q 25 ${50 + oscilloscopeOffsets[0]} 50 50 T 100 50 T 150 50 T 200 50 T 250 50 T 300 50`} fill="none" stroke="#22d3ee" strokeWidth="2" className="animate-pulse" />
+                                            <path d={`M 0 50 Q 25 ${50 - oscilloscopeOffsets[1]} 50 50 T 100 50 T 150 50 T 200 50 T 250 50 T 300 50`} fill="none" stroke="#a855f7" strokeWidth="2" className="animate-pulse" style={{ animationDelay: '0.5s' }} />
                                         </svg>
                                     </div>
                                 </div>

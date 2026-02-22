@@ -1,0 +1,7 @@
+<<<<<<< HEAD
+PlatformToolSet=v145:VCToolArchitecture=Native64Bit:VCToolsVersion=14.50.35717:VCServicingVersionCompilers=14.50.35718:TargetPlatformVersion=10.0.26100.0:
+Debug|x64|C:\Users\alast\OneDrive\Apps\QCOS_Project\ai_core\scripts\build\CMakeFiles\4.1.1-msvc1\CompilerIdC\|
+=======
+PlatformToolSet=v145:VCToolArchitecture=Native64Bit:VCToolsVersion=14.50.35717:VCServicingVersionCompilers=14.50.35718:TargetPlatformVersion=10.0.26100.0:
+Debug|x64|C:\Users\alast\OneDrive\Apps\QCOS_Project\ai_core\scripts\build\CMakeFiles\4.1.1-msvc1\CompilerIdC\|
+>>>>>>> d6de685d2c7b77476426b95b7cfd6d529b95af6d

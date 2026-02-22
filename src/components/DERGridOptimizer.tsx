@@ -206,19 +206,19 @@ const DERGridOptimizer: React.FC = () => {
                         <div className="absolute inset-0 holographic-grid opacity-20"></div>
                         
                         {/* Power Lines (SVG) */}
-                        <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
                              {/* Central Hub Lines */}
-                             <line x1="50%" y1="50%" x2="20%" y2="30%" stroke="rgba(34, 211, 238, 0.3)" strokeWidth="2" />
-                             <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="rgba(34, 211, 238, 0.3)" strokeWidth="2" />
-                             <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="rgba(239, 68, 68, 0.4)" strokeWidth="2" strokeDasharray="5,5" className="animate-pulse" />
-                             <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="rgba(239, 68, 68, 0.4)" strokeWidth="2" strokeDasharray="5,5" className="animate-pulse" />
+                             <line x1="50" y1="50" x2="20" y2="30" stroke="rgba(34, 211, 238, 0.3)" strokeWidth="0.5" />
+                             <line x1="50" y1="50" x2="80" y2="20" stroke="rgba(34, 211, 238, 0.3)" strokeWidth="0.5" />
+                             <line x1="50" y1="50" x2="20" y2="80" stroke="rgba(239, 68, 68, 0.4)" strokeWidth="0.5" strokeDasharray="2,2" className="animate-pulse" />
+                             <line x1="50" y1="50" x2="80" y2="80" stroke="rgba(239, 68, 68, 0.4)" strokeWidth="0.5" strokeDasharray="2,2" className="animate-pulse" />
                              
                              {/* Power Particles */}
-                             <circle r="3" fill="#fff" className="animate-flow-path">
-                                 <animateMotion dur="2s" repeatCount="indefinite" path="M 50% 50% L 20% 80%" />
+                             <circle r="1" fill="#fff" className="animate-flow-path">
+                                 <animateMotion dur="2s" repeatCount="indefinite" path="M 50 50 L 20 80" />
                              </circle>
-                             <circle r="3" fill="#22d3ee" className="animate-flow-path" style={{animationDelay: '1s'}}>
-                                 <animateMotion dur="3s" repeatCount="indefinite" path="M 20% 30% L 50% 50%" />
+                             <circle r="1" fill="#22d3ee" className="animate-flow-path" style={{animationDelay: '1s'}}>
+                                 <animateMotion dur="3s" repeatCount="indefinite" path="M 20 30 L 50 50" />
                              </circle>
                         </svg>
 

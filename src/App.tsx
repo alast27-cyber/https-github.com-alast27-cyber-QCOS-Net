@@ -64,6 +64,10 @@ import QuantumReinforcementLearning from './components/QuantumReinforcementLearn
 import QuantumProgrammingInterface from './components/QuantumProgrammingInterface';
 import QuantumLargeLanguageModel from './components/QuantumLargeLanguageModel';
 import QuantumAppExchange from './components/QuantumAppExchange';
+import QuantumMonteCarloFinance from './components/QuantumMonteCarloFinance';
+import QuantumNetworkVisualizer from './components/QuantumNetworkVisualizer';
+import VQEToolkit from './components/VQEToolkit';
+import QcosDashboard from './components/QcosDashboard';
 
 const QCOS_VERSION = 4.5;
 
@@ -89,7 +93,11 @@ const DashboardContent: React.FC = () => {
   const { addToast } = useToast();
   const { systemStatus, startAllSimulations, qllm, entanglementMesh } = useSimulation();
   
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    const hasOnboarded = localStorage.getItem('qcos_onboarded') === 'true';
+    const isChipsInstalled = localStorage.getItem('chips_browser_installed') === 'true';
+    return isChipsInstalled && !hasOnboarded;
+  });
   const [isInstalled, setIsInstalled] = useState(() => localStorage.getItem('chips_browser_installed') === 'true'); 
   const [isImmersive, setIsImmersive] = useState(false);
 
@@ -110,20 +118,18 @@ const DashboardContent: React.FC = () => {
   }, [handleMouseMove]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-        if (isInstalled) {
-             const hasOnboarded = localStorage.getItem('qcos_onboarded') === 'true';
-             if (!hasOnboarded) {
-                 setShowOnboarding(true);
-             } else {
-                  const timer = setTimeout(() => {
-                       startAllSimulations();
-                   }, 1000);
-                   return () => clearTimeout(timer);
-             }
+    if (isAuthenticated && isInstalled) {
+        const hasOnboarded = localStorage.getItem('qcos_onboarded') === 'true';
+        if (!hasOnboarded && !showOnboarding) {
+            setShowOnboarding(true);
+        } else {
+            const timer = setTimeout(() => {
+                startAllSimulations();
+            }, 1000);
+            return () => clearTimeout(timer);
         }
     }
-  }, [isAuthenticated, startAllSimulations]);
+  }, [isAuthenticated, isInstalled, startAllSimulations, showOnboarding]);
   
   const handleInstallationComplete = () => {
       localStorage.setItem('chips_browser_installed', 'true');
@@ -137,7 +143,7 @@ const DashboardContent: React.FC = () => {
       startAllSimulations();
   };
 
-  const [dashboardGroup, setDashboardGroup] = useState<'group1' | 'group2' | 'group3' | 'group4'>('group1');
+  const [dashboardGroup, setDashboardGroup] = useState<'group1' | 'group2' | 'group3' | 'group4' | 'group5'>('group1');
   
   const [flipP1, setFlipP1] = useState(false);
   const [flipP2, setFlipP2] = useState(false);
@@ -154,6 +160,10 @@ const DashboardContent: React.FC = () => {
   const [flipP19, setFlipP19] = useState(false);
   const [flipP20, setFlipP20] = useState(false);
   const [flipP21, setFlipP21] = useState(false);
+
+  const [flipP25, setFlipP25] = useState(false);
+  const [flipP26, setFlipP26] = useState(false);
+  const [flipP27, setFlipP27] = useState(false);
   
   const [logs, setLogs] = useState<LogEntry[]>(initialLogs);
   const [maximizedPanelId, setMaximizePanelId] = useState<string | null>(null);
@@ -303,6 +313,9 @@ const DashboardContent: React.FC = () => {
              'quantum-programming': { title: 'Programming Interface', content: <QuantumProgrammingInterface /> },
              'quantum-llm': { title: 'Large Language Model', content: <QuantumLargeLanguageModel /> },
              'quantum-exchange': { title: 'App Exchange', content: <QuantumAppExchange /> },
+             'quantum-monte-carlo': { title: 'Monte Carlo Finance', content: <QuantumMonteCarloFinance /> },
+             'quantum-network-visualizer': { title: 'Quantum Network Visualizer', content: <QuantumNetworkVisualizer /> },
+             'vqe-toolkit': { title: 'VQE Toolkit', content: <VQEToolkit /> },
              'chips-quantum-network': { 
                  title: 'Chips Quantum Browser', 
                  content: <CHIPSBrowserSDK initialApp={undefined} onToggleAgentQ={() => {}} apps={marketApps} onInstallApp={handleInstallApp} /> 
@@ -555,19 +568,19 @@ const DashboardContent: React.FC = () => {
               <div className="col-span-12 lg:col-span-4 h-full relative" style={{ perspective: '3000px' }}>
                   <div className={`relative w-full h-full transition-transform duration-1000 transform-style-preserve-3d ${flipP19 ? 'rotate-y-180' : ''}`}>
                       <div className={`absolute inset-0 backface-hidden ${!flipP19 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
-                           <GlassPanel onMaximize={() => setMaximizePanelId('agi-singularity')} title="AGI Singularity Interface">
+                           <GlassPanel onMaximize={() => setMaximizePanelId('qcos-dashboard')} title="QCOS Dashboard">
                                <div className="absolute top-2 right-14 z-50">
                                  <button onClick={(e) => { e.stopPropagation(); setFlipP19(true); }} className="p-1.5 hover:bg-red-500/20 rounded-md border border-red-800 text-red-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
                                </div>
-                               <AGISingularityInterface />
+                               <QcosDashboard />
                            </GlassPanel>
                        </div>
                        <div className={`absolute inset-0 backface-hidden rotate-y-180 ${flipP19 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
-                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-swine')} title="Quantum Swine Intelligence">
+                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-rl')} title="Quantum Reinforcement Learning">
                                <div className="absolute top-2 right-14 z-50">
                                  <button onClick={(e) => { e.stopPropagation(); setFlipP19(false); }} className="p-1.5 hover:bg-green-500/20 rounded-md border border-green-800 text-green-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
                                </div>
-                               <QuantumSwineIntelligence onOpenApp={() => {}} />
+                               <QuantumReinforcementLearning />
                            </GlassPanel>
                        </div>
                    </div>
@@ -576,19 +589,19 @@ const DashboardContent: React.FC = () => {
                <div className="col-span-12 lg:col-span-5 h-full relative" style={{ perspective: '3000px' }}>
                    <div className={`relative w-full h-full transition-transform duration-1000 transform-style-preserve-3d ${flipP20 ? 'rotate-y-180' : ''}`}>
                        <div className={`absolute inset-0 backface-hidden ${!flipP20 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
-                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-rl')} title="Quantum Reinforcement Learning">
+                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-programming')} title="Quantum Programming Interface">
                                <div className="absolute top-2 right-14 z-50">
                                  <button onClick={(e) => { e.stopPropagation(); setFlipP20(true); }} className="p-1.5 hover:bg-orange-500/20 rounded-md border border-orange-800 text-orange-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
                                </div>
-                               <QuantumReinforcementLearning />
+                               <QuantumProgrammingInterface />
                            </GlassPanel>
                        </div>
                        <div className={`absolute inset-0 backface-hidden rotate-y-180 ${flipP20 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
-                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-programming')} title="Quantum Programming Interface">
+                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-llm')} title="Quantum Large Language Model">
                                <div className="absolute top-2 right-14 z-50">
                                  <button onClick={(e) => { e.stopPropagation(); setFlipP20(false); }} className="p-1.5 hover:bg-teal-500/20 rounded-md border border-teal-800 text-teal-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
                                </div>
-                               <QuantumProgrammingInterface />
+                               <QuantumLargeLanguageModel />
                            </GlassPanel>
                        </div>
                    </div>
@@ -597,19 +610,84 @@ const DashboardContent: React.FC = () => {
                <div className="col-span-12 lg:col-span-3 h-full relative" style={{ perspective: '3000px' }}>
                    <div className={`relative w-full h-full transition-transform duration-1000 transform-style-preserve-3d ${flipP21 ? 'rotate-y-180' : ''}`}>
                        <div className={`absolute inset-0 backface-hidden ${!flipP21 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
-                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-llm')} title="Quantum Large Language Model">
+                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-exchange')} title="Quantum App Exchange">
                                <div className="absolute top-2 right-14 z-50">
                                  <button onClick={(e) => { e.stopPropagation(); setFlipP21(true); }} className="p-1.5 hover:bg-indigo-500/20 rounded-md border border-indigo-800 text-indigo-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
                                </div>
-                               <QuantumLargeLanguageModel />
+                               <QuantumAppExchange />
                            </GlassPanel>
                        </div>
                        <div className={`absolute inset-0 backface-hidden rotate-y-180 ${flipP21 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
-                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-exchange')} title="Quantum App Exchange">
+                           <GlassPanel onMaximize={() => setMaximizePanelId('agi-singularity')} title="AGI Singularity Interface">
                                <div className="absolute top-2 right-14 z-50">
                                  <button onClick={(e) => { e.stopPropagation(); setFlipP21(false); }} className="p-1.5 hover:bg-pink-500/20 rounded-md border border-pink-800 text-pink-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
                                </div>
-                               <QuantumAppExchange />
+                               <AGISingularityInterface />
+                           </GlassPanel>
+                       </div>
+                   </div>
+               </div>
+            </>
+          ) : dashboardGroup === 'group5' ? (
+            <>
+              <div className="col-span-12 lg:col-span-4 h-full relative" style={{ perspective: '3000px' }}>
+                  <div className={`relative w-full h-full transition-transform duration-1000 transform-style-preserve-3d ${flipP25 ? 'rotate-y-180' : ''}`}>
+                      <div className={`absolute inset-0 backface-hidden ${!flipP25 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
+                           <GlassPanel onMaximize={() => setMaximizePanelId('q-biomed')} title="BioMed Discovery">
+                               <div className="absolute top-2 right-14 z-50">
+                                 <button onClick={(e) => { e.stopPropagation(); setFlipP25(true); }} className="p-1.5 hover:bg-red-500/20 rounded-md border border-red-800 text-red-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
+                               </div>
+                               <QBioMedDrugDiscovery />
+                           </GlassPanel>
+                       </div>
+                       <div className={`absolute inset-0 backface-hidden rotate-y-180 ${flipP25 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
+                           <GlassPanel onMaximize={() => setMaximizePanelId('mol-sim')} title="Molecular Toolkit">
+                               <div className="absolute top-2 right-14 z-50">
+                                 <button onClick={(e) => { e.stopPropagation(); setFlipP25(false); }} className="p-1.5 hover:bg-green-500/20 rounded-md border border-green-800 text-green-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
+                               </div>
+                               <MolecularSimulationToolkit />
+                           </GlassPanel>
+                       </div>
+                   </div>
+               </div>
+
+               <div className="col-span-12 lg:col-span-5 h-full relative" style={{ perspective: '3000px' }}>
+                   <div className={`relative w-full h-full transition-transform duration-1000 transform-style-preserve-3d ${flipP26 ? 'rotate-y-180' : ''}`}>
+                       <div className={`absolute inset-0 backface-hidden ${!flipP26 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
+                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-cognitive-architecture')} title="Cognitive Architecture">
+                               <div className="absolute top-2 right-14 z-50">
+                                 <button onClick={(e) => { e.stopPropagation(); setFlipP26(true); }} className="p-1.5 hover:bg-orange-500/20 rounded-md border border-orange-800 text-orange-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
+                               </div>
+                               <QuantumCognitiveArchitecture />
+                           </GlassPanel>
+                       </div>
+                       <div className={`absolute inset-0 backface-hidden rotate-y-180 ${flipP26 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
+                           <GlassPanel onMaximize={() => setMaximizePanelId('quantum-deep-learning')} title="Quantum Deep Learning">
+                               <div className="absolute top-2 right-14 z-50">
+                                 <button onClick={(e) => { e.stopPropagation(); setFlipP26(false); }} className="p-1.5 hover:bg-teal-500/20 rounded-md border border-teal-800 text-teal-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
+                               </div>
+                               <QuantumDeepLearning />
+                           </GlassPanel>
+                       </div>
+                   </div>
+               </div>
+
+               <div className="col-span-12 lg:col-span-3 h-full relative" style={{ perspective: '3000px' }}>
+                   <div className={`relative w-full h-full transition-transform duration-1000 transform-style-preserve-3d ${flipP27 ? 'rotate-y-180' : ''}`}>
+                       <div className={`absolute inset-0 backface-hidden ${!flipP27 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
+                           <GlassPanel onMaximize={() => setMaximizePanelId('qos-kernel-manager')} title="QOS Kernel Console">
+                               <div className="absolute top-2 right-14 z-50">
+                                 <button onClick={(e) => { e.stopPropagation(); setFlipP27(true); }} className="p-1.5 hover:bg-indigo-500/20 rounded-md border border-indigo-800 text-indigo-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
+                               </div>
+                               <QOSKernelConsole />
+                           </GlassPanel>
+                       </div>
+                       <div className={`absolute inset-0 backface-hidden rotate-y-180 ${flipP27 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-500`}>
+                           <GlassPanel onMaximize={() => setMaximizePanelId('system-diagnostic')} title="System Diagnostics">
+                               <div className="absolute top-2 right-14 z-50">
+                                 <button onClick={(e) => { e.stopPropagation(); setFlipP27(false); }} className="p-1.5 hover:bg-pink-500/20 rounded-md border border-pink-800 text-pink-400 transition-all hover:scale-110 bg-black/60 backdrop-blur-sm"><RefreshCwIcon className="w-4 h-4"/></button>
+                               </div>
+                               <SystemDiagnostic onClose={() => setMaximizePanelId(null)} />
                            </GlassPanel>
                        </div>
                    </div>
@@ -642,12 +720,13 @@ const DashboardContent: React.FC = () => {
                    if (prev === 'group1') return 'group2';
                    if (prev === 'group2') return 'group3';
                    if (prev === 'group3') return 'group4';
+                   if (prev === 'group4') return 'group5';
                    return 'group1';
                  })}
                 className={`holographic-projection px-5 py-2 text-[10px] font-black uppercase tracking-widest border rounded-full transition-all flex items-center gap-2 ${dashboardGroup === 'group2' ? 'bg-purple-900/20 border-purple-500/40 text-purple-300' : 'bg-cyan-900/10 border-cyan-500/40 text-cyan-300'}`}
               >
                  <GridIcon className="w-3 h-3" />
-                 {dashboardGroup === 'group1' ? 'Shift to Panel Group 2' : dashboardGroup === 'group2' ? 'Shift to Panel Group 3' : dashboardGroup === 'group3' ? 'Shift to Panel Group 4' : 'Shift to Panel Group 1'}
+                 {dashboardGroup === 'group1' ? 'Shift to Panel Group 2' : dashboardGroup === 'group2' ? 'Shift to Panel Group 3' : dashboardGroup === 'group3' ? 'Shift to Panel Group 4' : dashboardGroup === 'group4' ? 'Shift to Panel Group 5' : 'Shift to Panel Group 1'}
               </button>
 
               <button 

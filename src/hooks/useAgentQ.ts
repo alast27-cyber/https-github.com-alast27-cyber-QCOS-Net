@@ -235,7 +235,7 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         console.warn("Gemini API is disconnected. Returning mock app generation.");
         return {
             files: { 'src/App.tsx': `// Mock App for ${description}` },
-            uiStructure: { component: 'div', props: { children: `Mock App: ${description}` } }
+            uiStructure: { type: 'div', component: 'div', props: { children: `Mock App: ${description}` } }
         };
     }, []);
 

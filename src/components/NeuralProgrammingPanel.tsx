@@ -71,6 +71,19 @@ const INITIAL_NEURAL_SCRIPTS: NeuralScript[] = [
 const QuantumOpsInterface: React.FC = () => {
     // State for animations
     const [pulseData, setPulseData] = useState<{t: number, v: number}[]>([]);
+    const vectorRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        let animationFrameId: number;
+        const animate = () => {
+            if (vectorRef.current) {
+                vectorRef.current.style.transform = `rotate(${Date.now()/50}deg) rotateX(45deg)`;
+            }
+            animationFrameId = requestAnimationFrame(animate);
+        };
+        animate();
+        return () => cancelAnimationFrame(animationFrameId);
+    }, []);
     const [crosstalk, setCrosstalk] = useState<number[][]>([]);
     const [calibration, setCalibration] = useState<number[]>([0,0,0,0]);
     const [qstFidelity, setQstFidelity] = useState(0.85);
@@ -208,7 +221,7 @@ const QuantumOpsInterface: React.FC = () => {
                         <div className="h-full w-px bg-purple-500/30 absolute"></div>
                         <div className="w-16 h-16 rounded-full border border-purple-400/20"></div>
                         {/* State Vector */}
-                        <div className="absolute w-1 h-12 bg-gradient-to-t from-transparent to-white origin-bottom bottom-1/2 left-1/2 -ml-0.5" style={{transform: `rotate(${Date.now()/50}deg) rotateX(45deg)`}}></div>
+                        <div ref={vectorRef} className="absolute w-1 h-12 bg-gradient-to-t from-transparent to-white origin-bottom bottom-1/2 left-1/2 -ml-0.5"></div>
                     </div>
                 </div>
 

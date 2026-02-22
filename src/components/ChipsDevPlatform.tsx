@@ -276,7 +276,7 @@ const transpileCodeToStructure = (code: string): UIStructure | null => {
             }
 
             return {
-                structure: { component: tagName, props, children },
+                structure: { type: 'div', component: tagName, props, children },
                 remainder
             };
         }
@@ -365,6 +365,7 @@ const PlanningView: React.FC<{
     onUseBlueprint: (bp: any) => void;
     onEditCode: () => void;
 }> = ({ project, onUpdate, projects, onSelectProject, onDeleteProject, onUseBlueprint, onEditCode }) => {
+    const [now] = useState(() => Date.now());
     return <div className="p-4 flex flex-col gap-4 h-full overflow-y-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
              <div className="md:col-span-1 bg-black/30 border border-cyan-900/50 rounded-lg p-3">
@@ -376,7 +377,7 @@ const PlanningView: React.FC<{
                                 <span className="text-xs font-bold truncate">{p.title}</span>
                                 <button onClick={(e) => { e.stopPropagation(); onDeleteProject(p.id); }} className="text-gray-500 hover:text-red-400"><TrashIcon className="w-3 h-3" /></button>
                              </div>
-                             <span className="text-[9px] text-gray-500 mt-1">Last edited: {new Date(p.lastEdited || Date.now()).toLocaleDateString()}</span>
+                             <span className="text-[9px] text-gray-500 mt-1">Last edited: {new Date(p.lastEdited || now).toLocaleDateString()}</span>
                          </div>
                      ))}
                  </div>

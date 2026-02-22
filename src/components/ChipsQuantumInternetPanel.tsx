@@ -59,6 +59,7 @@ const ItemCard: React.FC<{
 // --- Sub-Panel Content Placeholders ---
 
 const SubPanelContent: React.FC<{ id: string; onBack: () => void; color?: string }> = ({ id, onBack, color = 'cyan' }) => {
+    const [installCounts] = useState(() => Array.from({ length: 7 }, () => Math.floor(Math.random() * 500)));
     // Determine content based on ID
     let content = <div className="text-center text-gray-500 mt-10">Content Module Loading...</div>;
     let title = "Sub-Panel";
@@ -122,7 +123,7 @@ const SubPanelContent: React.FC<{ id: string; onBack: () => void; color?: string
                         <BoxIcon className="w-8 h-8 text-purple-400" />
                         <div>
                             <p className="text-xs font-bold text-white">Q-App {i}</p>
-                            <p className="text-[10px] text-gray-400">Utility • {Math.floor(Math.random() * 500)} installs</p>
+                            <p className="text-[10px] text-gray-400">Utility • {installCounts[i]} installs</p>
                         </div>
                     </div>
                 ))}

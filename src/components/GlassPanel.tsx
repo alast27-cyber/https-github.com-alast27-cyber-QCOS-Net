@@ -11,6 +11,36 @@ interface GlassPanelProps {
 }
 
 const GlassPanel: React.FC<GlassPanelProps> = ({ title, children, className = '', style, onMaximize, isMaximized = false }) => {
+  const panelRef = React.useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  React.useEffect(() => {
+    const node = panelRef.current;
+    if (node) {
+      const handleMouseEnter = () => setIsHovered(true);
+      const handleMouseLeave = () => setIsHovered(false);
+      node.addEventListener('mouseenter', handleMouseEnter);
+      node.addEventListener('mouseleave', handleMouseLeave);
+      return () => {
+        node.removeEventListener('mouseenter', handleMouseEnter);
+        node.removeEventListener('mouseleave', handleMouseLeave);
+      };
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const node = panelRef.current;
+    if (node) {
+      const handleMouseEnter = () => setIsHovered(true);
+      const handleMouseLeave = () => setIsHovered(false);
+      node.addEventListener('mouseenter', handleMouseEnter);
+      node.addEventListener('mouseleave', handleMouseLeave);
+      return () => {
+        node.removeEventListener('mouseenter', handleMouseEnter);
+        node.removeEventListener('mouseleave', handleMouseLeave);
+      };
+    }
+  }, []);
   return (
     <div 
       className={`

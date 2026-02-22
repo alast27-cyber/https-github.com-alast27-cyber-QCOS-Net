@@ -75,7 +75,7 @@ const AdminChat: React.FC<AdminChatProps> = ({
               <div className="flex-grow overflow-y-auto pr-2 space-y-3 p-2">
                 {messages.map((msg, index) => {
                     const isUser = msg.sender === 'user';
-                    let bubbleClasses = `max-w-[80%] p-2 rounded-lg text-sm ${isUser ? 'bg-amber-700/50 text-white' : (mode === 'console' ? 'bg-slate-700/50 text-amber-200' : 'bg-blue-700/50 text-blue-200')}`;
+                    const bubbleClasses = `max-w-[80%] p-2 rounded-lg text-sm ${isUser ? 'bg-amber-700/50 text-white' : (mode === 'console' ? 'bg-slate-700/50 text-amber-200' : 'bg-blue-700/50 text-blue-200')}`;
                     return (
                       <div key={msg.id || index} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
                         <div className={bubbleClasses}>

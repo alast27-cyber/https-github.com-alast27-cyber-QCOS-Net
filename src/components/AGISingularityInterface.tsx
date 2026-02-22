@@ -44,6 +44,7 @@ const QubitStateVisualizer: React.FC<{ qubitStability: number }> = ({ qubitStabi
         Array.from({ length: QUBIT_COUNT }, () => ({ state: 'zero', coherence: 100 }))
     );
     const [scanIndex, setScanIndex] = useState(0);
+    const [nodeId] = useState(() => Math.random().toString(16).slice(2, 6).toUpperCase());
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -101,7 +102,7 @@ const QubitStateVisualizer: React.FC<{ qubitStability: number }> = ({ qubitStabi
 
             <div className="flex justify-between items-center text-[9px] text-cyan-800 font-mono border-t border-cyan-900/30 pt-2 px-1">
                 <span>AVG_COHERENCE: {(qubitStates.reduce((a, b) => a + b.coherence, 0) / QUBIT_COUNT).toFixed(1)}%</span>
-                <span className="animate-pulse">NODE_0X{Math.random().toString(16).slice(2, 6).toUpperCase()}</span>
+                <span className="animate-pulse">NODE_0X{nodeId}</span>
             </div>
         </div>
     );
@@ -111,14 +112,14 @@ interface AGISingularityInterfaceProps {
     onPanelSelect?: (id: string) => void;
     isExternalProcessing?: boolean;
     externalTaskName?: string;
-    qubitStability: number;
+    qubitStability?: number;
 }
 
 const AGISingularityInterface: React.FC<AGISingularityInterfaceProps> = ({ 
     onPanelSelect, 
     isExternalProcessing = false,
     externalTaskName,
-    qubitStability
+    qubitStability = 100
 }) => {
     const [status, setStatus] = useState<CognitionStatus>('idle');
     const [progress, setProgress] = useState(0);
@@ -279,14 +280,14 @@ const AGISingularityInterface: React.FC<AGISingularityInterfaceProps> = ({
                 </div>
 
                 <div className="col-span-6 h-full relative flex items-center justify-center perspective-[1000px]">
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40">
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40" viewBox="0 0 100 100" preserveAspectRatio="none">
                         {cognitionEngines.map(e => (
                             <path 
                                 key={e.id}
-                                d={`M 50% 50% L ${e.x}% ${e.y}%`}
+                                d={`M 50 50 L ${e.x} ${e.y}`}
                                 stroke={activeEngineId === e.id ? "#22d3ee" : "#1e3a8a"}
-                                strokeWidth={activeEngineId === e.id ? 2 : 1}
-                                strokeDasharray="5 5"
+                                strokeWidth={activeEngineId === e.id ? 0.5 : 0.25}
+                                strokeDasharray="2 2"
                                 className={activeEngineId === e.id || status === 'merged' ? 'animate-flow' : ''}
                             />
                         ))}

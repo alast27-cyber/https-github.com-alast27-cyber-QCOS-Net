@@ -5,6 +5,8 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import process from 'node:process';
 
+import monacoEditorPlugin from 'vite-plugin-monaco-editor';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -15,7 +17,7 @@ export default defineConfig(({ mode }) => {
         port: 3000,
         host: '0.0.0.0',
       },
-      plugins: [react(), tailwindcss()],
+      plugins: [react(), tailwindcss(), (monacoEditorPlugin as any).default({})],
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),

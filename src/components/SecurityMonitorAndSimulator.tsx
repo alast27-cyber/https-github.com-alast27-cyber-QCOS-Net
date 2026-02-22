@@ -172,6 +172,51 @@ const SecurityMonitorAndSimulator: React.FC<SecurityMonitorProps> = ({ onMaximiz
     const [simResult, setSimResult] = useState<{ success: boolean; score: number; notes: string } | null>(null);
     const [humanOverride, setHumanOverride] = useState(false);
 
+    const addLog = (actor: SecurityLog['actor'], action: string, severity: SecurityLog['severity']) => {
+        setLogs(prev => [{
+            id: Date.now() + Math.random(),
+            timestamp: new Date().toLocaleTimeString(),
+            actor,
+            action,
+            severity
+        }, ...prev].slice(0, 50));
+    };
+
+    // --- Simulator Logic ---
+    const runSimulation = () => {
+        setIsSimulating(true);
+        setSimResult(null);
+        setSimProgress(0);
+        
+        let p = 0;
+        const interval = setInterval(() => {
+            p += 5;
+            setSimProgress(p);
+            if (p >= 100) {
+                clearInterval(interval);
+                setIsSimulating(false);
+                
+                // Calculate Result
+                const baseDefense = Math.random() * 50 + 30;
+                const bonus = humanOverride ? 15 : 0; // Human insight bonus
+                // EKS Bonus
+                const eksBonus = selectedDefense.includes('EKS') ? 20 : 0;
+
+                const score = Math.min(99.9, baseDefense + bonus + eksBonus);
+                const success = score > 60;
+                
+                setSimResult({
+                    success,
+                    score,
+                    notes: success 
+                        ? `Protocol ${selectedDefense} effectively mitigated ${selectedAttack}. EKS Verification confirmed integrity.`
+                        : `Defense failed. ${selectedAttack} bypassed logic gates. Recommendation: Enable Active Counter-Strike.`
+                });
+            }
+        }, 100);
+    };
+
+
     // --- Monitor Logic (AI Agent Simulation) ---
     useEffect(() => {
         const interval = setInterval(() => {
@@ -244,50 +289,6 @@ const SecurityMonitorAndSimulator: React.FC<SecurityMonitorProps> = ({ onMaximiz
         return () => clearTimeout(timer);
     }, [isAutoSimulating, isSimulating, simResult]);
 
-
-    const addLog = (actor: SecurityLog['actor'], action: string, severity: SecurityLog['severity']) => {
-        setLogs(prev => [{
-            id: Date.now() + Math.random(),
-            timestamp: new Date().toLocaleTimeString(),
-            actor,
-            action,
-            severity
-        }, ...prev].slice(0, 50));
-    };
-
-    // --- Simulator Logic ---
-    const runSimulation = () => {
-        setIsSimulating(true);
-        setSimResult(null);
-        setSimProgress(0);
-        
-        let p = 0;
-        const interval = setInterval(() => {
-            p += 5;
-            setSimProgress(p);
-            if (p >= 100) {
-                clearInterval(interval);
-                setIsSimulating(false);
-                
-                // Calculate Result
-                const baseDefense = Math.random() * 50 + 30;
-                const bonus = humanOverride ? 15 : 0; // Human insight bonus
-                // EKS Bonus
-                const eksBonus = selectedDefense.includes('EKS') ? 20 : 0;
-
-                const score = Math.min(99.9, baseDefense + bonus + eksBonus);
-                const success = score > 60;
-                
-                setSimResult({
-                    success,
-                    score,
-                    notes: success 
-                        ? `Protocol ${selectedDefense} effectively mitigated ${selectedAttack}. EKS Verification confirmed integrity.`
-                        : `Defense failed. ${selectedAttack} bypassed logic gates. Recommendation: Enable Active Counter-Strike.`
-                });
-            }
-        }, 100);
-    };
 
     // --- Radar Chart Data ---
     const radarData = [

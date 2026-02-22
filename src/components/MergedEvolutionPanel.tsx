@@ -89,12 +89,17 @@ const MergedEvolutionPanel: React.FC<{ onMaximizeSubPanel?: (id: string) => void
     const [progress, setProgress] = useState(0);
     const [simLogs, setSimLogs] = useState<string[]>([]);
     const [epochCount, setEpochCount] = useState(0);
+    const [networkFlux, setNetworkFlux] = useState(0.999);
     const logsEndRef = useRef<HTMLDivElement>(null);
     const cycleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         if (logsEndRef.current) logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }, [simLogs]);
+
+    useEffect(() => {
+        setNetworkFlux(0.999 + Math.random() * 0.001);
+    }, [epochCount]);
 
     const runOptimizationCycle = useCallback(() => {
         setProgress(0);
@@ -138,24 +143,23 @@ export const NETWORK_TUNING = {
                     }
                     
                     setEpochCount(prev => prev + 1);
-                    
-                    // Recursive Loop Pause
-                    cycleTimerRef.current = setTimeout(() => {
-                        runOptimizationCycle();
-                    }, 2000);
                 }
             }, totalDelay + step.delay);
             totalDelay += step.delay;
         });
     }, [epochCount, onApplyPatch]);
 
-    // Initial Start
+    // Loop Driver
     useEffect(() => {
-        runOptimizationCycle();
-        return () => {
-            if (cycleTimerRef.current) clearTimeout(cycleTimerRef.current);
-        };
-    }, []);
+        if (!isOptimizing) return;
+        
+        // Initial start or next cycle
+        const timer = setTimeout(() => {
+            runOptimizationCycle();
+        }, 2000);
+        
+        return () => clearTimeout(timer);
+    }, [isOptimizing, runOptimizationCycle]);
 
     const handleMaximize = (id: string) => {
         if (onMaximizeSubPanel) onMaximizeSubPanel(id);
@@ -262,7 +266,7 @@ export const NETWORK_TUNING = {
                 </div>
                 <div className="flex flex-col items-center">
                     <span className="text-[8px] text-gray-500 uppercase font-black mb-1 tracking-tighter">Network Flux</span>
-                    <span className="text-sm font-mono text-cyan-400">{(0.999 + Math.random() * 0.001).toFixed(5)}</span>
+                    <span className="text-sm font-mono text-cyan-400">{networkFlux.toFixed(5)}</span>
                 </div>
                 <div className="flex flex-col items-center">
                     <span className="text-[8px] text-gray-500 uppercase font-black mb-1 tracking-tighter">System State</span>

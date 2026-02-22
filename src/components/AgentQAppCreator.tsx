@@ -96,8 +96,8 @@ const AgentQAppCreator: React.FC<AgentQAppCreatorProps> = ({ onGenerateApp, onDe
         const toggleRegex = /set(\w+)\(\s*!(\w+)\s*\)/;
         const toggleRegexPrev = /set(\w+)\(\s*prev\w+\s*=>\s*!prev\w+\s*\)/;
 
-        let incMatch = functionBody.match(incrementRegex) || functionBody.match(incrementRegexPrev);
-        let togMatch = functionBody.match(toggleRegex) || functionBody.match(toggleRegexPrev);
+        const incMatch = functionBody.match(incrementRegex) || functionBody.match(incrementRegexPrev);
+        const togMatch = functionBody.match(toggleRegex) || functionBody.match(toggleRegexPrev);
 
         if (incMatch) {
             const varName = incMatch[1].toLowerCase().replace('prev', '');

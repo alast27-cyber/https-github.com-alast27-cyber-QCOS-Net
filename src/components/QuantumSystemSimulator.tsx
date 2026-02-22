@@ -92,4 +92,6 @@ const QuantumSystemSimulator: React.FC<QuantumSystemSimulatorProps> = ({ embedde
     );
 };
 
+QuantumSystemSimulator.displayName = 'QuantumSystemSimulator';
+
 export default QuantumSystemSimulator;

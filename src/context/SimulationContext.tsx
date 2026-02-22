@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useToast } from './ToastContext';
 
 // --- Types ---
@@ -329,7 +329,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const [systemStatus, setSystemStatus] = useState<SystemStatus>({ currentTask: "System Idle", neuralLoad: 35, instinctsCataloged: 1240, activeThreads: 128, isRepairing: false, ipsThroughput: 850, isOptimized: false });
     const [inquiry, setInquiry] = useState<InquiryState>({ id: '', prompt: '', status: 'idle', result: null });
     const [neuralInterface, setNeuralInterface] = useState<NeuralInterfaceState>({ isActive: false, connectionType: 'EEG', coherence: 0, pairCognitionActive: false, lastIntent: null, singularityAlignment: 0.0 });
-    const [singularityBoost, setSingularityBoost] = useState(0);
+
 
     const [qiaiIps, setQiaiIps] = useState<QIAIIPSState>({
         qil: { coherence: 0.99, status: 'IDLE', load: 12 },
@@ -385,6 +385,22 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         modelLibrary: []
     });
 
+    const singularityBoost = useMemo(() => {
+        let boost = 0;
+        if (qllm.isActive) boost += 15;
+        if (qllm.isTraining) boost += 10;
+        if (qllm.isAutoTopology) boost += 15;
+        if (qmlEngine.status === 'TRAINING') boost += 15;
+        if (qmlEngine.status === 'CONVERGED') boost += 20;
+        if (entanglementMesh.isQRLtoQNNLinked) boost += 25; 
+        
+        // Universe Boosts
+        if (universeConnections.kernel) boost += 30;
+        if (universeConnections.agentQ) boost += 30;
+
+        return boost;
+    }, [qllm.isActive, qllm.isTraining, qllm.isAutoTopology, qmlEngine.status, entanglementMesh.isQRLtoQNNLinked, universeConnections]);
+
     const [qrlEngine, setQrlEngine] = useState<QRLEngineState>({
         status: 'IDLE',
         currentEpisode: 0,
@@ -428,22 +444,6 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         currentStage: { QLLM: 4, QML: 4, QRL: 4, QGL: 4, QDL: 4 },
         isEntangled: true
     });
-
-    useEffect(() => {
-        let boost = 0;
-        if (qllm.isActive) boost += 15;
-        if (qllm.isTraining) boost += 10;
-        if (qllm.isAutoTopology) boost += 15;
-        if (qmlEngine.status === 'TRAINING') boost += 15;
-        if (qmlEngine.status === 'CONVERGED') boost += 20;
-        if (entanglementMesh.isQRLtoQNNLinked) boost += 25; 
-        
-        // Universe Boosts
-        if (universeConnections.kernel) boost += 30;
-        if (universeConnections.agentQ) boost += 30;
-
-        setSingularityBoost(boost);
-    }, [qllm.isActive, qllm.isTraining, qllm.isAutoTopology, qmlEngine.status, entanglementMesh.isQRLtoQNNLinked, universeConnections]);
 
     // Data Ingestion Simulation
     useEffect(() => {

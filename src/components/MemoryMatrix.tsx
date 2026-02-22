@@ -23,6 +23,11 @@ interface MemoryMatrixProps {
 const MemoryMatrix: React.FC<MemoryMatrixProps> = ({ lastActivity, memorySummary, interactive = false, messages = [] }) => {
     const [blocks, setBlocks] = useState<MemoryBlock[]>([]);
     const [selectedBlockId, setSelectedBlockId] = useState<number | null>(null);
+    const [decay, setDecay] = useState(0);
+
+    useEffect(() => {
+        setDecay(Math.random() * 0.01);
+    }, [selectedBlockId]);
 
     // Map messages to blocks whenever messages or activity changes
     useEffect(() => {
@@ -141,7 +146,7 @@ const MemoryMatrix: React.FC<MemoryMatrixProps> = ({ lastActivity, memorySummary
                                 <span>Coherence: {(selectedBlock.activity * 100).toFixed(1)}%</span>
                             </div>
                             <div className="text-right">
-                                Decay: {(Math.random() * 0.01).toFixed(4)}/ms
+                                Decay: {decay.toFixed(4)}/ms
                             </div>
                         </div>
                     </div>

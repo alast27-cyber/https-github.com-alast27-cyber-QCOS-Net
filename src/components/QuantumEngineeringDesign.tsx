@@ -45,11 +45,6 @@ const QuantumCADStudio: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const [mesh, setMesh] = useState<Vertex[]>([]);
     const [rotation, setRotation] = useState({ x: 0.5, y: 0.5 });
     
-    // Initialize standard mesh
-    useEffect(() => {
-        generateMesh('sphere');
-    }, []);
-
     const generateMesh = (type: string) => {
         const vertices: Vertex[] = [];
         const steps = 24;
@@ -83,6 +78,11 @@ const QuantumCADStudio: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         }
         setMesh(vertices);
     };
+
+    // Initialize standard mesh
+    useEffect(() => {
+        generateMesh('sphere');
+    }, []);
 
     const handleGenerate = () => {
         if (!prompt) return;
