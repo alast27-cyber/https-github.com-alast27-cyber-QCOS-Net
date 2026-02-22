@@ -25,7 +25,7 @@ const QuantumAppExchange: React.FC<QuantumAppExchangeProps> = ({ apps, onInstall
     const [activeCategory, setActiveCategory] = useState('All');
     const [searchTerm, setSearchTerm] = useState('');
 
-    const filteredApps = apps.filter(app => {
+    const filteredApps = (apps || []).filter(app => {
         const matchesSearch = app.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                               app.description.toLowerCase().includes(searchTerm.toLowerCase());
         
