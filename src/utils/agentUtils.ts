@@ -1,4 +1,6 @@
 
+import JSZip from 'jszip';
+
 // --- Type Definitions ---
 export interface ChartData {
   type: 'line' | 'bar' | 'area';
@@ -167,10 +169,6 @@ export const fileToText = (file: File): Promise<string> =>
     });
 
 export const processZipFile = async (file: File): Promise<string> => {
-    const JSZip = (window as any).JSZip;
-    if (!JSZip) {
-        throw new Error("JSZip library is not loaded. Please ensure the CDN script is in index.html.");
-    }
     const jszip = new JSZip();
     const zip = await jszip.loadAsync(file);
     

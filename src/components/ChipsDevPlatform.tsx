@@ -624,6 +624,35 @@ interface StudioViewProps {
 
 const StudioView: React.FC<StudioViewProps> = ({ project, onUpdate, onAiAssist, onGlobalDeploy, onCreateProject, onSave }) => {
     const [activeFile, setActiveFile] = useState<string>('App.tsx');
+    const [showPreview, setShowPreview] = useState(true);
+
+    const [previewState, setPreviewState] = useState<{ [key: string]: any }>({});
+
+    const uiStructure = useMemo(() => {
+        const code = project.files['App.tsx'] || '';
+        return transpileCodeToStructure(code);
+    }, [project.files['App.tsx']]);
+
+    useEffect(() => {
+        const code = project.files['App.tsx'] || '';
+        setPreviewState(extractStateFromCode(code));
+    }, [project.files['App.tsx']]);
+
+    const handlePreviewAction = useCallback((actionName: string) => {
+        setPreviewState(prev => {
+            if (actionName.startsWith('toggle')) {
+                const possibleState = actionName.replace('toggle', '');
+                const key = Object.keys(prev).find(k => 
+                    k.toLowerCase() === possibleState.toLowerCase() ||
+                    possibleState.toLowerCase().startsWith(k.toLowerCase())
+                );
+                if (key && typeof prev[key] === 'boolean') {
+                    return { ...prev, [key]: !prev[key] };
+                }
+            }
+            return prev;
+        });
+    }, []);
     
     // ... (State logic for Studio View) ...
     const fileSystemOps = useMemo(() => ({
@@ -667,15 +696,74 @@ const StudioView: React.FC<StudioViewProps> = ({ project, onUpdate, onAiAssist, 
                 />
             </div>
             <div className="flex-grow flex flex-col relative min-w-0 bg-black/40 overflow-hidden">
-                <EditorWorkspace 
-                    files={project.files} 
-                    selectedFile={activeFile} 
-                    onSelectFile={setActiveFile} 
-                    unsavedChanges={null}
-                    onContentChange={(val) => onUpdate(project.id, { files: {...project.files, [activeFile]: val} })}
-                    onRenameFile={()=>{}}
-                    onDeleteFile={()=>{}}
-                />
+                <div className={`flex-grow grid min-h-0 ${showPreview ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
+                    <div className="flex flex-col border-r border-cyan-900/30 overflow-hidden">
+                        <EditorWorkspace 
+                            files={project.files} 
+                            selectedFile={activeFile} 
+                            onSelectFile={setActiveFile} 
+                            unsavedChanges={null}
+                            onContentChange={(val) => onUpdate(project.id, { files: {...project.files, [activeFile]: val} })}
+                            onRenameFile={()=>{}}
+                            onDeleteFile={()=>{}}
+                        />
+                    </div>
+                    {showPreview && (
+                        <div className="flex flex-col bg-slate-950/50 overflow-hidden border-l border-cyan-900/30">
+                            <div className="p-2 border-b border-cyan-900/30 bg-black/40 flex justify-between items-center flex-shrink-0">
+                                <div className="flex items-center gap-2">
+                                    <EyeIcon className="w-3.5 h-3.5 text-cyan-400" />
+                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Live UI Preview</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-900/20 border border-green-800/50 text-[8px] text-green-400 font-mono">
+                                        <div className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
+                                        SYNCED
+                                    </div>
+                                    <button onClick={() => setShowPreview(false)} className="p-1 hover:bg-white/10 rounded text-gray-500 hover:text-white transition-colors">
+                                        <XIcon className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="flex-grow p-6 overflow-auto custom-scrollbar bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-950/10 via-black to-black relative">
+                                <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                                
+                                <div className="h-full w-full max-w-2xl mx-auto">
+                                    {uiStructure ? (
+                                        <div className="h-full w-full rounded-2xl border border-cyan-500/20 bg-black/60 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden relative flex flex-col">
+                                            <div className="flex-grow overflow-auto custom-scrollbar">
+                                                <HolographicPreviewRenderer 
+                                                    structure={uiStructure} 
+                                                    state={previewState} 
+                                                    onAction={handlePreviewAction} 
+                                                />
+                                            </div>
+                                            <div className="p-2 bg-black/80 border-t border-cyan-900/30 flex justify-between items-center text-[8px] text-cyan-800 font-mono uppercase">
+                                                <span>Render Engine: Holographic v2</span>
+                                                <span>App: {project.title}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="h-full flex flex-col items-center justify-center text-gray-600 text-center p-8 bg-black/40 rounded-2xl border border-dashed border-cyan-900/30">
+                                            <AlertTriangleIcon className="w-12 h-12 mb-4 opacity-20 text-cyan-500" />
+                                            <p className="text-sm font-black text-cyan-900 uppercase tracking-widest">Parsing Error</p>
+                                            <p className="text-[10px] mt-2 text-gray-700 max-w-xs">Unable to extract UI structure from App.tsx. Ensure the component uses a standard return statement with JSX.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                {!showPreview && (
+                    <button 
+                        onClick={() => setShowPreview(true)}
+                        className="absolute bottom-6 right-6 p-4 bg-cyan-600 rounded-full text-white shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:bg-cyan-500 hover:scale-110 transition-all z-30 group"
+                        title="Show Preview"
+                    >
+                        <EyeIcon className="w-6 h-6 group-hover:animate-pulse" />
+                    </button>
+                )}
             </div>
         </div>
     );

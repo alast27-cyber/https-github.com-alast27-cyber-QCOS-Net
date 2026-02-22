@@ -6,7 +6,7 @@ import {
 } from '../utils/agentUtils';
 import { UIStructure, SystemHealth } from '../types';
 import { useSimulation } from '../context/SimulationContext';
-import { GoogleGenAI, Type } from "@google/genai";
+// import { GoogleGenAI, Type } from "@google/genai";
 import { generateContentWithRetry } from '../utils/gemini';
 
 export interface FileSystemOps {
@@ -212,16 +212,8 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         setLastActivity(Date.now());
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-            const response = await generateContentWithRetry(ai, {
-                model: 'gemini-3-flash-preview',
-                contents: input,
-                config: {
-                    systemInstruction: `You are Agent Q, the core intelligence of QCOS. Context: ${activeContext}. Keep responses technical and helpful.`
-                }
-            });
-            
-            const text = response.text || "Communication established.";
+            console.warn("Gemini API is disconnected. Returning mock chat response for AgentQ.");
+            const text = "Gemini API is currently disconnected. AgentQ is running in offline mode. Please activate Google AI Studio free tier or connect a paid API key to enable AI functionalities.";
             setMessages(prev => [...prev, { 
                 id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 sender: 'ai', 
@@ -240,19 +232,11 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
     }, [isLoading, activeContext, speak]);
 
     const generateApp = useCallback(async (description: string): Promise<{ files: { [path: string]: string }, uiStructure: UIStructure | null }> => {
-        try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-            const prompt = `Architect a new CHIPS application based on this description: "${description}". Return JSON with files map and uiStructure.`;
-            const response = await generateContentWithRetry(ai, {
-                model: 'gemini-3-pro-preview',
-                contents: prompt,
-                config: { responseMimeType: "application/json" }
-            });
-            const data = JSON.parse(response.text || '{}');
-            return { files: data.files || {}, uiStructure: data.uiStructure || null };
-        } catch (error) {
-            return { files: {}, uiStructure: null };
-        }
+        console.warn("Gemini API is disconnected. Returning mock app generation.");
+        return {
+            files: { 'src/App.tsx': `// Mock App for ${description}` },
+            uiStructure: { component: 'div', props: { children: `Mock App: ${description}` } }
+        };
     }, []);
 
     const updateAppForChips = useCallback(async (files: { [path: string]: string }): Promise<{ updatedFiles: { [path: string]: string }, summary: string }> => {
@@ -260,20 +244,13 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
     }, []);
 
     const debugAndFixApp = useCallback(async (files: { [path: string]: string }): Promise<{ fixedFiles: { [path: string]: string }, summary: string, uiStructure: UIStructure | null }> => {
-        return { fixedFiles: files, summary: "Debug Complete.", uiStructure: null };
+        console.warn("Gemini API is disconnected. Returning mock debug response.");
+        return { fixedFiles: files, summary: "Debug Complete (offline mode).", uiStructure: null };
     }, []);
 
     const editCode = useCallback(async (code: string, instruction: string): Promise<string> => {
-        try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-            const response = await generateContentWithRetry(ai, {
-                model: 'gemini-3-pro-preview',
-                contents: `Code: ${code}\nInstruction: ${instruction}`
-            });
-            return response.text || code;
-        } catch (error) {
-            return code;
-        }
+        console.warn("Gemini API is disconnected. Returning mock code edit.");
+        return `// Code edit for: ${instruction}\n${code}`;
     }, []);
 
     return {

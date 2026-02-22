@@ -1,10 +1,10 @@
 
 import { GoogleGenAI, GenerateContentParameters, GenerateContentResponse } from '@google/genai';
 
-const isApiDisabled = false; // Global flag to disable API calls
+const isApiDisabled = true; // Global flag to disable API calls
 
 // Enhanced check for retriable errors including server errors (5xx) and RPC errors
-const isRetriableError = (error: unknown): boolean => {
+export const isRetriableError = (error: unknown): boolean => {
     if (error instanceof Error) {
         const msg = error.message.toLowerCase();
         const name = error.name;
@@ -23,7 +23,7 @@ const isRetriableError = (error: unknown): boolean => {
     return false;
 };
 
-export const generateContentWithRetry = async (ai: GoogleGenAI, params: GenerateContentParameters, retries = 3, delay = 1000): Promise<GenerateContentResponse> => {
+export const generateContentWithRetry = async (ai: GoogleGenAI, params: GenerateContentParameters, retries = 5, delay = 2000): Promise<GenerateContentResponse> => {
     if (isApiDisabled) {
         console.warn("Gemini API calls are disabled by the operator.");
         // Simulate a delay to make the UI feel responsive without making a call

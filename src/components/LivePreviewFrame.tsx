@@ -49,6 +49,14 @@ const LivePreviewFrame: React.FC<LivePreviewFrameProps> = ({ code, files }) => {
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>ChipsDev Live Preview</title>
+                    <script>
+                        // Suppress Tailwind CDN production warning in preview
+                        const originalWarn = console.warn;
+                        console.warn = (...args) => {
+                            if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+                            originalWarn(...args);
+                        };
+                    </script>
                     <script src="https://cdn.tailwindcss.com"></script>
                     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
                     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
