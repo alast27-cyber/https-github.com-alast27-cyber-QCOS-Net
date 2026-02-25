@@ -307,7 +307,7 @@ const CHIPSGatewayAdmin: React.FC<CHIPSGatewayAdminProps> = ({ uriAssignments })
                 { s: 'Executed', msg: 'Integrity Verified. Decrypting Q-Lang payload. Execution started.', delay: 7000 }
             ];
 
-            let timers: ReturnType<typeof setTimeout>[] = [];
+            const timers: ReturnType<typeof setTimeout>[] = [];
 
             steps.forEach((step, index) => {
                 const timer = setTimeout(() => {

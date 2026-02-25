@@ -81,7 +81,7 @@ const QuantumCADStudio: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
     // Initialize standard mesh
     useEffect(() => {
-        generateMesh('sphere');
+        setTimeout(() => generateMesh('sphere'), 0);
     }, []);
 
     const handleGenerate = () => {
@@ -164,9 +164,9 @@ const QuantumCADStudio: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 }
 
                 // Rotation
-                let y = py * Math.cos(currentRotX) - pz * Math.sin(currentRotX);
+                const y = py * Math.cos(currentRotX) - pz * Math.sin(currentRotX);
                 let z = py * Math.sin(currentRotX) + pz * Math.cos(currentRotX);
-                let x = px * Math.cos(currentRotY) - z * Math.sin(currentRotY);
+                const x = px * Math.cos(currentRotY) - z * Math.sin(currentRotY);
                 z = px * Math.sin(currentRotY) + z * Math.cos(currentRotY);
 
                 // Projection

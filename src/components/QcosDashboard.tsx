@@ -29,7 +29,7 @@ const QcosDashboard: React.FC = () => {
             speed: 0.005 + Math.random() * 0.01
         }));
         
-        setOrbitingFiles(initialOrbiters);
+        setTimeout(() => setOrbitingFiles(initialOrbiters), 0);
 
         // Animation loop for orbiting files
         let animationFrameId: number;

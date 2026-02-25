@@ -54,8 +54,8 @@ const DeployedAppWrapper: React.FC<DeployedAppWrapperProps> = ({ structure, code
         const incrementRegex = /set(\w+)\(\s*(\w+)\s*\+\s*1\s*\)/;
         const toggleRegex = /set(\w+)\(\s*!(\w+)\s*\)/;
 
-        let incMatch = functionBody.match(incrementRegex);
-        let togMatch = functionBody.match(toggleRegex);
+        const incMatch = functionBody.match(incrementRegex);
+        const togMatch = functionBody.match(toggleRegex);
 
         if (incMatch) {
             const varName = incMatch[1].toLowerCase().replace('prev', '');

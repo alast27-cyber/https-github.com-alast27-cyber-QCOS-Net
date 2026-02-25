@@ -312,12 +312,13 @@ const AIContextSidebar: React.FC<{ context: AIContextData | undefined, isLoading
 const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ, apps, onInstallApp, onDeployApp }) => {
     const [tabs, setTabs] = useState<BrowserTab[]>(() => {
         if (initialApp) {
-            const initContext = analyzeQuantumContext(initialApp.uri, initialApp.title);
+            const startUri = initialApp.q_uri || initialApp.https_url || '';
+            const initContext = analyzeQuantumContext(startUri, initialApp.name);
             return [{
                 id: 'tab-0',
-                title: initialApp.title,
-                uri: initialApp.uri,
-                history: [initialApp.uri],
+                title: initialApp.name,
+                uri: startUri,
+                history: [startUri],
                 historyIndex: 0,
                 isLoading: false,
                 icon: initialApp.icon,
@@ -370,7 +371,7 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
     useEffect(() => {
         const activeTab = tabs.find(t => t.id === activeTabId);
         if (activeTab && activeTab.uri !== intentInput) {
-            setIntentInput(activeTab.uri === NEW_TAB_URI ? '' : activeTab.uri);
+            setTimeout(() => setIntentInput(activeTab.uri === NEW_TAB_URI ? '' : activeTab.uri), 0);
         }
     }, [activeTabId, tabs, intentInput]);
 

@@ -17,6 +17,7 @@ interface QuantumDeepLearningProps {
 }
 
 const QDLLayerBlock: React.FC<{ layer: { type: string, coherence: number }, index: number, isTraining: boolean }> = ({ layer, index, isTraining }) => {
+    const [opacities] = useState(() => Array.from({ length: 8 }).map(() => 0.3 + Math.random() * 0.7));
     const typeColors = {
         'ENCODING': 'from-blue-600/40 to-blue-900/40 border-blue-400/50 text-blue-200',
         'QCNN': 'from-purple-600/40 to-purple-900/40 border-purple-400/50 text-purple-200',
@@ -45,7 +46,7 @@ const QDLLayerBlock: React.FC<{ layer: { type: string, coherence: number }, inde
                             className={`w-1 h-3 rounded-full ${isTraining ? 'animate-pulse' : ''}`}
                             style={{ 
                                 backgroundColor: 'currentColor', 
-                                opacity: 0.3 + (Math.random() * 0.7),
+                                opacity: opacities[i],
                                 animationDelay: `${i * 0.08}s`
                             }}
                         />

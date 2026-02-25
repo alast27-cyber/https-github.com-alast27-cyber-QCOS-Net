@@ -595,10 +595,10 @@ const NeuralProgrammingPanel: React.FC = () => {
                 // Sort nodes by depth for basic occlusion logic
                 const projectedNodes = manifoldNodes.current.map(node => {
                     // Rotate Y
-                    let x = node.x * Math.cos(t) - node.z * Math.sin(t);
+                    const x = node.x * Math.cos(t) - node.z * Math.sin(t);
                     let z = node.z * Math.cos(t) + node.x * Math.sin(t);
                     // Rotate X
-                    let y = node.y * Math.cos(t*0.5) - z * Math.sin(t*0.5);
+                    const y = node.y * Math.cos(t*0.5) - z * Math.sin(t*0.5);
                     z = z * Math.cos(t*0.5) + node.y * Math.sin(t*0.5);
                     
                     const scale = fov / (fov + (z * 100));

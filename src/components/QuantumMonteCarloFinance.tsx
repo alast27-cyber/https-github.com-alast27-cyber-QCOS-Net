@@ -118,7 +118,7 @@ const QuantumMonteCarloFinance: React.FC = () => {
 
   const generateQlangScript = () => {
     const scenarioDescription = stressScenario || "Standard market simulation";
-    let qlang = `// Q-Lang for scenario: ${scenarioDescription}
+    const qlang = `// Q-Lang for scenario: ${scenarioDescription}
 // --- Input Parameters ---
 PARAM risk_free_rate = 0.05;
 PARAM time_to_maturity = 1.0;

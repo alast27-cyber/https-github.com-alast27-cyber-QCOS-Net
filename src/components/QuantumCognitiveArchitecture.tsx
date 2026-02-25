@@ -89,7 +89,7 @@ interface QuantumCognitiveArchitectureProps {
 }
 
 const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> = ({ onApplyPatch }) => {
-    const initialTime = useRef(Date.now());
+    const [initialTime] = useState(() => Date.now());
     const { agentQProps } = useAgentQ({
         focusedPanelId: null,
         panelInfoMap: {},
@@ -138,9 +138,12 @@ const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> 
         if (isSimulating) {
             interval = setInterval(() => {
                 setUniverses(prevUniverses => prevUniverses.map(u => {
-                    let { 
-                        optimizationScore, status, currentVersion, nextVersion, 
-                        predictionLog, engines, upgradesApplied, stability 
+                    const { 
+                        optimizationScore, status, engines
+                    } = u;
+                    let {
+                        currentVersion, nextVersion, 
+                        predictionLog, upgradesApplied, stability 
                     } = u;
 
                     // 1. State Machine Transitions
@@ -331,7 +334,7 @@ const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> 
                     </div>
                     <div className="flex-grow bg-black/40 border border-yellow-800/30 rounded-lg p-3 overflow-hidden relative">
                         <MemoryMatrix 
-                            lastActivity={lastActivity || initialTime.current} 
+                            lastActivity={lastActivity || initialTime} 
                             memorySummary="System Cognitive State"
                             interactive={true}
                             messages={messages} 

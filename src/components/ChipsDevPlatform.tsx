@@ -629,15 +629,15 @@ const StudioView: React.FC<StudioViewProps> = ({ project, onUpdate, onAiAssist, 
 
     const [previewState, setPreviewState] = useState<{ [key: string]: any }>({});
 
+    const appCode = project.files['App.tsx'] || '';
+
     const uiStructure = useMemo(() => {
-        const code = project.files['App.tsx'] || '';
-        return transpileCodeToStructure(code);
-    }, [project.files['App.tsx']]);
+        return transpileCodeToStructure(appCode);
+    }, [appCode]);
 
     useEffect(() => {
-        const code = project.files['App.tsx'] || '';
-        setPreviewState(extractStateFromCode(code));
-    }, [project.files['App.tsx']]);
+        setPreviewState(extractStateFromCode(appCode));
+    }, [appCode]);
 
     const handlePreviewAction = useCallback((actionName: string) => {
         setPreviewState(prev => {

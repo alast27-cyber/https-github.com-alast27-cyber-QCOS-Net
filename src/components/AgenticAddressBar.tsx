@@ -34,10 +34,12 @@ const AgenticAddressBar: React.FC<AgenticAddressBarProps> = ({ value, onChange, 
         if (lowerInput.startsWith('chips://')) {
             // Check for spaces (illegal in URIs)
             if (/\s/.test(input)) {
-                setValidationError("Syntax Error: Spaces not allowed in Q-URI");
-                setFidelity(0);
-                setParseState({ protocol: 'CHIPS://', dqn: '', algo: '', task: '', valid: false });
-                setAgentThought("Error: Invalid URI formatting.");
+                setTimeout(() => {
+                    setValidationError("Syntax Error: Spaces not allowed in Q-URI");
+                    setFidelity(0);
+                    setParseState({ protocol: 'CHIPS://', dqn: '', algo: '', task: '', valid: false });
+                    setAgentThought("Error: Invalid URI formatting.");
+                }, 0);
                 return;
             }
 
@@ -47,10 +49,12 @@ const AgenticAddressBar: React.FC<AgenticAddressBarProps> = ({ value, onChange, 
             const match = input.match(chipsStructureRegex);
 
             if (!match) {
-                setValidationError("Malformed URI: Invalid character or format");
-                setFidelity(0);
-                setParseState({ protocol: 'CHIPS://', dqn: '', algo: '', task: '', valid: false });
-                setAgentThought("Error: Address does not match CHIPS protocol.");
+                setTimeout(() => {
+                    setValidationError("Malformed URI: Invalid character or format");
+                    setFidelity(0);
+                    setParseState({ protocol: 'CHIPS://', dqn: '', algo: '', task: '', valid: false });
+                    setAgentThought("Error: Address does not match CHIPS protocol.");
+                }, 0);
                 return;
             }
 
@@ -61,50 +65,64 @@ const AgenticAddressBar: React.FC<AgenticAddressBarProps> = ({ value, onChange, 
 
             // Node ID Validation
             if (!dqn) {
-                setValidationError("Missing Target Node Identifier");
-                setFidelity(0);
-                setParseState({ protocol, dqn: '', algo: '', task: '', valid: false });
-                setAgentThought("Error: Target node undefined.");
+                setTimeout(() => {
+                    setValidationError("Missing Target Node Identifier");
+                    setFidelity(0);
+                    setParseState({ protocol, dqn: '', algo: '', task: '', valid: false });
+                    setAgentThought("Error: Target node undefined.");
+                }, 0);
                 return;
             }
 
-            setParseState({
-                protocol: protocol || '',
-                dqn: dqn || '',
-                algo: algo || '',
-                task: task || '',
-                valid: true
-            });
+            setTimeout(() => {
+                setParseState({
+                    protocol: protocol || '',
+                    dqn: dqn || '',
+                    algo: algo || '',
+                    task: task || '',
+                    valid: true
+                });
+            }, 0);
 
             // Simulate Agent Reasoning based on Node Trust
             if (dqn) {
                 if (['rigel', 'sirius', 'dqn-alpha', 'store', 'q-vox', 'qmc-finance', 'protocols'].includes(dqn.toLowerCase())) {
-                    setAgentThought(`Node '${dqn}' verification passed. Latency: 12ms.`);
-                    setFidelity(98);
+                    setTimeout(() => {
+                        setAgentThought(`Node '${dqn}' verification passed. Latency: 12ms.`);
+                        setFidelity(98);
+                    }, 0);
                 } else {
-                    setAgentThought(`Resolving unknown DQN '${dqn}' via Distributed Registry...`);
-                    setFidelity(45);
+                    setTimeout(() => {
+                        setAgentThought(`Resolving unknown DQN '${dqn}' via Distributed Registry...`);
+                        setFidelity(45);
+                    }, 0);
                 }
             }
 
             if (algo) {
-                setAgentThought(prev => prev + ` Loading context '${algo}'...`);
+                setTimeout(() => setAgentThought(prev => prev + ` Loading context '${algo}'...`), 0);
             }
 
         } else if (lowerInput.startsWith('http')) {
-            setParseState({ protocol: 'HTTPS', dqn: '', algo: '', task: '', valid: true });
-            setAgentThought("Legacy Web Protocol. Routing via Quantum Gateway...");
-            setFidelity(100);
+            setTimeout(() => {
+                setParseState({ protocol: 'HTTPS', dqn: '', algo: '', task: '', valid: true });
+                setAgentThought("Legacy Web Protocol. Routing via Quantum Gateway...");
+                setFidelity(100);
+            }, 0);
         } else if (input.length > 0) {
             // Search Mode
-            setParseState({ protocol: '', dqn: '', algo: '', task: '', valid: false });
-            setAgentThought(`Analyzing semantic intent: "${input}"...`);
-            setFidelity(60);
+            setTimeout(() => {
+                setParseState({ protocol: '', dqn: '', algo: '', task: '', valid: false });
+                setAgentThought(`Analyzing semantic intent: "${input}"...`);
+                setFidelity(60);
+            }, 0);
         } else {
             // Idle
-            setParseState({ protocol: '', dqn: '', algo: '', task: '', valid: false });
-            setAgentThought("Agent Q Standing By. Enter Q-URI or Intent.");
-            setFidelity(0);
+            setTimeout(() => {
+                setParseState({ protocol: '', dqn: '', algo: '', task: '', valid: false });
+                setAgentThought("Agent Q Standing By. Enter Q-URI or Intent.");
+                setFidelity(0);
+            }, 0);
         }
 
     }, [value]);
@@ -119,7 +137,7 @@ const AgenticAddressBar: React.FC<AgenticAddressBarProps> = ({ value, onChange, 
 
     // Reset validation error when input changes
     useEffect(() => {
-        setValidationError(null);
+        setTimeout(() => setValidationError(null), 0);
     }, [value]);
 
     return (

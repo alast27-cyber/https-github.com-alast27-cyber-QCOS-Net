@@ -23,7 +23,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
                 { msg: "[SUCCESS] Entanglement Integrity Hash: 1.000", delay: 6500 },
             ];
 
-            let timeouts: ReturnType<typeof setTimeout>[] = [];
+            const timeouts: ReturnType<typeof setTimeout>[] = [];
 
             sequence.forEach(({ msg, delay }) => {
                 const t = setTimeout(() => {

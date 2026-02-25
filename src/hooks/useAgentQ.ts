@@ -211,10 +211,9 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         const utterance = new SpeechSynthesisUtterance(text);
         utteranceRef.current = utterance;
 
-        let selectedVoice: SpeechSynthesisVoice | undefined;
         const maleVoiceKeywords = ['male', 'david', 'mark', 'alex', 'daniel', 'lee'];
         const englishVoices = availableVoices.filter(v => v.lang.startsWith('en-'));
-        selectedVoice = englishVoices.find(v => v.name.toLowerCase().includes('google') && maleVoiceKeywords.some(kw => v.name.toLowerCase().includes(kw)))
+        const selectedVoice = englishVoices.find(v => v.name.toLowerCase().includes('google') && maleVoiceKeywords.some(kw => v.name.toLowerCase().includes(kw)))
             || englishVoices.find(v => maleVoiceKeywords.some(kw => v.name.toLowerCase().includes(kw)))
             || availableVoices.find(voice => voice.name === 'Google US English')
             || availableVoices.find(voice => voice.lang.startsWith('en-US'));

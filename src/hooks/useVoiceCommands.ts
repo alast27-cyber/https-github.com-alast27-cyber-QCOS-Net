@@ -68,7 +68,9 @@ export const useVoiceCommands = (commands: Command[]) => {
   const [listeningState, setListeningState] = useState<ListeningState>('idle');
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const commandsRef = useRef(commands);
-  commandsRef.current = commands; // Keep commands up to date
+  useEffect(() => {
+    commandsRef.current = commands;
+  }, [commands]);
   
   // Refs to track state without triggering re-renders inside callbacks
   const isListeningIntentRef = useRef(false);
@@ -93,7 +95,9 @@ export const useVoiceCommands = (commands: Command[]) => {
             permissionDeniedRef.current = true;
             if (isListeningIntentRef.current && recognitionRef.current) {
                 isListeningIntentRef.current = false;
-                try { recognitionRef.current.stop(); } catch(e) {}
+                try { recognitionRef.current.stop(); } catch(e) {
+                    // Ignore stop errors
+                }
             }
         }
     };
@@ -157,7 +161,9 @@ export const useVoiceCommands = (commands: Command[]) => {
         if (errorTimeoutRef.current) window.clearTimeout(errorTimeoutRef.current);
         errorTimeoutRef.current = window.setTimeout(() => {
             if (isMounted && isListeningIntentRef.current && recognitionRef.current) {
-                 try { recognitionRef.current.stop(); } catch(e) {}
+                 try { recognitionRef.current.stop(); } catch(e) {
+                     // Ignore stop errors
+                 }
                  // It will restart in onend
             }
         }, 5000);
@@ -194,7 +200,9 @@ export const useVoiceCommands = (commands: Command[]) => {
         isListeningIntentRef.current = false;
         
         if (recognitionRef.current) {
-            try { recognitionRef.current.stop(); } catch(e) {}
+            try { recognitionRef.current.stop(); } catch(e) {
+                // Ignore stop errors
+            }
             recognitionRef.current = null;
         }
         
@@ -216,7 +224,9 @@ export const useVoiceCommands = (commands: Command[]) => {
         // Stop listening
         isListeningIntentRef.current = false;
         if (recognitionRef.current) {
-            try { recognitionRef.current.stop(); } catch(e) {}
+            try { recognitionRef.current.stop(); } catch(e) {
+                // Ignore stop errors
+            }
         }
         setListeningState('idle');
     } else {

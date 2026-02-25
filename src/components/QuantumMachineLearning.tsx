@@ -139,25 +139,29 @@ const QuantumMachineLearning: React.FC<{ embedded?: boolean }> = ({ embedded = f
     // Sync History with Engine
     useEffect(() => {
         if (qmlEngine.status === 'TRAINING' || qmlEngine.status === 'CONVERGED') {
-            setLossHistory(prev => {
-                if (prev.length === 0 || prev[prev.length-1].epoch !== qmlEngine.currentEpoch) {
-                    return [...prev, { epoch: qmlEngine.currentEpoch, loss: qmlEngine.loss, accuracy: qmlEngine.accuracy * 100 }].slice(-50);
-                }
-                return prev;
-            });
+            setTimeout(() => {
+                setLossHistory(prev => {
+                    if (prev.length === 0 || prev[prev.length-1].epoch !== qmlEngine.currentEpoch) {
+                        return [...prev, { epoch: qmlEngine.currentEpoch, loss: qmlEngine.loss, accuracy: qmlEngine.accuracy * 100 }].slice(-50);
+                    }
+                    return prev;
+                });
+            }, 0);
         }
         if (qmlEngine.status === 'IDLE' && lossHistory.length > 0 && qmlEngine.currentEpoch === 0) {
-            setLossHistory([]); 
+            setTimeout(() => setLossHistory([]), 0); 
         }
     }, [qmlEngine.currentEpoch, qmlEngine.status, qmlEngine.loss, qmlEngine.accuracy]);
 
     // Update local state when auto-evolution changes engine hyperparameters
     useEffect(() => {
         if (qmlEngine.autoEvolution.isActive) {
-            setQubits(qmlEngine.hyperparameters.qubitCount);
-            setCircuitDepth(qmlEngine.hyperparameters.circuitDepth);
-            setLearningRate(qmlEngine.hyperparameters.learningRate);
-            setSelectedModel(qmlEngine.modelType as any);
+            setTimeout(() => {
+                setQubits(qmlEngine.hyperparameters.qubitCount);
+                setCircuitDepth(qmlEngine.hyperparameters.circuitDepth);
+                setLearningRate(qmlEngine.hyperparameters.learningRate);
+                setSelectedModel(qmlEngine.modelType as any);
+            }, 0);
         }
     }, [qmlEngine.hyperparameters, qmlEngine.modelType, qmlEngine.autoEvolution.isActive]);
 

@@ -20,7 +20,7 @@ const QuantumDataSearchPanel: React.FC = () => {
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     // Dummy results based on keywords
-    let dummyResults: string[] = [];
+    const dummyResults: string[] = [];
     const lowerSearchTerm = searchTerm.toLowerCase();
 
     if (lowerSearchTerm.includes('superposition')) {

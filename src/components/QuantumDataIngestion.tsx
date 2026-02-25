@@ -50,12 +50,14 @@ const QuantumDataIngestion: React.FC<{ onMaximize?: () => void }> = ({ onMaximiz
 
     // Update chart history
     useEffect(() => {
-        setTick(t => t + 1);
-        setChartHistory(prev => {
-            const newData = [...prev, { time: tick, val: totalThroughput }];
-            if (newData.length > 30) newData.shift();
-            return newData;
-        });
+        setTimeout(() => {
+            setTick(t => t + 1);
+            setChartHistory(prev => {
+                const newData = [...prev, { time: tick, val: totalThroughput }];
+                if (newData.length > 30) newData.shift();
+                return newData;
+            });
+        }, 0);
     }, [totalThroughput]); 
 
     return (

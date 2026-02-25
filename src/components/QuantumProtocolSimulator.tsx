@@ -8,7 +8,7 @@ const QuantumProtocolSimulator: React.FC = () => {
     const [entropy, setEntropy] = useState('');
 
     useEffect(() => {
-        setEntropy('0x' + Math.random().toString(16).slice(2, 10).toUpperCase());
+        setTimeout(() => setEntropy('0x' + Math.random().toString(16).slice(2, 10).toUpperCase()), 0);
     }, []);
 
     const protocols = [

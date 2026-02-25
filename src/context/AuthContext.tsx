@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const currentTime = Math.floor(Date.now() / 1000);
         if (decoded.exp && decoded.exp < currentTime) {
           console.warn("Session expired. Logging out.");
-          logout();
+          setTimeout(() => logout(), 0);
           return;
         }
 
@@ -100,21 +100,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
              // Optional: Force level sync with DB if it changed
              const actualLevel = dbUser.level; 
              
-             setIsAuthenticated(true);
-             setCurrentUser(dbUser.username);
-             setAdminLevel(actualLevel);
-             setToken(storedToken);
+             setTimeout(() => {
+               setIsAuthenticated(true);
+               setCurrentUser(dbUser.username);
+               setAdminLevel(actualLevel);
+               setToken(storedToken);
+             }, 0);
            } else {
              // User not found in DB or invalid level
              console.warn("User invalid or not found in registry.");
-             logout();
+             setTimeout(() => logout(), 0);
            }
         } else {
-          logout();
+          setTimeout(() => logout(), 0);
         }
       } else {
         // Invalid token format
-        logout();
+        setTimeout(() => logout(), 0);
       }
     }
   }, []);

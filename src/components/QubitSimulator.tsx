@@ -10,7 +10,7 @@ const QubitSimulator: React.FC = () => {
             state: Math.random(),
             phase: Math.random() * 360
         }));
-        setQubits(initialQubits);
+        setTimeout(() => setQubits(initialQubits), 0);
 
         const interval = setInterval(() => {
             setQubits(prev => prev.map(q => ({

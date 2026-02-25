@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 
 interface QuantumMemoryDataMatrixProps {
     label: string;
@@ -10,6 +10,7 @@ interface QuantumMemoryDataMatrixProps {
 }
 
 const QuantumMemoryDataMatrix: React.FC<QuantumMemoryDataMatrixProps> = ({ label, colorBase, rows, cols, className = "" }) => {
+    const [opacities] = useState(() => Array.from({ length: rows * cols }).map(() => Math.random() * 0.8 + 0.2));
     const getColorClass = (base: string) => {
         switch (base) {
             case 'green': return 'bg-green-500';
@@ -31,7 +32,7 @@ const QuantumMemoryDataMatrix: React.FC<QuantumMemoryDataMatrixProps> = ({ label
                     <div 
                         key={i} 
                         className={`aspect-square rounded-[1px] ${getColorClass(colorBase)}`} 
-                        style={{ opacity: Math.random() * 0.8 + 0.2 }}
+                        style={{ opacity: opacities[i] }}
                     />
                 ))}
             </div>

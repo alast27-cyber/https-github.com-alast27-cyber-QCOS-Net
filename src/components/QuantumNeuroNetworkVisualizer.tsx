@@ -13,12 +13,14 @@ const QuantumNeuroNetworkVisualizer: React.FC = () => {
     const [nodes, setNodes] = useState<Node[]>([]);
 
     useEffect(() => {
-        setNodes(Array.from({ length: 12 }).map((_, i) => ({
-            id: i,
-            x: 20 + Math.random() * 60,
-            y: 20 + Math.random() * 60,
-            size: 2 + Math.random() * 4
-        })));
+        setTimeout(() => {
+            setNodes(Array.from({ length: 12 }).map((_, i) => ({
+                id: i,
+                x: 20 + Math.random() * 60,
+                y: 20 + Math.random() * 60,
+                size: 2 + Math.random() * 4
+            })));
+        }, 0);
     }, []);
 
     return (

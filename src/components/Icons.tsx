@@ -3,7 +3,7 @@ import {
     Box, Search, Star, DownloadCloud, Cpu, Globe, FlaskConical, ShieldCheck,
     DollarSign, Settings, LayoutGrid, Sparkles, BrainCircuit, Atom, Terminal,
     Activity, Zap, Layers, Command, Code, Send, X, RefreshCw, ChevronRight,
-    Database, Network, Infinity, ShoppingCart, User, LogOut, Play, Square,
+    Database, Network, Infinity as InfinityLucide, ShoppingCart, User, LogOut, Play, Square,
     Clock, Share2, GitBranch, Rocket, FastForward, Loader, Link, ToggleLeft,
     ToggleRight, CheckCircle2, AlertTriangle, FileCode, ArrowRight, MessageSquare,
     ChevronLeft, ArrowLeftRight, Home, Lightbulb, Eye, Clipboard, Key,
@@ -46,7 +46,7 @@ export const RefreshCwIcon = RefreshCw || Fallback;
 export const ChevronRightIcon = ChevronRight || Fallback;
 export const DatabaseIcon = Database || Fallback;
 export const NetworkIcon = Network || Fallback;
-export const InfinityIcon = Infinity || Fallback;
+export const InfinityIcon = InfinityLucide || Fallback;
 export const ShoppingCartIcon = ShoppingCart || Fallback;
 export const UserIcon = User || Fallback;
 export const LogOutIcon = LogOut || Fallback;

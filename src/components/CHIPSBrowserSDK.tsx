@@ -230,7 +230,7 @@ const CHIPSBrowserSDK: React.FC<CHIPSBrowserSDKProps> = ({ initialApp, onToggleA
     useEffect(() => {
         const activeTab = tabs.find(t => t.id === activeTabId);
         if (activeTab && activeTab.uri !== intentInput) {
-            setIntentInput(activeTab.uri === NEW_TAB_URI ? '' : activeTab.uri);
+            setTimeout(() => setIntentInput(activeTab.uri === NEW_TAB_URI ? '' : activeTab.uri), 0);
         }
     }, [activeTabId, tabs, intentInput]);
 

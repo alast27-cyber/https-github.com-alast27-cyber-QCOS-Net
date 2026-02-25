@@ -22,7 +22,7 @@ const QDeNoiseProcessor: React.FC = () => {
     };
 
     useEffect(() => {
-        generateSignal();
+        setTimeout(() => generateSignal(), 0);
     }, []);
 
     const processSignal = () => {

@@ -260,9 +260,11 @@ UPGRADE_KERNEL();`;
         if (isSimulating && inquiry.status === 'complete' && inquiry.result) {
             try {
                 const data = JSON.parse(inquiry.result.match(/\{[\s\S]*\}/)?.[0] || inquiry.result);
-                setPrediction(data);
-                setIsSimulating(false);
-                setSimLogs(prev => [`[CORE] Lattice Analysis Converged.`, ...prev]);
+                setTimeout(() => {
+                    setPrediction(data);
+                    setIsSimulating(false);
+                    setSimLogs(prev => [`[CORE] Lattice Analysis Converged.`, ...prev]);
+                }, 0);
                 
                 updateQIAIIPS({
                     qil: { ...qiaiIps.qil, status: 'IDLE', load: 12 },
@@ -275,12 +277,14 @@ UPGRADE_KERNEL();`;
                 }
             } catch (e) {
                 console.error("Simulation parse failed", e);
-                setIsSimulating(false);
-                updateQIAIIPS({
-                    qil: { ...qiaiIps.qil, status: 'IDLE', load: 0 },
-                    qips: { ...qiaiIps.qips, status: 'IDLE', load: 0 },
-                    qcl: { ...qiaiIps.qcl, status: 'IDLE', load: 0 }
-                });
+                setTimeout(() => {
+                    setIsSimulating(false);
+                    updateQIAIIPS({
+                        qil: { ...qiaiIps.qil, status: 'IDLE', load: 0 },
+                        qips: { ...qiaiIps.qips, status: 'IDLE', load: 0 },
+                        qcl: { ...qiaiIps.qcl, status: 'IDLE', load: 0 }
+                    });
+                }, 0);
             }
         }
     }, [inquiry, isSimulating, codebase, qiaiIps, updateQIAIIPS, addToast]);

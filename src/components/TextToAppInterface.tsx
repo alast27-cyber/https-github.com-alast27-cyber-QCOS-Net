@@ -20,14 +20,16 @@ const CHIPSAgentWeaver: React.FC<CHIPSAgentWeaverProps> = ({ initialAgentInput, 
 
   useEffect(() => {
     if (initialAgentInput) {
-        setAgentInput(initialAgentInput);
-        setProtocolStatus('idle');
-        setDeploymentStatus('idle');
-        setGeneratedPublicUrl(null);
-        setPublishStatus('idle');
-        setAppName('');
-        setAppDescription('');
-        setDeploymentLog(['[System] Agent definition received from QML Forge. Ready for protocol encoding.']);
+        setTimeout(() => {
+            setAgentInput(initialAgentInput);
+            setProtocolStatus('idle');
+            setDeploymentStatus('idle');
+            setGeneratedPublicUrl(null);
+            setPublishStatus('idle');
+            setAppName('');
+            setAppDescription('');
+            setDeploymentLog(['[System] Agent definition received from QML Forge. Ready for protocol encoding.']);
+        }, 0);
     }
   }, [initialAgentInput]);
 

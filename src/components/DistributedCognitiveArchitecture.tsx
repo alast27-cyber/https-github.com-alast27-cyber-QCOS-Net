@@ -162,7 +162,7 @@ const DistributedCognitiveArchitecture: React.FC<{ activeDataStreams: string[] }
         if (!isSimulating) return;
         const interval = setInterval(() => {
             setDomains(prevDomains => prevDomains.map(d => {
-                let nextProgress = d.progress + (Math.random() * 1.5) + 0.2;
+                const nextProgress = d.progress + (Math.random() * 1.5) + 0.2;
                 let nextStatus = d.status;
                 if (nextProgress < 30) nextStatus = 'Researching';
                 else if (nextProgress < 60) nextStatus = 'Prototyping';

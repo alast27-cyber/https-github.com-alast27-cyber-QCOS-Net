@@ -85,7 +85,7 @@ class UserService {
     }
 
     public updateUser(updatedUser: User) {
-        let users = this.getUsers();
+        const users = this.getUsers();
         const index = users.findIndex(u => u.id === updatedUser.id);
         if (index !== -1) {
             users[index] = updatedUser;

@@ -9,7 +9,7 @@ const QuantumNetworkVisualizer: React.FC = () => {
     
     // Initialize random nodes
     useEffect(() => {
-        const newNodes = [];
+        const newNodes: {x: number, y: number, id: string, type: 'QAN' | 'DQN'}[] = [];
         // Center QAN
         newNodes.push({ x: 0.5, y: 0.5, id: 'QAN-ROOT', type: 'QAN' as const });
         // Satellite DQNs
@@ -21,7 +21,7 @@ const QuantumNetworkVisualizer: React.FC = () => {
                 type: 'DQN' as const
             });
         }
-        setNodes(newNodes);
+        setTimeout(() => setNodes(newNodes), 0);
     }, []);
 
     useEffect(() => {

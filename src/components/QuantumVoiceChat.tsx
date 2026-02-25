@@ -38,7 +38,7 @@ const VoiceInterface: React.FC<{ status: string }> = ({ status }) => {
     // Simulate audio visualizer
     useEffect(() => {
         if (status !== 'Connected' || isMuted) {
-            setVolume(0);
+            setTimeout(() => setVolume(0), 0);
             return;
         }
         const interval = setInterval(() => {

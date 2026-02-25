@@ -196,7 +196,7 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
                 operators: [
                     'OP::H', 'OP::X', 'OP::Y', 'OP::Z', 'OP::S', 'OP::T', 'OP::CNOT', 'OP::C4Z', 'OP::MEASURE', 'OP::RETURN_RESULT', 'OP::I', 'OP::CZ', 'OP::RZ', 'OP::RY', 'OP::SWAP', 'OP::TOFFOLI', 'OP::QAE', 'OP::QUANTUM_WALK', 'OP::INIT_STATE', 'OP::DEPLOY', 'OP::ROUTE'
                 ],
-                symbols:  /[=><!~?:&|+\-*\/\^%]+/,
+                symbols:  /[=><!~?:&|+\-*/^%]+/,
                 escapes: /\\(?:[abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
                 
                 tokenizer: {
@@ -210,10 +210,10 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
                             }
                         }],
                         { include: '@whitespace' },
-                        [/[{}()\[\]]/, '@brackets'],
+                        [/[{}()[\]]/, '@brackets'],
                         [/[<>](?!@symbols)/, '@brackets'],
                         [/@symbols/, { cases: { '@operators': 'operator', '@default': '' } }],
-                        [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
+                        [/\d*\.\d+([eE][-+]?\d+)?/, 'number.float'],
                         [/0[xX][0-9a-fA-F]+/, 'number.hex'],
                         [/\d+/, 'number'],
                         [/"([^"\\]|\\.)*$/, 'string.invalid'],
@@ -231,9 +231,9 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
                         [/\/\*/,       'comment', '@comment']
                     ],
                     comment: [
-                        [/[^\/*]+/, 'comment'],
+                        [/[^/*]+/, 'comment'],
                         [/\*\//,    'comment', '@pop'],
-                        [/[\/*]/,   'comment']
+                        [/[/*]/,   'comment']
                     ],
                 }
             });
@@ -279,7 +279,9 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
             const model = editor.getModel();
             if (model) {
                 if (subscriptionRef.current) {
-                    try { subscriptionRef.current.dispose(); } catch(e){}
+                    try { subscriptionRef.current.dispose(); } catch(e){
+                        console.error("Failed to dispose subscription", e);
+                    }
                 }
                 subscriptionRef.current = model.onDidChangeContent(() => {
                     // Guard against disposed model within the listener callback
