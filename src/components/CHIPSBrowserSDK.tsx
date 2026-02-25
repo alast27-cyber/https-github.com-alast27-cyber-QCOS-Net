@@ -190,19 +190,8 @@ const AIContextSidebar: React.FC<{ context: string | undefined, isLoading: boole
 );
 
 const CHIPSBrowserSDK: React.FC<CHIPSBrowserSDKProps> = ({ initialApp, onToggleAgentQ, apps, onInstallApp }) => {
-    const [tabs, setTabs] = useState<BrowserTab[]>([]);
-    const [activeTabId, setActiveTabId] = useState<string | null>(null);
-    const [intentInput, setIntentInput] = useState('');
-    const [showAISidebar, setShowAISidebar] = useState(false);
-    const [isCoreStatusOpen, setIsCoreStatusOpen] = useState(false);
-    const [bookmarks, setBookmarks] = useState<{ uri: string, title: string }[]>([
-        { uri: STORE_URI_CHIPS, title: 'App Store' },
-        { uri: 'chips://qmc-finance', title: 'QMC Finance' }
-    ]);
-
-    // Initialize tabs
-    useEffect(() => {
-        if (tabs.length === 0) {
+    const [tabs, setTabs] = useState<BrowserTab[]>(() => {
+        if (initialApp) {
             const startUri = initialApp?.q_uri || NEW_TAB_URI;
             const newTab: BrowserTab = {
                 id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -214,19 +203,36 @@ const CHIPSBrowserSDK: React.FC<CHIPSBrowserSDKProps> = ({ initialApp, onToggleA
                 icon: initialApp?.icon,
                 aiContextSummary: "System ready. Awaiting quantum intent."
             };
-            setTabs([newTab]);
-            setActiveTabId(newTab.id);
-            setIntentInput(startUri === NEW_TAB_URI ? '' : startUri);
+            return [newTab];
         }
-    }, [initialApp]);
+        return [{
+            id: 'tab-0',
+            title: 'New Tab',
+            uri: NEW_TAB_URI,
+            history: [NEW_TAB_URI],
+            historyIndex: 0,
+            isLoading: false,
+            aiContextSummary: "System ready. Awaiting quantum intent."
+        }];
+    });
+    const [activeTabId, setActiveTabId] = useState<string | null>(null);
+    const [intentInput, setIntentInput] = useState('');
+    const [showAISidebar, setShowAISidebar] = useState(false);
+    const [isCoreStatusOpen, setIsCoreStatusOpen] = useState(false);
+    const [bookmarks, setBookmarks] = useState<{ uri: string, title: string }[]>([
+        { uri: STORE_URI_CHIPS, title: 'App Store' },
+        { uri: 'chips://qmc-finance', title: 'QMC Finance' }
+    ]);
+
+
 
     // Update address bar when active tab changes
     useEffect(() => {
         const activeTab = tabs.find(t => t.id === activeTabId);
-        if (activeTab) {
+        if (activeTab && activeTab.uri !== intentInput) {
             setIntentInput(activeTab.uri === NEW_TAB_URI ? '' : activeTab.uri);
         }
-    }, [activeTabId, tabs]);
+    }, [activeTabId, tabs, intentInput]);
 
     const createTab = useCallback(() => {
         const newTab: BrowserTab = {

@@ -121,7 +121,7 @@ const DashboardContent: React.FC = () => {
     if (isAuthenticated && isInstalled) {
         const hasOnboarded = localStorage.getItem('qcos_onboarded') === 'true';
         if (!hasOnboarded && !showOnboarding) {
-            setShowOnboarding(true);
+            setTimeout(() => setShowOnboarding(true), 0);
         } else {
             const timer = setTimeout(() => {
                 startAllSimulations();
@@ -189,15 +189,15 @@ const DashboardContent: React.FC = () => {
           if (action === 'modify_panel' && target) {
               try {
                   const data = JSON.parse(target);
-                  addLog('system', `[Q-NATIVE] Panel ${data.action}: ${data.panelName}`);
+                  addLog('INFO', `[Q-NATIVE] Panel ${data.action}: ${data.panelName}`);
                   addToast(`System Panel ${data.action} initiated for ${data.panelName}`, 'info');
-              } catch (e) {}
+              } catch (e) { console.error("Error processing modify_panel action:", e); }
           } else if (action === 'trigger_evolution' && target) {
               try {
                   const data = JSON.parse(target);
-                  addLog('system', `[Q-NATIVE] ${data.evolutionType.toUpperCase()} Evolution Triggered: ${data.description}`);
+                  addLog('INFO', `[Q-NATIVE] ${data.evolutionType.toUpperCase()} Evolution Triggered: ${data.description}`);
                   addToast(`Evolution Protocol Initiated: ${data.evolutionType}`, 'warning');
-              } catch (e) {}
+              } catch (e) { console.error("Error processing trigger_evolution action:", e); }
           }
       }
   });

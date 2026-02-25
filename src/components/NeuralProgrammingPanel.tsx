@@ -92,7 +92,7 @@ const QuantumOpsInterface: React.FC = () => {
     useEffect(() => {
         // Init Crosstalk
         const initialMatrix = Array(8).fill(0).map(() => Array(8).fill(0).map(() => Math.random() * 0.2));
-        setCrosstalk(initialMatrix);
+        setTimeout(() => setCrosstalk(initialMatrix), 0);
     }, []);
 
     // Simulation Loop

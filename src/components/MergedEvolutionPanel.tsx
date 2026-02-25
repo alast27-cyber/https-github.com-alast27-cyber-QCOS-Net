@@ -97,8 +97,10 @@ const MergedEvolutionPanel: React.FC<{ onMaximizeSubPanel?: (id: string) => void
         if (logsEndRef.current) logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }, [simLogs]);
 
+    const networkFluxRef = useRef(0);
     useEffect(() => {
-        setNetworkFlux(0.999 + Math.random() * 0.001);
+        networkFluxRef.current = 0.999 + Math.random() * 0.001;
+        setTimeout(() => setNetworkFlux(networkFluxRef.current), 0);
     }, [epochCount]);
 
     const runOptimizationCycle = useCallback(() => {

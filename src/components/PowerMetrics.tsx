@@ -39,9 +39,9 @@ const PowerMetrics: React.FC<PowerMetricsProps> = ({ powerEfficiency }) => {
   // This effect handles the status based on temperature
   useEffect(() => {
     if (cryoTemp > 0.016 || cryoTemp < 0.014) {
-      setCryoStatus('Warning');
+      setTimeout(() => setCryoStatus('Warning'), 0);
     } else {
-      setCryoStatus('Optimal');
+      setTimeout(() => setCryoStatus('Optimal'), 0);
     }
   }, [cryoTemp]);
 

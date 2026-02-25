@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { CpuChipIcon, SparklesIcon, UsersIcon, ChartBarIcon } from './Icons';
 import { Message } from '../utils/agentUtils';
 
@@ -25,8 +25,10 @@ const MemoryMatrix: React.FC<MemoryMatrixProps> = ({ lastActivity, memorySummary
     const [selectedBlockId, setSelectedBlockId] = useState<number | null>(null);
     const [decay, setDecay] = useState(0);
 
+    const decayRef = useRef(0);
     useEffect(() => {
-        setDecay(Math.random() * 0.01);
+        decayRef.current = Math.random() * 0.01;
+        setTimeout(() => setDecay(decayRef.current), 0);
     }, [selectedBlockId]);
 
     // Map messages to blocks whenever messages or activity changes
@@ -72,7 +74,7 @@ const MemoryMatrix: React.FC<MemoryMatrixProps> = ({ lastActivity, memorySummary
              }
         }
 
-        setBlocks(newBlocks);
+        setTimeout(() => setBlocks(newBlocks), 0);
     }, [messages, lastActivity]);
 
     const getBlockColor = (type: string, activity: number) => {

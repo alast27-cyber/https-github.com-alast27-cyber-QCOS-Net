@@ -31,7 +31,7 @@ const PublicDeploymentOptimizationHub: React.FC<PublicDeploymentOptimizationHubP
         }
     });
     if (Object.keys(newStatuses).length > 0) {
-        setOptimizationStatuses(prev => ({...prev, ...newStatuses}));
+        setTimeout(() => setOptimizationStatuses(prev => ({...prev, ...newStatuses})), 0);
     }
   }, [apps, optimizationStatuses]);
 

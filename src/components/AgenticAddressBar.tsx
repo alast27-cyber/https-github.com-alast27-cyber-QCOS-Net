@@ -30,9 +30,6 @@ const AgenticAddressBar: React.FC<AgenticAddressBarProps> = ({ value, onChange, 
         const input = value.trim();
         const lowerInput = input.toLowerCase();
         
-        // Reset Error
-        setValidationError(null);
-
         // 1. CHIPS Protocol Validation Logic
         if (lowerInput.startsWith('chips://')) {
             // Check for spaces (illegal in URIs)
@@ -119,6 +116,11 @@ const AgenticAddressBar: React.FC<AgenticAddressBarProps> = ({ value, onChange, 
             }
         }
     };
+
+    // Reset validation error when input changes
+    useEffect(() => {
+        setValidationError(null);
+    }, [value]);
 
     return (
         <div className={`relative flex flex-col w-full transition-all duration-500 ${isFocused ? 'scale-[1.01]' : ''}`}>

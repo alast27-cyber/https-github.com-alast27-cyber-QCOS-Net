@@ -310,7 +310,36 @@ const AIContextSidebar: React.FC<{ context: AIContextData | undefined, isLoading
 );
 
 const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ, apps, onInstallApp, onDeployApp }) => {
-    const [tabs, setTabs] = useState<BrowserTab[]>([]);
+    const [tabs, setTabs] = useState<BrowserTab[]>(() => {
+        if (initialApp) {
+            const initContext = analyzeQuantumContext(initialApp.uri, initialApp.title);
+            return [{
+                id: 'tab-0',
+                title: initialApp.title,
+                uri: initialApp.uri,
+                history: [initialApp.uri],
+                historyIndex: 0,
+                isLoading: false,
+                icon: initialApp.icon,
+                aiContext: initContext,
+                codeContent: initialApp.code
+            }];
+        }
+        return [{
+            id: 'tab-0',
+            title: 'New Tab',
+            uri: NEW_TAB_URI,
+            history: [NEW_TAB_URI],
+            historyIndex: 0,
+            isLoading: false,
+            aiContext: {
+                summary: "System ready. Awaiting quantum intent.",
+                entities: [],
+                actions: [],
+                confidence: 100
+            }
+        }];
+    });
     const [activeTabId, setActiveTabId] = useState<string | null>(null);
     const [intentInput, setIntentInput] = useState('');
     const [showAISidebar, setShowAISidebar] = useState(false);
@@ -336,33 +365,14 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
         return () => clearInterval(interval);
     }, []);
 
-    useEffect(() => {
-        if (tabs.length === 0) {
-            const startUri = initialApp?.q_uri || NEW_TAB_URI;
-            const initContext = analyzeQuantumContext(startUri, initialApp ? initialApp.name : 'New Tab');
-            
-            const newTab: BrowserTab = {
-                id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                title: initialApp ? initialApp.name : 'New Tab',
-                uri: startUri,
-                history: [startUri],
-                historyIndex: 0,
-                isLoading: false,
-                icon: initialApp?.icon,
-                aiContext: initContext
-            };
-            setTabs([newTab]);
-            setActiveTabId(newTab.id);
-            setIntentInput(startUri === NEW_TAB_URI ? '' : startUri);
-        }
-    }, [initialApp]);
+
 
     useEffect(() => {
         const activeTab = tabs.find(t => t.id === activeTabId);
-        if (activeTab) {
+        if (activeTab && activeTab.uri !== intentInput) {
             setIntentInput(activeTab.uri === NEW_TAB_URI ? '' : activeTab.uri);
         }
-    }, [activeTabId, tabs]);
+    }, [activeTabId, tabs, intentInput]);
 
     const createTab = useCallback(() => {
         const startUri = NEW_TAB_URI;

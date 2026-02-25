@@ -8,7 +8,25 @@ interface DeployedAppWrapperProps {
 }
 
 const DeployedAppWrapper: React.FC<DeployedAppWrapperProps> = ({ structure, code }) => {
-    const [appState, setAppState] = useState<{ [key: string]: any }>({});
+    const [appState, setAppState] = useState<{ [key: string]: any }>(() => {
+        const initialStateRegex = /const \[\w+, set\w+\] = useState\((.*?)\);/g;
+        let match;
+        const newInitialState: { [key: string]: any } = {};
+        while ((match = initialStateRegex.exec(code)) !== null) {
+            try {
+                const stateVar = match[1];
+                const rawInitialValue = match[2];
+                // Attempt to parse the initial value. This is a simplified approach.
+                // A more robust solution might involve a sandboxed eval or AST parsing.
+                newInitialState[stateVar] = JSON.parse(rawInitialValue);
+            } catch (e) {
+                console.warn("Could not parse initial state value:", match[2], e);
+                // Fallback to string or default if parsing fails
+                newInitialState[match[1]] = match[2];
+            }
+        }
+        return newInitialState;
+    });
 
     useEffect(() => {
         // Extract initial state from code
@@ -24,7 +42,7 @@ const DeployedAppWrapper: React.FC<DeployedAppWrapperProps> = ({ structure, code
                 newInitialState[stateVar] = rawInitialValue.replace(/^['"`]|['"`]$/g, ''); 
             }
         }
-        setAppState(newInitialState);
+
     }, [code]);
 
     const handleAction = (handlerName: string) => {
