@@ -82,7 +82,7 @@ const QuantumDataIngestion: React.FC<{ onMaximize?: () => void }> = ({ onMaximiz
                          <Share2Icon className="w-4 h-4 text-purple-400 animate-pulse" />
                          <div>
                              <p className="text-[9px] font-bold text-white uppercase tracking-widest">Quantum-Entangled Uplink: ACTIVE</p>
-                             <p className="text-[8px] text-purple-300">Feeding Universe Simulator & QML Engine</p>
+                             <p className="text-[8px] text-purple-300">Feeding Grand Universe Simulator & QML Engine</p>
                          </div>
                     </div>
                     <button 

@@ -9,8 +9,7 @@ import SystemDiagnostic from '../components/SystemDiagnostic';
 import QCOSGateway from '../components/QCOSGateway';
 import CHIPSBrowserSDK from '../components/CHIPSBrowserSDK';
 import CHIPSAppStore from '../components/CHIPSAppStore';
-import QuantumAppExchange from '../components/QuantumAppExchange';
-import UniverseSimulator from '../components/UniverseSimulator';
+import GrandUniverseSimulator from '../components/GrandUniverseSimulator';
 import CHIPSBackOffice from '../components/CHIPSBackOffice';
 import ChipsEconomy from '../components/ChipsEconomy';
 import QPUHealth from '../components/QPUHealth';
@@ -122,8 +121,7 @@ export const usePanelContent = (props: UsePanelContentProps) => {
             case 'chips-quantum-network': return <ChipsQuantumInternetNetwork apps={hydratedApps} onInstallApp={props.onInstallApp} onToggleAgentQ={props.toggleAgentQ} onDeployApp={props.onPublishToExchange} />;
             case 'chips-browser-sdk': return <CHIPSBrowserSDK initialApp={undefined} onToggleAgentQ={() => {}} apps={hydratedApps} onInstallApp={props.onInstallApp} />;
             case 'chips-app-store': return <CHIPSAppStore apps={hydratedApps} onInstall={props.onInstallApp} onLaunch={props.onLaunchApp} />;
-            case 'quantum-app-exchange': return <QuantumAppExchange apps={hydratedApps} onInstall={props.onInstallApp} onLaunch={props.onLaunchApp} onDeployApp={props.onPublishToExchange} uriAssignments={props.uriAssignments} onGenerateApp={props.onGenerateApp} onUpdateApp={props.onUpdateApp} onDebugApp={props.onDebugApp} onSimulate={props.onSimulateApp} />;
-            case 'universe-simulator': return <UniverseSimulator qubitCount={240} onApplyPatch={props.onApplyPatch} onExportToCreator={props.onOpenAppCreator} connectedApp={connectedApp} />;
+            case 'grand-universe-simulator': return <GrandUniverseSimulator qubitCount={240} onApplyPatch={props.onApplyPatch} onExportToCreator={props.onOpenAppCreator} connectedApp={connectedApp} />;
             case 'agi-singularity-interface': return <AGISingularityInterface qubitStability={props.systemHealth.qubitStability} />;
             case 'chips-dev-platform': return (
                 <Suspense fallback={<div className="h-full flex items-center justify-center text-cyan-500">Loading Dev Platform...</div>}>
@@ -155,7 +153,7 @@ export const usePanelContent = (props: UsePanelContentProps) => {
             case 'generic-solver': return <GenericQuantumSolver />;
             case 'qkd-sim': return <QKDSimulator />;
             case 'q-denoise': return <QDeNoiseProcessor />;
-            default:
+            default: {
                 const installedApp = hydratedApps.find(a => a.id === id && a.status === 'installed');
                 if (installedApp) {
                     if (installedApp.isCustom && installedApp.uiStructure && installedApp.code) {
@@ -166,6 +164,7 @@ export const usePanelContent = (props: UsePanelContentProps) => {
                     }
                 }
                 return <div className="p-4 text-cyan-700">Content for {id} is not initialized.</div>;
+            }
         }
     };
     const result: Record<number, FaceData> = {};

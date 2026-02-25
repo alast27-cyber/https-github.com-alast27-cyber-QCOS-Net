@@ -294,12 +294,12 @@ const EVOLUTION_STAGES = [
 // Expanded Data Sources with "Always Entangled" philosophy
 const INITIAL_DATA_SOURCES: DataSource[] = [
     { id: 'ds-01', name: 'Global Quantum Material Lattice', type: 'QUANTUM_LINK', status: 'ACTIVE', throughput: 145.2, fidelity: 99.9, latency: 2, isEntangled: true },
-    { id: 'ds-02', name: 'LIGO Gravitational Wave Observatory', type: 'STREAM', status: 'ACTIVE', throughput: 890.4, fidelity: 99.95, latency: 1, isEntangled: true },
-    { id: 'ds-03', name: 'James Webb Deep Field Telemetry', type: 'STREAM', status: 'ACTIVE', throughput: 2250.0, fidelity: 99.99, latency: 45, isEntangled: true },
-    { id: 'ds-04', name: 'Global Stock Ledger (DeFi)', type: 'STREAM', status: 'ACTIVE', throughput: 450.0, fidelity: 99.8, latency: 12, isEntangled: true },
-    { id: 'ds-05', name: 'CERN LHC Collision Data', type: 'STREAM', status: 'ACTIVE', throughput: 5600.0, fidelity: 99.99, latency: 1, isEntangled: true },
-    { id: 'ds-06', name: 'Twitter/X Semantic Firehose', type: 'STREAM', status: 'ACTIVE', throughput: 320.0, fidelity: 98.5, latency: 50, isEntangled: true },
-    { id: 'ds-07', name: 'GitHub Global Commit Stream', type: 'STREAM', status: 'ACTIVE', throughput: 120.5, fidelity: 99.2, latency: 30, isEntangled: true },
+    { id: 'ds-02', name: 'Urban-Scale Entanglement Dist. (Berlin)', type: 'STREAM', status: 'ACTIVE', throughput: 890.4, fidelity: 99.95, latency: 1, isEntangled: true },
+    { id: 'ds-03', name: 'Photonic Quantum Circuits (Waveguide QED)', type: 'STREAM', status: 'ACTIVE', throughput: 1630.0, fidelity: 99.99, latency: 45, isEntangled: true },
+    { id: 'ds-04', name: 'Smart Grid & Energy Infrastructure', type: 'STREAM', status: 'ACTIVE', throughput: 450.0, fidelity: 99.8, latency: 12, isEntangled: true },
+    { id: 'ds-05', name: 'Manufacturing (Predictive Maintenance)', type: 'STREAM', status: 'ACTIVE', throughput: 5600.0, fidelity: 99.99, latency: 1, isEntangled: true },
+    { id: 'ds-06', name: 'Aerospace (Turbine Performance)', type: 'STREAM', status: 'ACTIVE', throughput: 320.0, fidelity: 98.5, latency: 50, isEntangled: true },
+    { id: 'ds-07', name: 'Heavy Industry (Multi-Robot Fleet)', type: 'STREAM', status: 'ACTIVE', throughput: 120.5, fidelity: 99.2, latency: 30, isEntangled: true },
     { id: 'ds-08', name: 'Neural Net Training Cluster (Ext)', type: 'QUANTUM_LINK', status: 'ACTIVE', throughput: 890.0, fidelity: 99.4, latency: 5, isEntangled: true },
     { id: 'ds-09', name: 'NOAA Oceanographic Buoy Array', type: 'BATCH', status: 'ACTIVE', throughput: 65.0, fidelity: 99.1, latency: 200, isEntangled: true },
     { id: 'ds-10', name: 'Ethereum Mempool (Pending Tx)', type: 'STREAM', status: 'ACTIVE', throughput: 410.0, fidelity: 99.9, latency: 15, isEntangled: true },
@@ -696,12 +696,12 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const toggleUniverseToKernel = useCallback((active: boolean) => {
         setUniverseConnections(prev => ({ ...prev, kernel: active }));
-        addToast(active ? "Universe Simulator entangled with QCOS Kernel." : "Kernel link decoupled.", active ? 'success' : 'warning');
+        addToast(active ? "Grand Universe Simulator entangled with QCOS Kernel." : "Kernel link decoupled.", active ? 'success' : 'warning');
     }, [addToast]);
 
     const toggleUniverseToAgentQ = useCallback((active: boolean) => {
         setUniverseConnections(prev => ({ ...prev, agentQ: active }));
-        addToast(active ? "Universe Simulator bridged to Agent Q Cognition." : "Agent Q link decoupled.", active ? 'success' : 'warning');
+        addToast(active ? "Grand Universe Simulator bridged to Agent Q Cognition." : "Agent Q link decoupled.", active ? 'success' : 'warning');
     }, [addToast]);
 
     const toggleSourceEntanglement = useCallback((id: string | 'ALL') => {

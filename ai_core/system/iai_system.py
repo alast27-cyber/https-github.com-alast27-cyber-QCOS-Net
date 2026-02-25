@@ -20,7 +20,7 @@ class IAI_IPS_System(nn.Module):
     The Brain of Agent Q.
     Now features DUAL COGNITION:
     1. QIAI-IPS (Instinctive Stack)
-    2. Universe Simulator (Infinite Logic Stack)
+    2. Grand Universe Simulator (Infinite Logic Stack)
     """
     def __init__(self, input_features: int, system_metrics_features: int, output_features: int = 1):
         super().__init__()
@@ -43,7 +43,7 @@ class IAI_IPS_System(nn.Module):
         self.clnn_manager = CLNN_QNN_Manager() # Governance
         self.qcll_manager = QCLL_QNN_Manager() # Self-Healing (Future Use)
         
-        # --- Layer 4: Universe Simulator (The Logic) ---
+        # --- Layer 4: Grand Universe Simulator (The Logic) ---
         print("[Layer 4] Initializing Universe Cognition (Hilbert/Cantor Engine)...")
         self.universe_manager = UniverseCognitionManager()
         
@@ -92,9 +92,9 @@ class IAI_IPS_System(nn.Module):
 
         
         # -------------------------------------------------------
-        # PATH B: Universe Simulator (Infinite Logic Processing)
+        # PATH B: Grand Universe Simulator (Infinite Logic Processing)
         # -------------------------------------------------------
-        if debug: print(">> Path B: Executing Universe Simulator (Hilbert/Cantor Logic)...")
+        if debug: print(">> Path B: Executing Grand Universe Simulator (Hilbert/Cantor Logic)...")
         
         # The Universe layer runs the 5 engines in superposition
         # It uses the same input features but processes them through the "Infinity Hotel" logic

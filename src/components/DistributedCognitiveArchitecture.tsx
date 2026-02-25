@@ -334,10 +334,10 @@ const DistributedCognitiveArchitecture: React.FC<{ activeDataStreams: string[] }
         <div className="w-full h-full relative bg-black/20 overflow-hidden flex items-center justify-center">
             <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
             
-            {/* --- 1. Universe Simulator (Center) --- */}
+            {/* --- 1. Grand Universe Simulator (Center) --- */}
             <div className={`absolute z-30 flex flex-col items-center justify-center w-32 h-32 bg-black/80 rounded-full border-2 border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.3)] ${isSimulating ? 'animate-pulse-slow' : ''}`}>
                 <GalaxyIcon className={`w-10 h-10 text-white ${isSimulating ? 'animate-spin-slow' : ''}`} />
-                <span className="text-[9px] font-black text-cyan-300 mt-1 uppercase tracking-widest">Universe Sim</span>
+                <span className="text-[9px] font-black text-cyan-300 mt-1 uppercase tracking-widest text-center">Grand Universe<br/>Sim</span>
                 <span className="text-[7px] text-gray-400 font-mono">QIAI-IPS Core</span>
             </div>
 

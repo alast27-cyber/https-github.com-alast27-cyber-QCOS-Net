@@ -21,6 +21,7 @@ interface AgentQProps {
   lastActivity?: number;
   isTtsEnabled?: boolean;
   onToggleTts?: () => void;
+  isSpeaking?: boolean;
   memorySummary?: string | null;
   onClearMemory?: () => void;
   activeContext?: string | null;
@@ -43,6 +44,7 @@ const AgentQ: React.FC<AgentQProps> = ({
     lastActivity,
     isTtsEnabled,
     onToggleTts,
+    isSpeaking,
     onClearMemory,
     memorySummary,
     activeContext,
@@ -377,14 +379,14 @@ const AgentQ: React.FC<AgentQProps> = ({
             <div className="flex-shrink-0 p-4 border-b border-cyan-900/50 bg-cyan-950/40 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-cyan-400/20 blur-lg rounded-full animate-pulse"></div>
-                  <BrainCircuitIcon className="w-8 h-8 text-cyan-400 relative z-10" />
+                  <div className={`absolute inset-0 bg-cyan-400/20 blur-lg rounded-full ${isSpeaking ? 'animate-ping' : 'animate-pulse'}`}></div>
+                  <BrainCircuitIcon className={`w-8 h-8 text-cyan-400 relative z-10 ${isSpeaking ? 'animate-pulse' : ''}`} />
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Agent Q</h3>
                   <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-[9px] text-cyan-600 font-mono">NEURAL_LINK: ACTIVE</span>
+                    <div className={`w-1.5 h-1.5 rounded-full ${isSpeaking ? 'bg-cyan-400 animate-ping' : 'bg-green-500 animate-pulse'}`}></div>
+                    <span className="text-[9px] text-cyan-600 font-mono">{isSpeaking ? 'AUDIO_SYNTHESIS: ACTIVE' : 'NEURAL_LINK: ACTIVE'}</span>
                   </div>
                   {universeConnections.agentQ && (
                      <div className="flex items-center gap-1 mt-1 text-[8px] text-purple-300 font-bold uppercase tracking-wider animate-pulse">
@@ -440,8 +442,8 @@ const AgentQ: React.FC<AgentQProps> = ({
                 onClick={onToggleOpen}
                 className="relative w-14 h-14 bg-cyan-950/80 border-2 border-cyan-400/50 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.3)] group hover:scale-110 transition-all duration-300"
             >
-                <div className="absolute inset-0 rounded-full bg-cyan-400 animate-ping opacity-20 group-hover:opacity-40"></div>
-                <BrainCircuitIcon className="w-7 h-7 text-cyan-300 relative z-10 group-hover:text-white transition-colors" />
+                <div className={`absolute inset-0 rounded-full bg-cyan-400 ${isSpeaking ? 'animate-ping opacity-40' : 'animate-ping opacity-20 group-hover:opacity-40'}`}></div>
+                <BrainCircuitIcon className={`w-7 h-7 text-cyan-300 relative z-10 group-hover:text-white transition-colors ${isSpeaking ? 'animate-pulse' : ''}`} />
                 
                 {/* Notification indicator if active */}
                 {isDataLinked && (

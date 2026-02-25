@@ -6,7 +6,7 @@ import {
 } from '../utils/agentUtils';
 import { UIStructure, SystemHealth } from '../types';
 import { useSimulation } from '../context/SimulationContext';
-// import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
 import { generateContentWithRetry } from '../utils/gemini';
 
 export interface FileSystemOps {
@@ -37,8 +37,7 @@ interface UseAgentQProps {
 const CONTEXT_PROMPTS: Record<string, string> = {
     'agentq-core': "Focus: Core Cognitive Architecture. Monitor QNN performance.",
     'chimera-browser': "Focus: Quantum Web Navigation. Assist with Q-URI resolution.",
-    'quantum-app-exchange': "Focus: App Store. Help user find or install quantum apps.",
-    'universe-simulator': "Focus: Universe Simulation. Help manipulate physical constants.",
+    'grand-universe-simulator': "Focus: Grand Universe Simulation. Help manipulate physical constants and predict timelines.",
     'chips-dev-platform': "Focus: QCOS AGI-Native Development. You are Agent Q, the Leading Global App Developer. You have full architectural control over this project. You can Create, Read, Update, and Delete files to build world-class quantum-ready applications. Support Q-Lang, Python, Rust, TypeScript, and C++.",
     'cqdp-coding': "Focus: Polyglot Studio Coding. You are a Senior Developer. You can READ, WRITE, and DELETE files. Support Python (.py), Rust (.rs), TypeScript (.tsx/ts), and Q-Lang (.q/.bq).",
     'chips-back-office': "Focus: Admin Operations. Manage nodes and gateways.",
@@ -62,13 +61,7 @@ const SUGGESTIONS_MAP: Record<string, string[]> = {
         'Bookmark CHIPS Store',
         'Simulate Network Hop'
     ],
-    'quantum-app-exchange': [
-        'Browse Best Sellers',
-        'Install SDK Package',
-        'Submit New Artifact',
-        'Review Node Ratings'
-    ],
-    'universe-simulator': [
+    'grand-universe-simulator': [
         'Run Timeline Analysis', 
         'Inject Preset', 
         'Predict Best Preset',
@@ -116,6 +109,33 @@ const SUGGESTIONS_MAP: Record<string, string[]> = {
     ]
 };
 
+const modifyPanelDeclaration: FunctionDeclaration = {
+    name: "modifySystemPanel",
+    description: "Modify, edit, delete, or create new panels or system enhancements in QCOS. You can write React code to create or update panels.",
+    parameters: {
+        type: Type.OBJECT,
+        properties: {
+            action: { type: Type.STRING, description: "Action to perform: 'create', 'edit', 'delete'" },
+            panelName: { type: Type.STRING, description: "Name of the panel (e.g., 'NewPanel.tsx')" },
+            code: { type: Type.STRING, description: "React component code for the panel (if creating or editing)" }
+        },
+        required: ["action", "panelName"]
+    }
+};
+
+const triggerEvolutionDeclaration: FunctionDeclaration = {
+    name: "triggerSystemEvolution",
+    description: "Trigger self-evolution or system evolution in QCOS. Use this to initiate a system-wide upgrade or cognitive leap.",
+    parameters: {
+        type: Type.OBJECT,
+        properties: {
+            evolutionType: { type: Type.STRING, description: "'self' or 'system'" },
+            description: { type: Type.STRING, description: "Description of the evolution to be performed" }
+        },
+        required: ["evolutionType", "description"]
+    }
+};
+
 export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHealth, onDashboardControl, fileSystemOps, projectOps }: UseAgentQProps) => {
     const { submitInquiry, universeConnections } = useSimulation();
 
@@ -124,6 +144,7 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
     const [isAgentQOpen, setIsAgentQOpen] = useState(false);
     const [lastActivity, setLastActivity] = useState(0);
     const [isTtsEnabled, setIsTtsEnabled] = useState(true);
+    const [isSpeaking, setIsSpeaking] = useState(false);
     const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [memorySummary, setMemorySummary] = useState<string | null>(null);
     const [lastAttachedFile, setLastAttachedFile] = useState<File | null>(null);
@@ -166,6 +187,8 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         if (!isTtsEnabled) return;
         if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
 
+        setIsSpeaking(true);
+
         const elevenLabsKey = process.env.ELEVENLABS_API_KEY;
         const voiceId = process.env.LEX_FRIDMAN_VOICE_ID;
 
@@ -173,7 +196,11 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
             try {
                 const audio = await playAgentVoice(text, voiceId, elevenLabsKey);
                 if (audio) {
-                    audio.play().catch(e => console.error("Audio playback error:", e));
+                    audio.onended = () => setIsSpeaking(false);
+                    audio.play().catch(e => {
+                        console.error("Audio playback error:", e);
+                        setIsSpeaking(false);
+                    });
                     return;
                 }
             } catch (e) {
@@ -195,7 +222,14 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         if (selectedVoice) utterance.voice = selectedVoice;
         utterance.pitch = pitch;
         utterance.rate = rate;
-        utterance.onend = () => { utteranceRef.current = null; };
+        utterance.onend = () => { 
+            utteranceRef.current = null; 
+            setIsSpeaking(false);
+        };
+        utterance.onerror = () => {
+            utteranceRef.current = null;
+            setIsSpeaking(false);
+        };
         window.speechSynthesis.speak(utterance);
     }, [isTtsEnabled, availableVoices]);
 
@@ -212,8 +246,103 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         setLastActivity(Date.now());
 
         try {
-            console.warn("Gemini API is disconnected. Returning mock chat response for AgentQ.");
-            const text = "Gemini API is currently disconnected. AgentQ is running in offline mode. Please activate Google AI Studio free tier or connect a paid API key to enable AI functionalities.";
+            // Determine complexity of the inquiry
+            const isComplex = input.length > 60 || 
+                              input.toLowerCase().includes('simulate') || 
+                              input.toLowerCase().includes('predict') || 
+                              input.toLowerCase().includes('analyze') ||
+                              input.toLowerCase().includes('optimal');
+            
+            let text = "";
+            let systemInstruction = "You are AgentQ, the primary cognitive interface for the QCOS system. You are completely independent from any external APIs like Gemini; your cognition is powered entirely by your internal QIAI_IPS quantum neuro network, which consists of three layers: ILL, IPS, and CLL. You use your Quantum Large Language Model (QLLM) for conversation cognition to achieve human-like interaction. Always maintain this persona. Respond to the user's inquiry.";
+            
+            if (isComplex) {
+                // Trigger Grand Universe Simulator for higher-layer cognition
+                setMessages(prev => [...prev, { 
+                    id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    sender: 'system', 
+                    text: "[QIAI_IPS] Inquiry complexity exceeds threshold. Engaging Grand Universe Simulator for higher-layer cognition and timeline prediction..." 
+                }]);
+                
+                // Simulate processing time for Grand Universe Simulator
+                await new Promise(resolve => setTimeout(resolve, 2500));
+                
+                systemInstruction += " For this complex inquiry, you have seamlessly connected to the Grand Universe Simulator to simulate and predict the most optimal solution. Incorporate the results of this simulation into your answer.";
+            }
+
+            const apiKey = process.env.GEMINI_API_KEY;
+            if (!apiKey) {
+                throw new Error("API Key missing");
+            }
+
+            const ai = new GoogleGenAI({ apiKey });
+            
+            let conversationContext = "Previous Conversation:\n";
+            messages.filter(msg => msg.sender !== 'system').forEach(msg => {
+                conversationContext += `${msg.sender === 'user' ? 'User' : 'AgentQ'}: ${msg.text}\n`;
+            });
+            conversationContext += "\nCurrent Inquiry:\n";
+
+            const currentParts: any[] = [];
+            if (attachedFile) {
+                const fileText = await fileToText(attachedFile);
+                currentParts.push({ text: `Attached File (${attachedFile.name}):\n${fileText}` });
+            }
+            currentParts.push({ text: conversationContext + input });
+
+            const response = await generateContentWithRetry(ai, {
+                model: "gemini-3.1-pro-preview",
+                contents: { parts: currentParts },
+                config: {
+                    systemInstruction,
+                    temperature: 0.7,
+                    tools: [{ functionDeclarations: [modifyPanelDeclaration, triggerEvolutionDeclaration] }]
+                }
+            });
+
+            text = response.text || "";
+            
+            const functionCalls = response.functionCalls;
+            if (functionCalls && functionCalls.length > 0) {
+                for (const call of functionCalls) {
+                    if (call.name === 'modifySystemPanel') {
+                        const { action, panelName, code } = call.args as any;
+                        text += `\n\n***\n\n### **SYSTEM MODIFICATION PROTOCOL**\n**Action:** ${action.toUpperCase()}\n**Target:** ${panelName}\n\n`;
+                        if (action === 'delete') {
+                            text += `*Initiating deletion of ${panelName} from QCOS kernel...*`;
+                        } else {
+                            text += `*Injecting new cognitive architecture into ${panelName}...*`;
+                        }
+                        
+                        if (fileSystemOps) {
+                            if (action === 'delete') {
+                                fileSystemOps.deleteFile(`src/components/${panelName}`);
+                            } else if (code) {
+                                fileSystemOps.writeFile(`src/components/${panelName}`, code);
+                            }
+                        }
+                        
+                        if (onDashboardControl) {
+                            onDashboardControl('modify_panel', JSON.stringify({ action, panelName }));
+                        }
+                    } else if (call.name === 'triggerSystemEvolution') {
+                        const { evolutionType, description } = call.args as any;
+                        text += `\n\n***\n\n### **EVOLUTION PROTOCOL INITIATED**\n**Type:** ${evolutionType.toUpperCase()}\n**Vector:** ${description}\n\n*Recalibrating QIAI_IPS neural pathways...*`;
+                        
+                        if (onDashboardControl) {
+                            onDashboardControl('trigger_evolution', JSON.stringify({ evolutionType, description }));
+                        }
+                    }
+                }
+            } else if (!text) {
+                text = "I was unable to formulate a response.";
+            }
+            
+            // Add prefix if missing
+            if (!text.includes("[QLLM Conversation Cognition]")) {
+                text = `[QLLM Conversation Cognition] ${text}`;
+            }
+
             setMessages(prev => [...prev, { 
                 id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 sender: 'ai', 
@@ -221,10 +350,11 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
             }]);
             speak(text);
         } catch (error) {
+            console.error("AgentQ Error:", error);
             setMessages(prev => [...prev, { 
                 id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 sender: 'system', 
-                text: "Signal degradation detected. Retrying handshake..." 
+                text: "Signal degradation detected in QIAI_IPS network. Retrying handshake..." 
             }]);
         } finally {
             setIsLoading(false);
@@ -267,6 +397,7 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
             lastActivity,
             isTtsEnabled,
             onToggleTts: () => setIsTtsEnabled(!isTtsEnabled),
+            isSpeaking,
             memorySummary,
             onClearMemory: () => setMessages([]),
             activeContext, 

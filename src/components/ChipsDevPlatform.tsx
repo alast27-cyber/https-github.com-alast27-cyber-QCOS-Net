@@ -26,7 +26,7 @@ import { generateContentWithRetry } from '../utils/gemini';
 // Local Imports
 import SyntaxHighlighter from './SyntaxHighlighter';
 import GlassPanel from './GlassPanel';
-import UniverseSimulator from './UniverseSimulator';
+import GrandUniverseSimulator from './GrandUniverseSimulator';
 import AgentQ from './AgentQ';
 import HolographicPreviewRenderer from './HolographicPreviewRenderer';
 import MonacoEditorWrapper from './MonacoEditorWrapper';

@@ -65,7 +65,7 @@ export const initialSystemHealth: SystemHealth = {
 export const panelToFaceMap: { [key: string]: number } = {
     'agentq-core': 0, 'qcos-core-gateway': 0, 'agentq-self-evo': 0, 'quantum-reinforcement-learning': 0,
     'chips-quantum-network': 1,
-    'chips-app-store': 2, 'quantum-app-exchange': 2, 'universe-simulator': 2,
+    'chips-app-store': 2, 'grand-universe-simulator': 2,
     'chips-dev-platform': 3,
     'chips-back-office': 4, 'security-monitor': 4, 'chips-economy': 4,
     'qpu-health': 5, 'system-diagnostic': 5, 'quantum-large-language-model': 5, 'neural-programming': 5, 'quantum-machine-learning': 5, 'quantum-engineering-design': 5,
@@ -91,8 +91,7 @@ export const getPanelMetadata = (qcosVersion: number): Record<number, FaceData> 
     layout: 'grid grid-cols-2 grid-rows-2 gap-2',
     panels: [
       { id: 'chips-app-store', title: <div className="flex items-center"><BoxIcon className="w-5 h-5 mr-2 text-cyan-400" />Chips Quantum App Store</div>, description: "Official application registry for the CHIPS Network.", className: 'col-span-2 row-span-1', minAdminLevel: 1 },
-      { id: 'quantum-app-exchange', title: <div className="flex items-center"><BoxIcon className="w-5 h-5 mr-2 text-purple-400" />Chips Simulator Plugin</div>, description: "Discover, install, and manage quantum plugin chips.", className: 'col-span-1 row-span-1', minAdminLevel: 2 },
-      { id: 'universe-simulator', title: <div className="flex items-center"><GalaxyIcon className="w-5 h-5 mr-2 text-blue-300 animate-spin-slow" />Universe Simulator</div>, description: "Predict future timelines via quantum parallelism.", className: 'col-span-1 row-span-1', minAdminLevel: 3 },
+      { id: 'grand-universe-simulator', title: <div className="flex items-center"><GalaxyIcon className="w-5 h-5 mr-2 text-blue-300 animate-spin-slow" />Grand Universe Simulator</div>, description: "Predict future timelines via quantum parallelism.", className: 'col-span-2 row-span-1', minAdminLevel: 3 },
     ]
   },
   3: { // Left Face - Program 3: ChipsDev Platform (CDP)

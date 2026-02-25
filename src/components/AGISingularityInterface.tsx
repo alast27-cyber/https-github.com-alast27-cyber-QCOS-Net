@@ -31,7 +31,7 @@ interface EngineNode {
 }
 
 const cognitionEngines: EngineNode[] = [
-    { id: 'qllm', label: 'SEMANTIC', model: 'Manifold-V4', icon: GlobeIcon, color: 'text-blue-400', glow: 'shadow-blue-500/40', x: 25, y: 25, targetPanelId: 'universe-simulator' },
+    { id: 'qllm', label: 'SEMANTIC', model: 'Manifold-V4', icon: GlobeIcon, color: 'text-blue-400', glow: 'shadow-blue-500/40', x: 25, y: 25, targetPanelId: 'grand-universe-simulator' },
     { id: 'qml', label: 'PATTERN', model: 'Feature-12D', icon: BrainCircuitIcon, color: 'text-purple-400', glow: 'shadow-purple-500/40', x: 75, y: 25, targetPanelId: 'qml-simulator' },
     { id: 'qrl', label: 'POLICY', model: 'Trajectory-X', icon: GitBranchIcon, color: 'text-emerald-400', glow: 'shadow-emerald-500/40', x: 80, y: 75, targetPanelId: 'qrl-engine' },
     { id: 'qgl', label: 'FORGE', model: 'Reality-Seed', icon: SparklesIcon, color: 'text-amber-400', glow: 'shadow-amber-500/40', x: 20, y: 75, targetPanelId: 'qgl-engine' },

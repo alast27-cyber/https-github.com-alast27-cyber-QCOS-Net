@@ -15,7 +15,7 @@ import {
 } from './Icons';
 import { useToast } from '../context/ToastContext';
 import { useSimulation } from '../context/SimulationContext';
-import UniverseSimulator from './UniverseSimulator';
+import GrandUniverseSimulator from './GrandUniverseSimulator';
 
 interface QCOSGatewayProps {
   codebase: { [key: string]: string };
@@ -370,13 +370,13 @@ UPGRADE_KERNEL();`;
 
                 {activeTab === 'source' && (
                     <div className="h-full flex flex-col gap-3">
-                        {/* Upper Half: Universe Simulator Integration */}
+                        {/* Upper Half: Grand Universe Simulator Integration */}
                         <div className="flex-grow bg-black/40 rounded-xl border border-cyan-800/50 relative overflow-hidden group">
                              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50 z-20"></div>
                              
                              <div className="absolute top-2 left-3 z-20 flex items-center gap-2">
                                 <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest bg-black/60 px-2 py-0.5 rounded border border-cyan-900 backdrop-blur-sm">
-                                    Universe Simulator Root
+                                    Grand Universe Simulator Root
                                 </span>
                                 <div className="flex items-center gap-1 text-[8px] text-green-400 bg-green-900/20 px-1.5 py-0.5 rounded border border-green-800 animate-pulse">
                                     <LinkIcon className="w-2 h-2" /> SYNCED
@@ -385,7 +385,7 @@ UPGRADE_KERNEL();`;
 
                              {/* Embedded Simulator */}
                              <div className="w-full h-full transform scale-95 origin-center opacity-90 group-hover:scale-100 group-hover:opacity-100 transition-all duration-700">
-                                 <UniverseSimulator embedded={true} />
+                                 <GrandUniverseSimulator embedded={true} />
                              </div>
                         </div>
 

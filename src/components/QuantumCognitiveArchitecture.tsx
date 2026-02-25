@@ -339,11 +339,11 @@ const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> 
                     </div>
                 </div>
 
-                {/* Bottom Section: Multi-Vector Universe Simulators */}
+                {/* Bottom Section: Multi-Vector Grand Universe Simulators */}
                 <div className="flex-grow flex flex-col gap-2 min-h-0">
                     <div className="flex justify-between items-center border-t border-gray-800 pt-2">
                         <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                             <GalaxyIcon className="w-3 h-3 animate-spin-slow" /> 3-Vector Universe Simulator
+                             <GalaxyIcon className="w-3 h-3 animate-spin-slow" /> 3-Vector Grand Universe Simulator
                         </span>
                         <div className="flex gap-2">
                             {!isSimulating ? (

@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, GenerateContentParameters, GenerateContentResponse } from '@google/genai';
 
-const isApiDisabled = true; // Global flag to disable API calls
+const isApiDisabled = false; // Global flag to disable API calls
 
 // Enhanced check for retriable errors including server errors (5xx) and RPC errors
 export const isRetriableError = (error: unknown): boolean => {
