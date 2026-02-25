@@ -7,7 +7,7 @@ import {
 import { UIStructure, SystemHealth } from '../types';
 import { useSimulation } from '../context/SimulationContext';
 import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
-import { generateContentWithRetry } from '../utils/gemini';
+import { generateContentWithRetry, useLocalCognition } from '../utils/gemini';
 
 export interface FileSystemOps {
     listFiles: () => string[];
@@ -270,11 +270,11 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
             }
 
             const apiKey = process.env.GEMINI_API_KEY;
-            if (!apiKey) {
-                throw new Error("API Key missing");
+            if (!apiKey && !useLocalCognition) {
+                throw new Error("System Alert: QIAI_IPS API Key missing. Please configure GEMINI_API_KEY in your environment.");
             }
 
-            const ai = new GoogleGenAI({ apiKey });
+            const ai = useLocalCognition ? (null as any) : new GoogleGenAI({ apiKey: apiKey! });
             
             let conversationContext = "Previous Conversation:\n";
             messages.filter(msg => msg.sender !== 'system').forEach(msg => {
@@ -350,10 +350,11 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
             speak(text);
         } catch (error) {
             console.error("AgentQ Error:", error);
+            const errorMsg = error instanceof Error ? error.message : "Signal degradation detected in QIAI_IPS network. Retrying handshake...";
             setMessages(prev => [...prev, { 
                 id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 sender: 'system', 
-                text: "Signal degradation detected in QIAI_IPS network. Retrying handshake..." 
+                text: errorMsg.startsWith("System Alert") ? errorMsg : "Signal degradation detected in QIAI_IPS network. Retrying handshake..." 
             }]);
         } finally {
             setIsLoading(false);
