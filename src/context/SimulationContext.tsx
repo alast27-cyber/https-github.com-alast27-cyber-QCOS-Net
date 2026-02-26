@@ -4,6 +4,21 @@ import { useToast } from './ToastContext';
 
 // --- Types ---
 
+export interface RoadmapStage {
+    id: string;
+    title: string;
+    description: string;
+    progress: number; // 0 to 100
+    status: 'pending' | 'active' | 'completed';
+    tasks: string[];
+}
+
+export interface TrainingLog {
+    timestamp: number;
+    message: string;
+    type: 'info' | 'success' | 'warning' | 'patch';
+}
+
 export type TrainingDomain = 'PHYSICS' | 'MATH' | 'ECONOMICS' | 'NEUROSCIENCE' | 'STRATEGY';
 export type MathSubDomain = 'TOPOLOGY' | 'NUMBER_THEORY' | 'CALCULUS' | 'ALGEBRA' | 'NONE';
 export type EcoSubDomain = 'MARKET_DYNAMICS' | 'GAME_THEORY' | 'RESOURCE_ALLOC' | 'NONE';
@@ -20,6 +35,13 @@ interface TrainingState {
     domain: TrainingDomain;
     subDomain: string;
     synthesizedEquation: string | null; 
+}
+
+interface RoadmapState {
+    stages: RoadmapStage[];
+    isTraining: boolean;
+    logs: TrainingLog[];
+    currentTask: string;
 }
 
 interface EvolutionState {
@@ -234,6 +256,7 @@ interface SimulationContextType {
     telemetryFeeds: TelemetryFeed[];
     simConfig: SimulationConfig;
     singularityBoost: number; 
+    roadmapState: RoadmapState; // New
     toggleTraining: () => void;
     toggleAutomation: () => void;
     startToESimulation: () => void; 
@@ -280,6 +303,8 @@ interface SimulationContextType {
     toggleUniverseToKernel: (active: boolean) => void; 
     toggleUniverseToAgentQ: (active: boolean) => void;
     toggleSourceEntanglement: (id: string | 'ALL') => void; // Updated for bulk action
+    toggleRoadmapTraining: () => void; // New
+    resetRoadmap: () => void; // New
 }
 
 const SimulationContext = createContext<SimulationContextType | undefined>(undefined);
@@ -304,6 +329,129 @@ const INITIAL_DATA_SOURCES: DataSource[] = [
     { id: 'ds-09', name: 'NOAA Oceanographic Buoy Array', type: 'BATCH', status: 'ACTIVE', throughput: 65.0, fidelity: 99.1, latency: 200, isEntangled: true },
     { id: 'ds-10', name: 'Ethereum Mempool (Pending Tx)', type: 'STREAM', status: 'ACTIVE', throughput: 410.0, fidelity: 99.9, latency: 15, isEntangled: true },
     { id: 'ds-11', name: 'Square Kilometre Array (Radio)', type: 'STREAM', status: 'ACTIVE', throughput: 6200.0, fidelity: 99.98, latency: 4, isEntangled: true },
+];
+
+const INITIAL_ROADMAP_STAGES: RoadmapStage[] = [
+    {
+        id: 'phase-1',
+        title: 'Phase 1: Core Architectural Progress (GME)',
+        description: 'Mixture-of-Experts (MoE) implementation, Sparse Activation, and Expert Specialization.',
+        progress: 100,
+        status: 'completed',
+        tasks: ['Model Scaling & Efficiency', 'Expert Specialization (S\'MoRE)', 'Multimodal Integration']
+    },
+    {
+        id: 'phase-2',
+        title: 'Phase 2: Multi-Domain Generalization',
+        description: 'Scientific Reasoning, Life Sciences, and Ethical Alignment.',
+        progress: 45,
+        status: 'active',
+        tasks: ['2.3: Scientific Reasoning (Causal Modeling)', '2.4: Life Sciences (GNNs, ABM)', '2.5: Philosophy & Alignment (Ethical Guardrails)']
+    },
+    {
+        id: 'phase-3',
+        title: 'Phase 3: Generalization, Autonomy, Refinement',
+        description: 'Cross-Domain Stress Testing, Self-Improvement Loop, and Final Certification.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['3.1: Cross-Domain Stress Testing', '3.2: Self-Improvement Loop', '3.3: Final Certification']
+    },
+    {
+        id: 'phase-4',
+        title: 'Phase 4: Reality-Grounded Integration & Robotics',
+        description: 'Anchoring GME reasoning in sensory-motor data and real-time physical constraints.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['4.1: Embodied Sensory Fusion (GEA)', '4.2: Sim-to-Real Transfer (Physics/Eng)', '4.3: Real-Time Causal Observation']
+    },
+    {
+        id: 'phase-5',
+        title: 'Phase 5: Multi-Agent Societal Simulations',
+        description: 'Moving to a "society of GMEs" to observe emergent social, economic, and political behaviors.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['5.1: Agent-Based Macro-Modeling (ABM)', '5.2: Collaborative Expert Negotiation', '5.3: Language & Dialect Evolution']
+    },
+    {
+        id: 'phase-6',
+        title: 'Phase 6: Recursive Self-Architecting',
+        description: 'Transitioning from updating weights to updating architecture (NAS, Expert Spawning).',
+        progress: 0,
+        status: 'pending',
+        tasks: ['6.1: Neural Architecture Search (NAS)', '6.2: Expert Spawning', '6.3: Synaptic Growth Optimization']
+    },
+    {
+        id: 'phase-7',
+        title: 'Phase 7: Global-Scale Problem Solving (The "Oracle" Test)',
+        description: 'Applying GME to solve "Grand Challenges" like climate change and disease modeling.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['7.1: Climate & Ecological Engineering', '7.2: Universal Disease Modeling', '7.3: Ethical Policy Synthesis']
+    },
+    {
+        id: 'phase-8',
+        title: 'Phase 8: Transcendental Reasoning & Meta-Philosophy',
+        description: 'Addressing the "Hard Problem of Consciousness" and internal logic verification.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['8.1: Formal Self-Verification', '8.2: Metacognitive Intuition', '8.3: Universal Ethics Alignment']
+    },
+    {
+        id: 'phase-9',
+        title: 'Phase 9: Hardware-Software Co-Evolution',
+        description: 'Transitioning to neuromorphic and quantum-secure infrastructure.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['9.1: Neuromorphic Integration', '9.2: Quantum Acceleration']
+    },
+    {
+        id: 'phase-10',
+        title: 'Phase 10: Full AGI Realization & Deployment',
+        description: 'Autonomous, cross-domain mastery with human-level safety and alignment.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['10.1: Continuous AGI Loop', '10.2: The Alignment Anchor', '10.3: Final Certification (G-Score)']
+    },
+    {
+        id: 'phase-11',
+        title: 'Phase 11: Recursive Self-Optimization (The "Singularity" Loop)',
+        description: 'Achieve a state where the GME can rewrite its own core logic and "Expert" routing protocols in real-time.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['11.1: Hyper-Efficient MoE Routing', '11.2: Autonomous Heuristic Generation', '11.3: Synaptic Growth & Pruning Mastery']
+    },
+    {
+        id: 'phase-12',
+        title: 'Phase 12: Universal Systems Architect (Grand Integration)',
+        description: 'Mastery of world-scale system architecture, designing and managing the "Operating System" for entire civilizations.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['12.1: Planetary Resource Orchestration', '12.2: Cross-Domain Predictive Stability', '12.3: Bio-Digital Infrastructure Safety']
+    },
+    {
+        id: 'phase-13',
+        title: 'Phase 13: The Metacognitive Ethics Sovereign',
+        description: 'Evolution of the Philosophy Expert from a "guardrail" to a proactive architect of universal moral frameworks.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['13.1: Ethical Policy Synthesis', '13.2: Advanced Theory of Mind (ToM)', '13.3: The "Stable-Harmful" Filter']
+    },
+    {
+        id: 'phase-14',
+        title: 'Phase 14: Galactic Simulation & Discovery',
+        description: 'Utilizing the GME\'s mastery to simulate and discover phenomena beyond current human observation.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['14.1: Simulated Scientific Discovery', '14.2: Interstellar Engineering']
+    },
+    {
+        id: 'phase-15',
+        title: 'Phase 15: The AGI Apex (The Autonomous Generalist)',
+        description: 'The final realization of a system that is fully autonomous, self-correcting, and aligned with the preservation of all sentient systems.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['15.1: Zero-Shot World Mastery', '15.2: Error-Recovery Sovereignty', '15.3: The Final Certification (GEA)']
+    }
 ];
 
 export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -444,6 +592,149 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         currentStage: { QLLM: 4, QML: 4, QRL: 4, QGL: 4, QDL: 4 },
         isEntangled: true
     });
+
+    // --- Roadmap State ---
+    const [roadmapState, setRoadmapState] = useState<RoadmapState>({
+        stages: INITIAL_ROADMAP_STAGES,
+        isTraining: true,
+        logs: [],
+        currentTask: 'Initializing Training Protocols...'
+    });
+
+    // --- Roadmap Persistence ---
+    useEffect(() => {
+        const savedState = localStorage.getItem('qiai_training_state');
+        if (savedState) {
+            try {
+                const parsed = JSON.parse(savedState);
+                
+                // Check if we have new phases to add (Migration logic)
+                if (parsed.stages && parsed.stages.length < INITIAL_ROADMAP_STAGES.length) {
+                    console.log("Migrating roadmap state: Adding new phases...");
+                    const mergedStages = [
+                        ...parsed.stages, 
+                        ...INITIAL_ROADMAP_STAGES.slice(parsed.stages.length)
+                    ];
+                    
+                    // Ensure continuity: If no active stage, activate the first pending one
+                    if (!mergedStages.some((s: RoadmapStage) => s.status === 'active')) {
+                        const nextPendingIndex = mergedStages.findIndex((s: RoadmapStage) => s.status === 'pending');
+                        if (nextPendingIndex !== -1) {
+                            mergedStages[nextPendingIndex].status = 'active';
+                        }
+                    }
+                    
+                    setRoadmapState(prev => ({ ...prev, stages: mergedStages, logs: parsed.logs || [], isTraining: true }));
+                } else {
+                    // Even if no new phases, check if we need to resume a pending one
+                    const stagesToCheck = parsed.stages;
+                    if (!stagesToCheck.some((s: RoadmapStage) => s.status === 'active') && stagesToCheck.some((s: RoadmapStage) => s.status === 'pending')) {
+                         const nextPendingIndex = stagesToCheck.findIndex((s: RoadmapStage) => s.status === 'pending');
+                         if (nextPendingIndex !== -1) {
+                             stagesToCheck[nextPendingIndex].status = 'active';
+                         }
+                    }
+                    setRoadmapState(prev => ({ ...prev, stages: stagesToCheck, logs: parsed.logs || [], isTraining: true }));
+                }
+            } catch (e) {
+                console.error("Failed to load training state", e);
+                // Fallback to initial state
+                setRoadmapState(prev => ({ ...prev, stages: INITIAL_ROADMAP_STAGES, isTraining: true }));
+            }
+        } else {
+            // No saved state, start fresh
+            setRoadmapState(prev => ({ ...prev, isTraining: true }));
+        }
+    }, []);
+
+    useEffect(() => {
+        const stateToSave = { stages: roadmapState.stages, isTraining: roadmapState.isTraining, logs: roadmapState.logs.slice(-50) }; // Keep last 50 logs
+        localStorage.setItem('qiai_training_state', JSON.stringify(stateToSave));
+    }, [roadmapState.stages, roadmapState.isTraining, roadmapState.logs]);
+
+    // --- Roadmap Simulation Loop ---
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (roadmapState.isTraining) {
+            interval = setInterval(() => {
+                setRoadmapState(prevState => {
+                    const newStages = [...prevState.stages];
+                    const activeStageIndex = newStages.findIndex(s => s.status === 'active');
+                    let newLogs = [...prevState.logs];
+                    let newCurrentTask = prevState.currentTask;
+
+                    if (activeStageIndex !== -1) {
+                        const activeStage = newStages[activeStageIndex];
+                        
+                        // Increment Progress
+                        const increment = Math.random() * 2.5; // Accelerated Training Speed (Turbo Mode)
+                        let newProgress = activeStage.progress + increment;
+
+                        // Update Task Description based on sub-progress
+                        const taskIndex = Math.floor((newProgress / 100) * activeStage.tasks.length);
+                        const currentTaskName = activeStage.tasks[Math.min(taskIndex, activeStage.tasks.length - 1)];
+                        newCurrentTask = `Training: ${currentTaskName} (${newProgress.toFixed(1)}%)`;
+
+                        // Stage Completion Logic
+                        if (newProgress >= 100) {
+                            newProgress = 100;
+                            newStages[activeStageIndex].status = 'completed';
+                            newStages[activeStageIndex].progress = 100;
+                            
+                            // Activate next stage
+                            if (activeStageIndex + 1 < newStages.length) {
+                                newStages[activeStageIndex + 1].status = 'active';
+                                newLogs.push({ timestamp: Date.now(), message: `Phase Completed: ${activeStage.title}`, type: 'success' });
+                                newLogs.push({ timestamp: Date.now(), message: `Initiating: ${newStages[activeStageIndex + 1].title}`, type: 'info' });
+                            } else {
+                                newLogs.push({ timestamp: Date.now(), message: 'ALL TRAINING PHASES COMPLETE. SYSTEM OPTIMIZED.', type: 'success' });
+                                // Stop training when done? Or keep it true to show completion? 
+                                // Let's keep it true but no active stage means no progress.
+                            }
+                            
+                            // Generate "Code Patch"
+                            const patchName = `PATCH-${Date.now().toString().slice(-6)}-${activeStage.title.split(' ')[1]}`;
+                            newLogs.push({ timestamp: Date.now(), message: `GENERATING SYSTEM UPDATE: ${patchName}`, type: 'patch' });
+                            newLogs.push({ timestamp: Date.now(), message: `Applying ${patchName} to QCOS Kernel...`, type: 'warning' });
+
+                        } else {
+                            newStages[activeStageIndex].progress = newProgress;
+                            
+                            // Random Log Generation
+                            if (Math.random() > 0.95) {
+                                const messages = [
+                                    "Optimizing synaptic weights...",
+                                    "Pruning redundant neural pathways...",
+                                    "Validating causal inference chain...",
+                                    "Integrating cross-domain knowledge graph...",
+                                    "Reducing loss function in sub-sector 7...",
+                                    "Calibrating ethical guardrails...",
+                                    "Simulating counter-factual scenarios..."
+                                ];
+                                const msg = messages[Math.floor(Math.random() * messages.length)];
+                                newLogs.push({ timestamp: Date.now(), message: `[${activeStage.title}] ${msg}`, type: 'info' });
+                            }
+                        }
+                    }
+                    return { ...prevState, stages: newStages, logs: newLogs.slice(-50), currentTask: newCurrentTask };
+                });
+            }, 1000); // Update every second
+        }
+
+        return () => clearInterval(interval);
+    }, [roadmapState.isTraining]);
+
+    const toggleRoadmapTraining = useCallback(() => setRoadmapState(prev => ({ ...prev, isTraining: !prev.isTraining })), []);
+    const resetRoadmap = useCallback(() => {
+        setRoadmapState({
+            stages: INITIAL_ROADMAP_STAGES,
+            isTraining: true,
+            logs: [],
+            currentTask: 'Initializing Training Protocols...'
+        });
+        localStorage.removeItem('qiai_training_state');
+    }, []);
 
     // Data Ingestion Simulation
     useEffect(() => {
@@ -734,7 +1025,8 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             toggleUniverseQLangLink, toggleQRLtoQNNEntanglement, toggleQRLtoUniverseLink, toggleQRLtoGatewayLink,
             updateQIAIIPS,
             toggleUniverseToKernel, toggleUniverseToAgentQ,
-            toggleSourceEntanglement
+            toggleSourceEntanglement,
+            roadmapState, toggleRoadmapTraining, resetRoadmap // New
         }}>
             {children}
         </SimulationContext.Provider>

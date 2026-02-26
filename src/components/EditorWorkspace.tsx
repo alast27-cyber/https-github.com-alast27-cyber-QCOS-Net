@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { FileCodeIcon, PencilSquareIcon, TrashIcon, CheckCircle2Icon, XIcon, SparklesIcon, LoaderIcon, ArrowRightIcon } from './Icons';
-import { GoogleGenAI } from '@google/genai';
-import { generateContentWithRetry } from '../utils/gemini';
+import { generateLocalCode } from '../utils/gemini';
 
 import MonacoEditorWrapper from './MonacoEditorWrapper';
 
@@ -108,19 +107,8 @@ const Editor: React.FC<{ content: string, fileName: string, onContentChange: (ne
 
         setIsGenerating(true);
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-            const systemInstruction = "You are an expert React/TypeScript developer. Your task is to modify or generate code based on the user's request. RETURN ONLY THE RAW CODE. Do not include markdown backticks, explanations, or any other text. If the user asks to modify existing code, return the FULL updated file content.";
-            
-            const prompt = `Request: ${aiPrompt}\n\nCurrent Code:\n${content}`;
-
-            const response = await generateContentWithRetry(ai, {
-                model: 'gemini-3-pro-preview',
-                contents: prompt,
-                config: { systemInstruction }
-            });
-
-            let newCode = response.text || '';
-            newCode = newCode.replace(/^```(tsx|ts|javascript|js|jsx)?\n/, '').replace(/\n```$/, '');
+            // Using Local QIAI_IPS Core for code generation (No API Calls)
+            const newCode = await generateLocalCode(aiPrompt, content);
             
             onContentChange(newCode);
             setAiPrompt('');

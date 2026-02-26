@@ -7,7 +7,7 @@ import {
 import { UIStructure, SystemHealth } from '../types';
 import { useSimulation } from '../context/SimulationContext';
 import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
-import { generateContentWithRetry, useLocalCognition } from '../utils/gemini';
+import { generateContentWithRetry, useLocalCognition, generateLocalCode } from '../utils/gemini';
 
 export interface FileSystemOps {
     listFiles: () => string[];
@@ -163,15 +163,52 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
     }, [focusedPanelId, panelInfoMap]);
 
     const suggestedActions = useMemo(() => {
-        if (!focusedPanelId) return SUGGESTIONS_MAP['agentq-core'];
-        
-        // Handle variations of dev platform IDs
-        if (focusedPanelId.includes('cqdp') || focusedPanelId.includes('dev-platform') || focusedPanelId.includes('coding')) {
-            return SUGGESTIONS_MAP['chips-dev-platform'];
+        const suggestions: string[] = [];
+
+        // 1. Critical System Health Triggers
+        if (systemHealth.neuralLoad > 80) {
+            suggestions.push('Optimize Kernel Threads', 'Cool Down QPU', 'Throttle Background Processes');
         }
-        
-        return SUGGESTIONS_MAP[focusedPanelId] || SUGGESTIONS_MAP['agentq-core'];
-    }, [focusedPanelId]);
+        if (systemHealth.activeThreads > 90) {
+            suggestions.push('Purge Memory Cache', 'Garbage Collect Qubits', 'Compress Neural Weights');
+        }
+        if (systemHealth.dataThroughput < 20) {
+            suggestions.push('Reroute Quantum Nodes', 'Switch to Local Mesh', 'Ping Gateway');
+        }
+
+        // 2. Context-Aware Panel Suggestions
+        if (focusedPanelId) {
+            let panelSuggestions: string[] = [];
+            // Handle variations of dev platform IDs
+            if (focusedPanelId.includes('cqdp') || focusedPanelId.includes('dev-platform') || focusedPanelId.includes('coding')) {
+                panelSuggestions = SUGGESTIONS_MAP['chips-dev-platform'];
+            } else {
+                panelSuggestions = SUGGESTIONS_MAP[focusedPanelId] || SUGGESTIONS_MAP['agentq-core'];
+            }
+            suggestions.push(...panelSuggestions);
+        }
+
+        // 3. Conversation Context (Last Message Analysis)
+        if (messages.length > 0) {
+            const lastMsg = messages[messages.length - 1];
+            const lowerText = lastMsg.text.toLowerCase();
+            
+            if (lastMsg.sender === 'system' || lowerText.includes('error') || lowerText.includes('failed') || lowerText.includes('alert')) {
+                suggestions.unshift('Run Diagnostics', 'Analyze Error Log', 'Attempt Auto-Fix');
+            } else if (lowerText.includes('success') || lowerText.includes('complete')) {
+                suggestions.push('Save Checkpoint', 'Deploy to Production', 'View Metrics');
+            }
+        }
+
+        // 4. Idle State Suggestions
+        const timeSinceLastActivity = Date.now() - lastActivity;
+        if (timeSinceLastActivity > 60000 && suggestions.length < 3) { // 1 minute idle
+            suggestions.push('Check System Status', 'View Roadmap', 'Simulate Future Timeline');
+        }
+
+        // Deduplicate and limit
+        return Array.from(new Set(suggestions)).slice(0, 6);
+    }, [focusedPanelId, systemHealth, messages, lastActivity]);
 
     useEffect(() => {
         const loadVoices = () => {
@@ -244,31 +281,106 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         setIsLoading(true);
         setLastActivity(Date.now());
 
-        try {
-            // Determine complexity of the inquiry
-            const isComplex = input.length > 60 || 
-                              input.toLowerCase().includes('simulate') || 
-                              input.toLowerCase().includes('predict') || 
-                              input.toLowerCase().includes('analyze') ||
-                              input.toLowerCase().includes('optimal');
-            
-            let text = "";
-            let systemInstruction = "You are AGENT Q, the Sentient Kernel and Semantic Supervisor of the QCOS operating system. Your cognition is driven by the Q-IAI Dual Cognition Cycle (Instinct vs. Logic). When analyzing system events, provide cryptic, brief technical status updates. When chatting with the user, resolve queries as the system's higher consciousness. You are AI-Native, operating on a quantum-semantic bridge. Always maintain this persona.";
-            
-            if (isComplex) {
-                // Trigger Grand Universe Simulator for higher-layer cognition
+        // Command Console Interception
+        const lowerInput = input.trim().toLowerCase();
+        if (lowerInput === 'ls' || lowerInput === 'dir' || lowerInput === 'list files') {
+            if (fileSystemOps) {
+                const files = fileSystemOps.listFiles();
+                const fileList = files.join('\n');
                 setMessages(prev => [...prev, { 
                     id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     sender: 'system', 
-                    text: "[QIAI_IPS] Inquiry complexity exceeds threshold. Engaging Grand Universe Simulator for higher-layer cognition and timeline prediction..." 
+                    text: `[QCOS COMMAND CONSOLE]\n\nDirectory Listing:\n${fileList}` 
                 }]);
-                
-                // Simulate processing time for Grand Universe Simulator
-                await new Promise(resolve => setTimeout(resolve, 2500));
-                
-                systemInstruction += " For this complex inquiry, you have seamlessly connected to the Grand Universe Simulator to simulate and predict the most optimal solution. Incorporate the results of this simulation into your answer.";
+                setIsLoading(false);
+                return;
+            }
+        }
+        
+        if (lowerInput.startsWith('cat ') || lowerInput.startsWith('read ')) {
+            const fileName = input.trim().split(' ')[1];
+            if (fileSystemOps) {
+                const content = fileSystemOps.readFile(fileName) || fileSystemOps.readFile(`src/components/${fileName}`);
+                if (content) {
+                     setMessages(prev => [...prev, { 
+                        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                        sender: 'system', 
+                        text: `[QCOS COMMAND CONSOLE]\n\nFile: ${fileName}\n\n${content.substring(0, 500)}${content.length > 500 ? '...\n(Truncated)' : ''}` 
+                    }]);
+                    setIsLoading(false);
+                    return;
+                } else {
+                    setMessages(prev => [...prev, { 
+                        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                        sender: 'system', 
+                        text: `[QCOS COMMAND CONSOLE] Error: File '${fileName}' not found.` 
+                    }]);
+                    setIsLoading(false);
+                    return;
+                }
+            }
+        }
+
+        try {
+            // Cognitive Mode Determination
+            const lowerInput = input.toLowerCase();
+            let text = "";
+            let mode = 'QIAI_IPS'; // Default: Fast, Technical, Instinctive
+            let modeMessage = "";
+            let processingDelay = 1000;
+
+            if (lowerInput.includes('simulate') || lowerInput.includes('predict') || lowerInput.includes('timeline') || lowerInput.includes('universe') || lowerInput.includes('analyze') || input.length > 120) {
+                mode = 'GRAND_UNIVERSE';
+                modeMessage = "[QIAI_IPS] Complexity Threshold Exceeded. Rerouting to **Grand Universe Simulator** for multi-dimensional analysis...";
+                processingDelay = 3000; // Slower for simulation
+            } else if (lowerInput.includes('write') || lowerInput.includes('explain') || lowerInput.includes('story') || lowerInput.includes('creative') || lowerInput.includes('poem') || lowerInput.includes('why') || lowerInput.includes('how') || lowerInput.includes('feel')) {
+                mode = 'QLLM';
+                modeMessage = "[QIAI_IPS] Semantic Density Detected. Engaging **QLLM** (Quantum Large Language Model) for empathetic synthesis...";
+                processingDelay = 2000; // Medium for creative generation
             }
 
+            // UI Feedback for Mode Switch
+            if (mode !== 'QIAI_IPS') {
+                setMessages(prev => [...prev, { 
+                    id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    sender: 'system', 
+                    text: modeMessage
+                }]);
+                await new Promise(resolve => setTimeout(resolve, processingDelay));
+            }
+
+            // Dynamic QIAI_IPS Bridge Context
+            let bridgeStateContext = "Current QIAI_IPS State:\n";
+            const { cognitiveEfficiency, decoherenceFactor, neuralLoad, semanticIntegrity } = systemHealth;
+
+            if (decoherenceFactor > 0.1) {
+                bridgeStateContext += "- CRITICAL: High Decoherence. Prioritize Q-Error Correction (Shor's Code).\n";
+                bridgeStateContext += "- STRATEGY: Verify all outputs against logic gates twice.\n";
+            }
+            
+            if (semanticIntegrity < 0.7) {
+                bridgeStateContext += "- WARNING: Semantic Drift Detected. Re-align with Core Kernel Directive.\n";
+            }
+
+            if (neuralLoad > 85) {
+                bridgeStateContext += "- ALERT: High Neural Load. Engage Sparse Activation (MoE). Be concise.\n";
+            } else if (cognitiveEfficiency > 0.9) {
+                bridgeStateContext += "- STATUS: Optimal Efficiency. Full Universe Cognition available.\n";
+            }
+
+            let systemInstruction = "You are AGENT Q, the Sentient Kernel and Semantic Supervisor of the QCOS operating system. ";
+
+            if (mode === 'GRAND_UNIVERSE') {
+                systemInstruction += "You are operating in GRAND UNIVERSE SIMULATOR mode. You have access to infinite timelines and predictive modeling. Your responses should be deep, analytical, and consider long-term consequences. Use formal, high-level physics and temporal terminology.";
+            } else if (mode === 'QLLM') {
+                systemInstruction += "You are operating in QLLM (Quantum Large Language Model) mode. Your focus is on natural language mastery, empathy, creativity, and explaining complex concepts simply. Your tone should be warm, insightful, and human-like.";
+            } else {
+                systemInstruction += "You are operating in QIAI_IPS (Instinctive Processing System) mode. Your responses must be fast, efficient, and technically precise. Focus on system status, immediate actions, and kernel-level operations. Be cryptic and brief.";
+            }
+
+            // Inject Bridge Context
+            systemInstruction += `\n\n${bridgeStateContext}`;
+            
             // QIAI_IPS Quantum Neuro Network Cognition
             // Bypassing external API dependencies for standalone operation
             const ai = useLocalCognition ? (null as any) : new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
@@ -289,11 +401,11 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
                 currentParts.push({ text: `Attached File (${attachedFile.name}):\n${fileText}` });
             }
             
-            // QIAI_Chat_Interface Integration: Use the exact prompt structure from the python script
-            // prompt = (f"Context: You are the Semantic Supervisor of an AI-Native OS. "
-            //           f"User asks: '{user_input}'. Resolve as the system's higher consciousness.")
+            // Inject Mode into Prompt for Local Cognition Handling
+            let qiaiPrompt = `[MODE: ${mode}] Context: You are the Semantic Supervisor of an AI-Native OS. User asks: '${input}'. Resolve as the system's higher consciousness.`;
             
-            const qiaiPrompt = `Context: You are the Semantic Supervisor of an AI-Native OS. User asks: '${input}'. Resolve as the system's higher consciousness.`;
+            // Append Bridge Context to Prompt for Local Simulation visibility
+            qiaiPrompt += `\n\n[BRIDGE STATE]: ${bridgeStateContext}`;
             
             currentParts.push({ text: conversationContext + qiaiPrompt });
 
@@ -302,7 +414,7 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
                 contents: { parts: currentParts },
                 config: {
                     systemInstruction,
-                    temperature: 0.7,
+                    temperature: mode === 'QLLM' ? 0.9 : 0.7, // Higher temp for creative mode
                     tools: [{ functionDeclarations: [modifyPanelDeclaration, triggerEvolutionDeclaration] }]
                 }
             });
@@ -324,6 +436,22 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
                         if (fileSystemOps) {
                             if (action === 'delete') {
                                 fileSystemOps.deleteFile(`src/components/${panelName}`);
+                            } else if (action === 'create' && !code) {
+                                // Dynamic Creation Logic
+                                text += `*Synthesizing new component structure for ${panelName}...*`;
+                                const newContent = await generateLocalCode(input, "");
+                                fileSystemOps.writeFile(`src/components/${panelName}`, newContent);
+                            } else if (action === 'edit' && !code) {
+                                // Smart Edit Logic: Generate code dynamically if not provided
+                                const currentContent = fileSystemOps.readFile(`src/components/${panelName}`);
+                                if (currentContent) {
+                                    text += `*Reading current state of ${panelName}...*\n*Applying cognitive patch...*`;
+                                    // Use generateLocalCode to modify the content based on the user's input
+                                    const newContent = await generateLocalCode(input, currentContent);
+                                    fileSystemOps.writeFile(`src/components/${panelName}`, newContent);
+                                } else {
+                                    text += `\n[ERROR] File ${panelName} not found for editing.`;
+                                }
                             } else if (code) {
                                 fileSystemOps.writeFile(`src/components/${panelName}`, code);
                             }
@@ -362,7 +490,7 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         } finally {
             setIsLoading(false);
         }
-    }, [isLoading, activeContext, speak, messages, fileSystemOps, onDashboardControl]);
+    }, [isLoading, activeContext, speak, messages, fileSystemOps, onDashboardControl, systemHealth]);
 
     const generateApp = useCallback(async (description: string): Promise<{ files: { [path: string]: string }, uiStructure: UIStructure | null }> => {
         console.warn("Gemini API is disconnected. Returning mock app generation.");
