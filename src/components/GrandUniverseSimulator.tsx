@@ -380,7 +380,7 @@ const GrandUniverseSimulator: React.FC<GrandUniverseSimulatorProps> = ({
         };
         render();
         return () => { cancelAnimationFrame(animationFrameId); };
-    }, [simulationMode, isSimulationRunning]);
+    }, [simulationMode, isSimulationRunning, cognitiveEngines, consensusResult]);
 
     const toggleSimulation = () => setIsSimulationRunning(!isSimulationRunning);
 

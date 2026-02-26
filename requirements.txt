@@ -1,0 +1,5 @@
+pennylane
+pennylane-lightning
+torch
+transformers
+numpy

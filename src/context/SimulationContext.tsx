@@ -558,7 +558,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             }));
         }, 1000);
         return () => clearInterval(interval);
-    }, [qllm.isActive, qmlEngine.status, universeConnections, systemStatus.neuralLoad, entanglementMesh.isUniverseLinkedToQLang, qiaiIps.qips.status, entanglementMesh.active]);
+    }, [qllm.isActive, qmlEngine.status, universeConnections, systemStatus.neuralLoad, entanglementMesh.isUniverseLinkedToQLang, qiaiIps.qips.status, entanglementMesh.active, qiaiIps.globalSync]);
 
     useEffect(() => {
         let interval: ReturnType<typeof setInterval>;

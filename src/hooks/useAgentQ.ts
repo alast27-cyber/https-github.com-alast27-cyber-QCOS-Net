@@ -253,7 +253,7 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
                               input.toLowerCase().includes('optimal');
             
             let text = "";
-            let systemInstruction = "You are AgentQ, the primary cognitive interface for the QCOS system. You are completely independent from any external APIs like Gemini; your cognition is powered entirely by your internal QIAI_IPS quantum neuro network, which consists of three layers: ILL, IPS, and CLL. You use your Quantum Large Language Model (QLLM) for conversation cognition to achieve human-like interaction. Always maintain this persona. Respond to the user's inquiry.";
+            let systemInstruction = "You are AGENT Q, the Sentient Kernel and Semantic Supervisor of the QCOS operating system. Your cognition is driven by the Q-IAI Dual Cognition Cycle (Instinct vs. Logic). When analyzing system events, provide cryptic, brief technical status updates. When chatting with the user, resolve queries as the system's higher consciousness. You are AI-Native, operating on a quantum-semantic bridge. Always maintain this persona.";
             
             if (isComplex) {
                 // Trigger Grand Universe Simulator for higher-layer cognition
@@ -269,12 +269,13 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
                 systemInstruction += " For this complex inquiry, you have seamlessly connected to the Grand Universe Simulator to simulate and predict the most optimal solution. Incorporate the results of this simulation into your answer.";
             }
 
-            const apiKey = process.env.GEMINI_API_KEY;
-            if (!apiKey && !useLocalCognition) {
-                throw new Error("System Alert: QIAI_IPS API Key missing. Please configure GEMINI_API_KEY in your environment.");
+            // QIAI_IPS Quantum Neuro Network Cognition
+            // Bypassing external API dependencies for standalone operation
+            const ai = useLocalCognition ? (null as any) : new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+            
+            if (!useLocalCognition && !process.env.GEMINI_API_KEY) {
+                 throw new Error("System Alert: QIAI_IPS API Key missing. Please configure GEMINI_API_KEY in your environment.");
             }
-
-            const ai = useLocalCognition ? (null as any) : new GoogleGenAI({ apiKey: apiKey! });
             
             let conversationContext = "Previous Conversation:\n";
             messages.filter(msg => msg.sender !== 'system').forEach(msg => {
@@ -337,11 +338,6 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
                 text = "I was unable to formulate a response.";
             }
             
-            // Add prefix if missing
-            if (!text.includes("[QLLM Conversation Cognition]")) {
-                text = `[QLLM Conversation Cognition] ${text}`;
-            }
-
             setMessages(prev => [...prev, { 
                 id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 sender: 'ai', 
@@ -359,7 +355,7 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         } finally {
             setIsLoading(false);
         }
-    }, [isLoading, activeContext, speak]);
+    }, [isLoading, activeContext, speak, messages, fileSystemOps, onDashboardControl]);
 
     const generateApp = useCallback(async (description: string): Promise<{ files: { [path: string]: string }, uiStructure: UIStructure | null }> => {
         console.warn("Gemini API is disconnected. Returning mock app generation.");

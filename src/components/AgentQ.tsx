@@ -376,26 +376,41 @@ const AgentQ: React.FC<AgentQProps> = ({
           <div className="h-full bg-slate-950/90 backdrop-blur-2xl border border-cyan-500/30 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-fade-in-up">
             
             {/* Header */}
-            <div className="flex-shrink-0 p-4 border-b border-cyan-900/50 bg-cyan-950/40 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className={`absolute inset-0 bg-cyan-400/20 blur-lg rounded-full ${isSpeaking ? 'animate-ping' : 'animate-pulse'}`}></div>
-                  <BrainCircuitIcon className={`w-8 h-8 text-cyan-400 relative z-10 ${isSpeaking ? 'animate-pulse' : ''}`} />
-                </div>
-                <div>
-                  <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Agent Q</h3>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-1.5 h-1.5 rounded-full ${isSpeaking ? 'bg-cyan-400 animate-ping' : 'bg-green-500 animate-pulse'}`}></div>
-                    <span className="text-[9px] text-cyan-600 font-mono">{isSpeaking ? 'AUDIO_SYNTHESIS: ACTIVE' : 'NEURAL_LINK: ACTIVE'}</span>
+            <div className="flex-shrink-0 p-4 border-b border-cyan-500/50 bg-black/80 flex items-center justify-between relative overflow-hidden">
+              {/* Q-Native Prime Background Effect - Closed Loop Singularity */}
+              <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(6,182,212,0.1)_180deg,transparent_360deg)] animate-spin-slow pointer-events-none opacity-30" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_60%)] animate-pulse-slow pointer-events-none" />
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50" />
+              
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="relative group">
+                  <div className={`absolute inset-0 bg-cyan-400/30 blur-xl rounded-full transition-all duration-500 ${isSpeaking ? 'scale-150 opacity-60' : 'scale-100 opacity-30 group-hover:opacity-50'}`}></div>
+                  <div className="relative w-10 h-10 flex items-center justify-center bg-black/50 rounded-full border border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                    <BrainCircuitIcon className={`w-6 h-6 text-cyan-400 ${isSpeaking ? 'animate-pulse' : ''}`} />
                   </div>
-                  {universeConnections.agentQ && (
-                     <div className="flex items-center gap-1 mt-1 text-[8px] text-purple-300 font-bold uppercase tracking-wider animate-pulse">
-                        <GalaxyIcon className="w-2.5 h-2.5" /> UNIVERSE SIM LINKED
-                     </div>
-                  )}
+                  {/* Quantum Superposition Indicator */}
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-purple-500 rounded-full border border-black animate-ping" />
+                </div>
+                
+                <div>
+                  <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
+                    Agent Q
+                    <span className="text-[8px] px-1.5 py-0.5 rounded bg-cyan-900/50 border border-cyan-500/30 text-cyan-300 font-mono tracking-normal shadow-[0_0_10px_rgba(6,182,212,0.2)]">PRIME</span>
+                  </h3>
+                  <div className="flex flex-col gap-0.5 mt-1">
+                    <div className="flex items-center gap-1.5">
+                      <div className={`w-1 h-1 rounded-full ${isSpeaking ? 'bg-cyan-400 animate-ping' : 'bg-green-500 animate-pulse'}`}></div>
+                      <span className="text-[9px] text-cyan-500 font-mono tracking-wider">Q-NATIVE COGNITION</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <GalaxyIcon className="w-2.5 h-2.5 text-purple-400 animate-spin-slow" />
+                      <span className="text-[8px] text-purple-400 font-mono tracking-wider">GRAND UNIVERSE LINKED</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+
+              <div className="flex items-center gap-2 relative z-10">
                 <button 
                   onClick={onToggleTts}
                   className={`p-2 rounded-lg border transition-all ${isTtsEnabled ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-300' : 'bg-slate-900 border-slate-800 text-gray-600'}`}
@@ -417,6 +432,22 @@ const AgentQ: React.FC<AgentQProps> = ({
                   <XIcon className="w-6 h-6" />
                 </button>
               </div>
+            </div>
+
+            {/* Cognitive Architecture Visualization Layer */}
+            <div className="flex justify-between px-4 py-1.5 bg-black/60 border-b border-cyan-900/30 backdrop-blur-sm relative z-10">
+                <div className="flex items-center gap-1.5 group cursor-help" title="Intuitive Logic Layer: Predictive Superposition Active">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_5px_rgba(59,130,246,0.5)]"></div>
+                    <span className="text-[8px] text-blue-400 font-mono tracking-wider group-hover:text-blue-300 transition-colors">ILL: PRE-COG</span>
+                </div>
+                <div className="flex items-center gap-1.5 group cursor-help" title="Integrated Processing Sphere: Autonomous Neuro-Plasticity Active">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse delay-75 shadow-[0_0_5px_rgba(168,85,247,0.5)]"></div>
+                    <span className="text-[8px] text-purple-400 font-mono tracking-wider group-hover:text-purple-300 transition-colors">IPS: PLASTICITY</span>
+                </div>
+                <div className="flex items-center gap-1.5 group cursor-help" title="Contextual Linguistic Layer: Quantum Empathy Active">
+                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse delay-150 shadow-[0_0_5px_rgba(244,63,94,0.5)]"></div>
+                    <span className="text-[8px] text-rose-400 font-mono tracking-wider group-hover:text-rose-300 transition-colors">CLL: EMPATHY</span>
+                </div>
             </div>
 
             {/* Content */}
