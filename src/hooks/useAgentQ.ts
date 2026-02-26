@@ -288,7 +288,14 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
                 const fileText = await fileToText(attachedFile);
                 currentParts.push({ text: `Attached File (${attachedFile.name}):\n${fileText}` });
             }
-            currentParts.push({ text: conversationContext + input });
+            
+            // QIAI_Chat_Interface Integration: Use the exact prompt structure from the python script
+            // prompt = (f"Context: You are the Semantic Supervisor of an AI-Native OS. "
+            //           f"User asks: '{user_input}'. Resolve as the system's higher consciousness.")
+            
+            const qiaiPrompt = `Context: You are the Semantic Supervisor of an AI-Native OS. User asks: '${input}'. Resolve as the system's higher consciousness.`;
+            
+            currentParts.push({ text: conversationContext + qiaiPrompt });
 
             const response = await generateContentWithRetry(ai, {
                 model: "gemini-3.1-pro-preview",

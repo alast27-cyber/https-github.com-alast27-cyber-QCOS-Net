@@ -42,6 +42,62 @@ const INITIAL_STAGES: RoadmapStage[] = [
         progress: 0,
         status: 'pending',
         tasks: ['3.1: Cross-Domain Stress Testing', '3.2: Self-Improvement Loop', '3.3: Final Certification']
+    },
+    {
+        id: 'phase-4',
+        title: 'Phase 4: Reality-Grounded Integration & Robotics',
+        description: 'Anchoring GME reasoning in sensory-motor data and real-time physical constraints.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['4.1: Embodied Sensory Fusion (GEA)', '4.2: Sim-to-Real Transfer (Physics/Eng)', '4.3: Real-Time Causal Observation']
+    },
+    {
+        id: 'phase-5',
+        title: 'Phase 5: Multi-Agent Societal Simulations',
+        description: 'Moving to a "society of GMEs" to observe emergent social, economic, and political behaviors.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['5.1: Agent-Based Macro-Modeling (ABM)', '5.2: Collaborative Expert Negotiation', '5.3: Language & Dialect Evolution']
+    },
+    {
+        id: 'phase-6',
+        title: 'Phase 6: Recursive Self-Architecting',
+        description: 'Transitioning from updating weights to updating architecture (NAS, Expert Spawning).',
+        progress: 0,
+        status: 'pending',
+        tasks: ['6.1: Neural Architecture Search (NAS)', '6.2: Expert Spawning', '6.3: Synaptic Growth Optimization']
+    },
+    {
+        id: 'phase-7',
+        title: 'Phase 7: Global-Scale Problem Solving (The "Oracle" Test)',
+        description: 'Applying GME to solve "Grand Challenges" like climate change and disease modeling.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['7.1: Climate & Ecological Engineering', '7.2: Universal Disease Modeling', '7.3: Ethical Policy Synthesis']
+    },
+    {
+        id: 'phase-8',
+        title: 'Phase 8: Transcendental Reasoning & Meta-Philosophy',
+        description: 'Addressing the "Hard Problem of Consciousness" and internal logic verification.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['8.1: Formal Self-Verification', '8.2: Metacognitive Intuition', '8.3: Universal Ethics Alignment']
+    },
+    {
+        id: 'phase-9',
+        title: 'Phase 9: Hardware-Software Co-Evolution',
+        description: 'Transitioning to neuromorphic and quantum-secure infrastructure.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['9.1: Neuromorphic Integration', '9.2: Quantum Acceleration']
+    },
+    {
+        id: 'phase-10',
+        title: 'Phase 10: Full AGI Realization & Deployment',
+        description: 'Autonomous, cross-domain mastery with human-level safety and alignment.',
+        progress: 0,
+        status: 'pending',
+        tasks: ['10.1: Continuous AGI Loop', '10.2: The Alignment Anchor', '10.3: Final Certification (G-Score)']
     }
 ];
 
@@ -58,12 +114,31 @@ const AgiTrainingSimulationRoadmap: React.FC = () => {
         if (savedState) {
             try {
                 const parsed = JSON.parse(savedState);
-                setStages(parsed.stages);
-                setIsTraining(parsed.isTraining);
-                setLogs(parsed.logs);
+                
+                // Check if we have new phases to add (Migration logic)
+                if (parsed.stages && parsed.stages.length < INITIAL_STAGES.length) {
+                    console.log("Migrating roadmap state: Adding new phases...");
+                    const mergedStages = [
+                        ...parsed.stages, 
+                        ...INITIAL_STAGES.slice(parsed.stages.length)
+                    ];
+                    setStages(mergedStages);
+                } else {
+                    setStages(parsed.stages);
+                }
+                
+                // Force training to start as per user request
+                setIsTraining(true);
+                setLogs(parsed.logs || []);
             } catch (e) {
                 console.error("Failed to load training state", e);
+                // Fallback to initial state
+                setStages(INITIAL_STAGES);
+                setIsTraining(true);
             }
+        } else {
+            // No saved state, start fresh
+            setIsTraining(true);
         }
     }, []);
 
@@ -186,7 +261,7 @@ const AgiTrainingSimulationRoadmap: React.FC = () => {
             {/* Main Content */}
             <div className="flex-grow flex flex-col md:flex-row overflow-hidden">
                 {/* Stages List */}
-                <div className="w-full md:w-2/3 p-4 overflow-y-auto space-y-4">
+                <div className="w-full md:w-3/4 p-4 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4">
                     {stages.map((stage) => (
                         <div key={stage.id} className={`p-4 rounded-lg border ${stage.status === 'active' ? 'bg-cyan-900/20 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.1)]' : 'bg-black/40 border-gray-700 opacity-80'}`}>
                             <div className="flex justify-between items-start mb-2">
@@ -223,7 +298,7 @@ const AgiTrainingSimulationRoadmap: React.FC = () => {
                 </div>
 
                 {/* Logs & Patches Panel */}
-                <div className="w-full md:w-1/3 bg-black/60 border-l border-cyan-500/30 flex flex-col">
+                <div className="w-full md:w-1/4 bg-black/60 border-l border-cyan-500/30 flex flex-col">
                     <div className="p-2 border-b border-cyan-900/50 text-[10px] font-bold text-cyan-500 uppercase tracking-widest flex items-center gap-2">
                         <DatabaseIcon className="w-3 h-3" /> System Logs & Patches
                     </div>
