@@ -1,0 +1,59 @@
+{
+    "name":  "qcos-dashboard",
+    "version":  "4.2.0",
+    "description":  "Quantum Computing Operating System Dashboard",
+    "repository":  {
+                       "type":  "git",
+                       "url":  "https://github.com/alast27-cyber/QCOS-chips"
+                   },
+    "type":  "module",
+    "scripts":  {
+                    "dev":  "tsx server.ts",
+                    "build":  "tsc \u0026\u0026 vite build",
+                    "preview":  "vite preview",
+                    "lint":  "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+                    "cleanup":  "node scripts/cleanup.js",
+                    "electron":  "electron .",
+                    "build:web":  "react-scripts build",
+                    "build:electron":  "react-scripts build \u0026\u0026 electron-builder"
+                },
+    "dependencies":  {
+                         "@monaco-editor/react":  "^4.6.0",
+                         "@tailwindcss/vite":  "^4.2.0",
+                         "@webcontainer/api":  "^1.1.0",
+                         "cors":  "^2.8.6",
+                         "express":  "^5.2.1",
+                         "jszip":  "^3.10.1",
+                         "lucide-react":  "^0.263.1",
+                         "react":  "^18.2.0",
+                         "react-dom":  "^18.2.0",
+                         "react-markdown":  "^9.0.1",
+                         "recharts":  "^2.13.0",
+                         "vite-plugin-monaco-editor":  "^1.1.0"
+                     },
+    "devDependencies":  {
+                            "@types/cors":  "^2.8.19",
+                            "@types/express":  "^5.0.6",
+                            "@types/node":  "^20.19.37",
+                            "@types/react":  "^18.2.0",
+                            "@types/react-dom":  "^18.2.0",
+                            "@typescript-eslint/eslint-plugin":  "^8.56.0",
+                            "@typescript-eslint/parser":  "^8.56.0",
+                            "@vitejs/plugin-react":  "^4.2.0",
+                            "autoprefixer":  "^10.4.16",
+                            "electron":  "^40.8.0",
+                            "electron-builder":  "^26.8.1",
+                            "electron-is-dev":  "^3.0.1",
+                            "eslint":  "^9.39.3",
+                            "eslint-plugin-react-hooks":  "^7.0.1",
+                            "eslint-plugin-react-refresh":  "^0.5.0",
+                            "globals":  "^17.3.0",
+                            "postcss":  "^8.4.31",
+                            "tailwindcss":  "^4.2.0",
+                            "tsx":  "^4.21.0",
+                            "typescript":  "^5.2.2",
+                            "typescript-eslint":  "^8.56.0",
+                            "vite":  "^5.0.0"
+                        },
+    "main":  "electron/main.ts"
+}

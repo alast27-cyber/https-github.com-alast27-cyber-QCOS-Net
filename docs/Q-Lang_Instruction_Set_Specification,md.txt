@@ -1,0 +1,198 @@
+Q-Lang Instruction Set Specification
+
+Q-Lang is the secure, compiled quantum assembly language contained within the Payload Block of a CHIPS packet. It is a high-level assembly optimized for clarity, security, and direct mapping to universal gate sets, making it hardware-agnostic at the compiler level.
+
+Q-Lang instructions follow a strict, standardized format: [INSTRUCTION TYPE] [OPERAND::VALUE] [TARGET_REGISTER].
+
+I. Resource Allocation Directives (The Header)
+
+These directives define the quantum and classical resources required for the job and must appear at the beginning of the Q-Lang script.
+
+Directive
+
+Syntax
+
+Description
+
+Quantum Register
+
+QREG ALLOC <count>
+
+Allocates <count> number of physical Qubits (Q[0] up to Q[count-1]) on the DQN hardware.
+
+Classical Register
+
+CREG ALLOC <count>
+
+Allocates <count> number of Classical Bits (C[0] up to C[count-1]) used to store measurement results and loop counters.
+
+Example:
+
+QREG ALLOC 5
+CREG ALLOC 3
+
+
+II. Core Execution Operands (Quantum Gates)
+
+These are the fundamental operations executed by the QEM's Control Electronics. All quantum operations use the keyword EXECUTE.
+
+A. Single-Qubit Operations
+
+Operand
+
+Gate
+
+Syntax
+
+Description
+
+OP::H
+
+Hadamard
+
+EXECUTE OP::H Q[i]
+
+Puts Qubit i into a superposition state ($\frac{
+
+OP::X
+
+Pauli-X (NOT)
+
+EXECUTE OP::X Q[i]
+
+Flips the state of Qubit i ($
+
+OP::Z
+
+Pauli-Z
+
+EXECUTE OP::Z Q[i]
+
+Applies a phase flip to the $
+
+OP::S
+
+Phase (P)
+
+EXECUTE OP::S Q[i]
+
+Applies the $\pi/2$ phase gate.
+
+OP::T
+
+$\pi/8$ Gate
+
+EXECUTE OP::T Q[i]
+
+Applies the $\pi/4$ phase gate.
+
+OP::Rz
+
+Rotation Z
+
+EXECUTE OP::RZ Q[i] <angle>
+
+Rotates the state vector around the Z-axis by <angle> radians.
+
+B. Multi-Qubit (Entangling) Operations
+
+These gates are crucial for creating entanglement and complex computation.
+
+Operand
+
+Gate
+
+Syntax
+
+Description
+
+OP::CNOT
+
+Controlled-NOT
+
+EXECUTE OP::CNOT Q[c], Q[t]
+
+Flips target qubit t if control qubit c is $
+
+OP::SWAP
+
+Swap Gate
+
+EXECUTE OP::SWAP Q[i], Q[j]
+
+Swaps the quantum states of Qubit i and Qubit j.
+
+OP::TOFFOLI
+
+CCNOT
+
+EXECUTE OP::TOFFOLI Q[c1], Q[c2], Q[t]
+
+Flips target t if both controls c1 and c2 are $
+
+OP::C4Z
+
+4-Control-Z
+
+EXECUTE OP::C4Z Q[c1], Q[c2], Q[c3], Q[c4]
+
+Applies a Z phase flip if all four control qubits are in the $
+
+III. Control Flow and Measurement
+
+These directives manage the script's flow and extract the final classical results.
+
+Directive
+
+Syntax
+
+Description
+
+MEASURE
+
+MEASURE Q[i] -> C[j]
+
+Performs a measurement on Qubit i, collapsing its state, and stores the resulting classical bit (0 or 1) in Classical Register j.
+
+BARRIER
+
+BARRIER Q[i], Q[j]
+
+A synchronization primitive. Prevents the QEM's optimizer from reordering gates across the barrier line.
+
+LOOP START
+
+@LABEL LOOP START <count>
+
+Defines the beginning of a code block to be executed exactly <count> times. Requires a unique @LABEL.
+
+LOOP END
+
+LOOP END
+
+Defines the end of the most recently started loop block.
+
+JUMP-IF
+
+JUMP-IF @LABEL C[i] == 1
+
+Conditional jump instruction. If Classical Register i holds 1, the program execution jumps to the defined @LABEL.
+
+IV. Q-Lang Script Example (Simple Entanglement)
+
+This script allocates two qubits, creates a Bell state ($|\Phi^+\rangle$), and measures the results.
+
+# --- 1. RESOURCE ALLOCATION ---
+QREG ALLOC 2
+CREG ALLOC 2
+
+# --- 2. PREPARATION (Create Bell State: Q[0] and Q[1] are entangled) ---
+EXECUTE OP::H Q[0]   # Put Q[0] in superposition
+EXECUTE OP::CNOT Q[0], Q[1] # Entangle Q[1] to Q[0]
+
+# --- 3. MEASUREMENT (Result will always be 00 or 11) ---
+MEASURE Q[0] -> C[0]
+MEASURE Q[1] -> C[1]
+
+# --- 4. FINISH ---
+END_JOB

@@ -1,0 +1,7 @@
+{
+  "name": "QCOS DASHBOARD",
+  "description": "A unified creative workspace powered by Google Gemini, featuring advanced chat reasoning, multimodal analysis, and image generation capabilities.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
