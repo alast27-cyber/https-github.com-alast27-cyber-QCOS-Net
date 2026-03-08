@@ -9,6 +9,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
+    "start": "node server.ts",
     "build": "tsc && vite build",
     "build:web": "tsc && vite build",
     "build:electron": "tsc && vite build && electron-builder",

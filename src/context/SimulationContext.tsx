@@ -1033,9 +1033,19 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         addToast(active ? "Grand Universe Simulator entangled with QCOS Kernel." : "Kernel link decoupled.", active ? 'success' : 'warning');
     }, [addToast]);
 
-    const toggleUniverseToAgentQ = useCallback((active: boolean) => {
-        setUniverseConnections(prev => ({ ...prev, agentQ: active }));
-        addToast(active ? "Grand Universe Simulator bridged to Agent Q Cognition." : "Agent Q link decoupled.", active ? 'success' : 'warning');
+    const toggleUniverseToAgentQ = useCallback(async (active: boolean) => {
+        try {
+            const res = await fetch('/api/universe/entangle/agentq', { method: 'POST' });
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const data = await res.json();
+            
+            setUniverseConnections(prev => ({ ...prev, agentQ: data.isEntangled }));
+            addToast(data.isEntangled ? "Grand Universe Simulator bridged to Agent Q Cognition." : "Agent Q link decoupled.", data.isEntangled ? 'success' : 'warning');
+        } catch (e) {
+            console.error("Failed to toggle universe entanglement", e);
+            // Fallback to local state if API fails (for demo purposes)
+            setUniverseConnections(prev => ({ ...prev, agentQ: active }));
+        }
     }, [addToast]);
 
     const toggleSourceEntanglement = useCallback(async (id: string | 'ALL') => {

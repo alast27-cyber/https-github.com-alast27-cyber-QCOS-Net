@@ -19,7 +19,7 @@ const POSSIBLE_ACTIONS = [
 ];
 
 const QcosDashboard: React.FC = () => {
-    const { qiaiIps, universeConnections } = useSimulation();
+    const { qiaiIps, universeConnections, toggleUniverseToAgentQ } = useSimulation();
     const [orbitingFiles, setOrbitingFiles] = useState<{ id: number; name: string; angle: number; radius: number; speed: number }[]>([]);
     const [predictedActions, setPredictedActions] = useState<string[]>([
         "Optimize Workspace Memory",
@@ -175,13 +175,30 @@ const QcosDashboard: React.FC = () => {
                                 <div className="h-48 bg-black/60 border border-purple-500/30 rounded-xl p-4 relative overflow-hidden group">
                                     <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/cosmos/400/300')] bg-cover bg-center opacity-30 group-hover:opacity-50 transition-opacity duration-700 mix-blend-screen"></div>
                                     <div className="relative z-10 h-full flex flex-col">
-                                        <div className="text-[10px] font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2 mb-2">
-                                            <GalaxyIcon className="w-4 h-4" /> Grand Universe Feed
+                                        <div className="flex justify-between items-center mb-2">
+                                            <div className="text-[10px] font-bold text-purple-400 uppercase tracking-widest flex items-center gap-2">
+                                                <GalaxyIcon className="w-4 h-4" /> Grand Universe Feed
+                                            </div>
+                                            <button 
+                                                onClick={() => toggleUniverseToAgentQ(!universeConnections.agentQ)}
+                                                className={`text-[8px] px-2 py-0.5 rounded border transition-all ${universeConnections.agentQ ? 'bg-purple-500/30 border-purple-400 text-purple-200 animate-pulse' : 'bg-black/50 border-gray-700 text-gray-500 hover:border-purple-500/50'}`}
+                                            >
+                                                {universeConnections.agentQ ? 'ENTANGLED' : 'ENTANGLE'}
+                                            </button>
                                         </div>
-                                        <div className="flex-grow flex items-end">
+                                        
+                                        {/* Entanglement Visual Beam */}
+                                        {universeConnections.agentQ && (
+                                            <div className="absolute left-1/2 bottom-0 w-1 h-full bg-gradient-to-t from-cyan-400 via-purple-500 to-transparent opacity-50 blur-sm animate-pulse z-0"></div>
+                                        )}
+
+                                        <div className="flex-grow flex items-end z-10">
                                             <div className="bg-black/80 backdrop-blur-sm p-2 rounded border border-purple-900/50 w-full">
                                                 <div className="text-[9px] text-purple-300 font-mono">SECTOR 7G: Stellar Nucleosynthesis</div>
                                                 <div className="text-[8px] text-gray-500 mt-1">Simulating 10^24 permutations...</div>
+                                                {universeConnections.agentQ && (
+                                                    <div className="text-[8px] text-cyan-400 mt-1 animate-pulse">&gt;&gt; Streaming Quantum Data to AgentQ...</div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

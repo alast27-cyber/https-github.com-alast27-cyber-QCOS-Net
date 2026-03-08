@@ -16,16 +16,19 @@ const BackendMonitor: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [lastUpdate, setLastUpdate] = useState(new Date());
 
+    const [system, setSystem] = useState<any>(null);
+
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const [roadmapRes, qceRes, ingestionRes, securityRes, podsRes, insightsRes] = await Promise.all([
+            const [roadmapRes, qceRes, ingestionRes, securityRes, podsRes, insightsRes, systemRes] = await Promise.all([
                 fetch('/api/roadmap').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
                 fetch('/api/qce').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
                 fetch('/api/ingestion').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
                 fetch('/api/security').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
                 fetch('/api/gateway/pods').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
-                fetch('/api/agentq/insights').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); })
+                fetch('/api/agentq/insights').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+                fetch('/api/system/monitor').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); })
             ]);
 
             setRoadmap(roadmapRes);
@@ -34,6 +37,7 @@ const BackendMonitor: React.FC = () => {
             setSecurity(securityRes);
             setPods(podsRes);
             setInsights(insightsRes);
+            setSystem(systemRes);
             setLastUpdate(new Date());
         } catch (error) {
             console.error("Failed to fetch backend data:", error);
@@ -207,6 +211,86 @@ const BackendMonitor: React.FC = () => {
                                         <div className="h-full bg-cyan-500" style={{ width: `${pod.load}%` }}></div>
                                     </div>
                                 </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* System Monitor */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="bg-black/60 p-4 rounded-xl border border-cyan-900/30 flex flex-col gap-4">
+                    <h3 className="text-xs font-black text-cyan-300 flex items-center gap-2 uppercase tracking-widest border-b border-cyan-900/30 pb-2">
+                        <CpuIcon className="w-4 h-4" /> System Resources
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                            <p className="text-[10px] text-gray-500 uppercase font-bold">CPU Usage</p>
+                            <div className="flex items-end gap-2">
+                                <span className="text-2xl font-mono text-cyan-400">{system?.cpu?.usage.toFixed(1)}%</span>
+                                <span className="text-[10px] text-gray-600 mb-1">{system?.cpu?.cores.length} Cores</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-gray-900 rounded-full overflow-hidden mt-2">
+                                <div className="h-full bg-cyan-500 transition-all duration-500" style={{ width: `${system?.cpu?.usage}%` }}></div>
+                            </div>
+                        </div>
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                            <p className="text-[10px] text-gray-500 uppercase font-bold">Memory Usage</p>
+                            <div className="flex items-end gap-2">
+                                <span className="text-2xl font-mono text-purple-400">{(system?.memory?.used / 1024).toFixed(1)}GB</span>
+                                <span className="text-[10px] text-gray-600 mb-1">/ {(system?.memory?.total / 1024).toFixed(1)}GB</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-gray-900 rounded-full overflow-hidden mt-2">
+                                <div className="h-full bg-purple-500 transition-all duration-500" style={{ width: `${(system?.memory?.used / system?.memory?.total) * 100}%` }}></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                            <p className="text-[10px] text-gray-500 uppercase font-bold">Network I/O</p>
+                            <div className="flex justify-between items-center mt-1">
+                                <span className="text-xs text-green-400">RX: {system?.network?.rx.toFixed(1)} MB/s</span>
+                                <span className="text-xs text-blue-400">TX: {system?.network?.tx.toFixed(1)} MB/s</span>
+                            </div>
+                        </div>
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                            <p className="text-[10px] text-gray-500 uppercase font-bold">System Uptime</p>
+                            <p className="text-lg font-mono text-white mt-1">{new Date(system?.uptime * 1000).toISOString().substr(11, 8)}</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                            <p className="text-[10px] text-gray-500 uppercase font-bold">API Requests</p>
+                            <p className="text-lg font-mono text-cyan-400 mt-1">{system?.api?.requests || 0}</p>
+                        </div>
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                            <p className="text-[10px] text-gray-500 uppercase font-bold">Avg Latency</p>
+                            <p className="text-lg font-mono text-yellow-400 mt-1">{(system?.api?.avgLatency || 0).toFixed(1)}ms</p>
+                        </div>
+                        <div className="bg-black/40 p-3 rounded-lg border border-white/5">
+                            <p className="text-[10px] text-gray-500 uppercase font-bold">Errors</p>
+                            <p className={`text-lg font-mono mt-1 ${system?.api?.errors > 0 ? 'text-red-500' : 'text-green-500'}`}>{system?.api?.errors || 0}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-black/60 p-4 rounded-xl border border-cyan-900/30 flex flex-col gap-4">
+                    <h3 className="text-xs font-black text-cyan-300 flex items-center gap-2 uppercase tracking-widest border-b border-cyan-900/30 pb-2">
+                        <ActivityIcon className="w-4 h-4" /> Active Processes
+                    </h3>
+                    <div className="overflow-y-auto max-h-48 custom-scrollbar space-y-1">
+                        <div className="grid grid-cols-4 text-[8px] text-gray-500 uppercase font-bold px-2 mb-1">
+                            <span>PID</span>
+                            <span>Name</span>
+                            <span>CPU%</span>
+                            <span>Status</span>
+                        </div>
+                        {system?.processes.map((proc: any) => (
+                            <div key={proc.pid} className="grid grid-cols-4 text-[10px] p-2 bg-black/40 border border-white/5 rounded hover:bg-white/5 transition-colors">
+                                <span className="font-mono text-gray-400">{proc.pid}</span>
+                                <span className="text-cyan-300 font-bold">{proc.name}</span>
+                                <span className="font-mono text-white">{proc.cpu}%</span>
+                                <span className={`text-[8px] uppercase ${proc.status === 'Running' ? 'text-green-400' : 'text-gray-500'}`}>{proc.status}</span>
                             </div>
                         ))}
                     </div>

@@ -1,6 +1,13 @@
 import express from "express";
 import cors from "cors";
 import { createServer as createViteServer } from "vite";
+import { fileURLToPath } from 'url';
+import path from 'path';
+import { startSystemMonitor, systemMonitorState, trackRequest } from './server/services/monitor.ts';
+import { startRoadmapSimulation, roadmapState, INITIAL_ROADMAP_STAGES } from './server/services/roadmap.ts';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
@@ -9,64 +16,29 @@ async function startServer() {
   app.use(cors());
   app.use(express.json());
 
-  // Request Logging Middleware
+  // Start Services
+  startSystemMonitor();
+  startRoadmapSimulation();
+
+  // Request Logging Middleware & Metrics
   app.use((req, res, next) => {
+    const start = Date.now();
     if (req.url.startsWith('/api')) {
       console.log(`[API] ${req.method} ${req.url}`);
     }
+    
+    res.on('finish', () => {
+        if (req.url.startsWith('/api')) {
+            const duration = Date.now() - start;
+            trackRequest(duration, res.statusCode >= 400);
+        }
+    });
+    
     next();
   });
 
   // --- AGI Roadmap State ---
-  const INITIAL_ROADMAP_STAGES = [
-    {
-        id: 'phase-1',
-        title: 'Phase 1: Foundation & MoE Architecture',
-        description: 'Mixture-of-Experts (MoE) implementation, Sparse Activation, and Expert Specialization.',
-        progress: 100,
-        status: 'completed',
-        tasks: ['Model Scaling & Efficiency', 'Expert Specialization (S\'MoRE)', 'Multimodal Integration']
-    },
-    {
-        id: 'phase-2',
-        title: 'Phase 2: Multi-Domain Generalization',
-        description: 'Scientific Reasoning, Life Sciences, and Ethical Alignment.',
-        progress: 45,
-        status: 'active',
-        tasks: ['2.3: Scientific Reasoning (Causal Modeling)', '2.4: Life Sciences (GNNs, ABM)', '2.5: Philosophy & Alignment (Ethical Guardrails)']
-    },
-    {
-        id: 'phase-3',
-        title: 'Phase 3: Generalization, Autonomy, Refinement',
-        description: 'Cross-Domain Stress Testing, Self-Improvement Loop, and Final Certification.',
-        progress: 0,
-        status: 'pending',
-        tasks: ['3.1: Cross-Domain Stress Testing', '3.2: Self-Improvement Loop', '3.3: Final Certification']
-    },
-    {
-        id: 'phase-4',
-        title: 'Phase 4: Reality-Grounded Integration & Robotics',
-        description: 'Anchoring GME reasoning in sensory-motor data and real-time physical constraints.',
-        progress: 0,
-        status: 'pending',
-        tasks: ['4.1: Embodied Sensory Fusion (GEA)', '4.2: Sim-to-Real Transfer (Physics/Eng)', '4.3: Real-Time Causal Observation']
-    },
-    {
-        id: 'phase-5',
-        title: 'Phase 5: Multi-Agent Societal Simulations',
-        description: 'Moving to a "society of GMEs" to observe emergent social, economic, and political behaviors.',
-        progress: 0,
-        status: 'pending',
-        tasks: ['5.1: Agent-Based Macro-Modeling (ABM)', '5.2: Collaborative Expert Negotiation', '5.3: Language & Dialect Evolution']
-    }
-  ];
-
-  const roadmapState = {
-    stages: [...INITIAL_ROADMAP_STAGES],
-    isTraining: true,
-    logs: [] as any[],
-    currentTask: 'Initializing Training Protocols...'
-  };
+  // (Moved to server/services/roadmap.ts)
 
   const qceState = {
     evolutionProgress: { QLLM: 0, QML: 0, QRL: 0, QGL: 0, QDL: 0 },
@@ -103,6 +75,13 @@ async function startServer() {
     ]
   };
 
+  const universeState = {
+    isEntangledWithAgentQ: false,
+    entropy: 0.5,
+    sector: '7G',
+    simulationDepth: '10^24'
+  };
+
   const qanState = {
     currentStage: 'idle',
     stageIndex: -1,
@@ -123,29 +102,7 @@ async function startServer() {
 
   // Background Training Loop
   setInterval(async () => {
-    // 1. Roadmap Training
-    if (roadmapState.isTraining) {
-      const activeIndex = roadmapState.stages.findIndex(s => s.status === 'active');
-      if (activeIndex !== -1) {
-        const activeStage = roadmapState.stages[activeIndex];
-        const increment = 0.5 + Math.random() * 1.5;
-        activeStage.progress = Math.min(100, activeStage.progress + increment);
-
-        if (activeStage.progress >= 100) {
-          activeStage.status = 'completed';
-          const nextIndex = activeIndex + 1;
-          if (nextIndex < roadmapState.stages.length) {
-            roadmapState.stages[nextIndex].status = 'active';
-            roadmapState.currentTask = `Starting ${roadmapState.stages[nextIndex].title}...`;
-          } else {
-            roadmapState.isTraining = false;
-            roadmapState.currentTask = 'AGI Training Complete.';
-          }
-        } else {
-          roadmapState.currentTask = `Training ${activeStage.title}: ${activeStage.progress.toFixed(1)}%`;
-        }
-      }
-    }
+    // 1. Roadmap Training (Moved to server/services/roadmap.ts)
 
     // 2. QCE Evolution
     const engines: Array<keyof typeof qceState.evolutionProgress> = ['QLLM', 'QML', 'QRL', 'QGL', 'QDL'];
@@ -232,29 +189,18 @@ async function startServer() {
       if (qllmState.lossHistory.length > 50) qllmState.lossHistory.shift();
     }
 
-    // Generate a "genuine" log using local heuristic every few steps
-    if (Math.random() > 0.8) {
-      const activeIndex = roadmapState.stages.findIndex(s => s.status === 'active');
-      const activeStage = activeIndex !== -1 ? roadmapState.stages[activeIndex] : null;
-      if (activeStage) {
-        const technicalTerms = ["Gradient", "Tensor", "Lattice", "Heuristic", "Entropy", "Weights", "Topology", "Vector", "Hilbert", "Qubit", "Entanglement", "Backprop", "Transformer", "MoE", "Expert"];
-        const actions = ["Optimizing", "Refining", "Converging", "Stabilizing", "Calibrating", "Initializing", "Validating", "Synchronizing", "Pruning", "Normalizing"];
-        const components = ["Cluster-7", "Node-Alpha", "Core-Lattice", "Semantic-Buffer", "Logic-Gate", "Neural-Fabric", "Memory-Array", "Compute-Grid"];
-        
-        const term = technicalTerms[Math.floor(Math.random() * technicalTerms.length)];
-        const action = actions[Math.floor(Math.random() * actions.length)];
-        const component = components[Math.floor(Math.random() * components.length)];
-        
-        const logMsg = `${action} ${term} on ${component} for ${activeStage.id.toUpperCase()}.`;
-        
-        roadmapState.logs.push({
-          timestamp: Date.now(),
-          message: logMsg,
-          type: Math.random() > 0.9 ? 'warning' : 'info'
-        });
-        if (roadmapState.logs.length > 50) roadmapState.logs.shift();
-      }
+    // 8. Universe Simulation & Entanglement
+    universeState.entropy += (Math.random() - 0.5) * 0.01;
+    if (universeState.isEntangledWithAgentQ) {
+        // Entanglement stabilizes entropy and boosts AgentQ efficiency
+        universeState.entropy = universeState.entropy * 0.95; 
+        // Simulate data exchange
+        if (Math.random() > 0.7) {
+            universeState.simulationDepth = `10^${Math.floor(24 + Math.random() * 5)}`;
+        }
     }
+
+    // Roadmap logs are now handled in server/services/roadmap.ts
   }, 5000);
 
   app.get("/api/roadmap", (req, res) => res.json(roadmapState));
@@ -512,8 +458,22 @@ async function startServer() {
   });
 
   app.get("/api/agentq/insights", (req, res) => {
-      res.json({ message: "AgentQ insights", data: { efficiency: 0.95, load: 0.12 } });
+      let efficiency = 0.95;
+      let load = 0.12;
+      
+      if (universeState.isEntangledWithAgentQ) {
+          efficiency = 0.999; // Super-efficiency
+          load = 0.45; // Higher load due to universe simulation
+      }
+      
+      res.json({ 
+          message: "AgentQ insights", 
+          data: { efficiency, load, entangled: universeState.isEntangledWithAgentQ } 
+      });
   });
+
+  // --- Real-Time System Monitor API ---
+  app.get("/api/system/monitor", (req, res) => res.json(systemMonitorState));
 
   // API 404 Handler - Prevent falling through to Vite SPA
   app.use('/api/*', (req, res) => {
@@ -528,6 +488,12 @@ async function startServer() {
       appType: "spa",
     });
     app.use(vite.middlewares);
+  } else {
+    // Production: Serve static files from dist
+    app.use(express.static(path.join(__dirname, 'dist')));
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    });
   }
 
   app.listen(PORT, "0.0.0.0", () => {

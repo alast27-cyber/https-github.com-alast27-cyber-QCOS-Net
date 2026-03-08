@@ -5,6 +5,7 @@ import QuantumLargeLanguageModel from './QuantumLargeLanguageModel';
 import QuantumMachineLearning from './QuantumMachineLearning';
 import QuantumReinforcementLearning from './QuantumReinforcementLearning';
 import QuantumDeepLearning from './QuantumDeepLearning';
+import QuantumGenerativeLearningModel from './QuantumGenerativeLearningModel';
 
 const GusDash: React.FC = () => {
     return (
@@ -45,6 +46,9 @@ const GusDash: React.FC = () => {
                 </div>
                 <div className="h-[400px]">
                     <QuantumDeepLearning />
+                </div>
+                <div className="h-[400px]">
+                    <QuantumGenerativeLearningModel />
                 </div>
             </div>
         </div>
