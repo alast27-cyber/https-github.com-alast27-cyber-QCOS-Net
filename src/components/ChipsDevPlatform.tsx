@@ -15,6 +15,7 @@ import {
     SettingsIcon, StarIcon, PencilSquareIcon, BugAntIcon, ChevronDownIcon, ChevronUpIcon,
     ArrowPathIcon, LayersIcon, NetworkIcon, CloudServerIcon
 } from './Icons';
+import { UniversalBridge } from '../bridge/UniversalBridge';
 import { STANDARD_QLANG_TEMPLATES, QLangTemplate } from '../utils/agentUtils';
 import { SystemHealth, UIStructure } from '../types';
 import { useToast } from '../context/ToastContext';
@@ -294,8 +295,6 @@ const NavButton: React.FC<{ active: boolean; onClick: () => void; icon: any; lab
     </button>
 );
 
-import { UniversalBridge } from '../bridge/UniversalBridge';
-
 const Terminal: React.FC<{ onLog: (msg: string) => void }> = ({ onLog }) => {
     const [input, setInput] = useState('');
     const [history, setHistory] = useState<string[]>(['QCOS Neural-Shell v4.5.0', 'Type "help" for a list of available commands.']);
@@ -319,7 +318,7 @@ const Terminal: React.FC<{ onLog: (msg: string) => void }> = ({ onLog }) => {
             try {
                 // Neural Terminal Logic: Execute via Universal Bridge
                 // This handles both Electron (PowerShell) and Web (Mock) environments
-                const result = await UniversalBridge.runPowerShell(cmd);
+                const result: { output: string; error: boolean } = await UniversalBridge.runPowerShell(cmd);
                 
                 if (result.error) {
                     newHistory.push(`ERROR: ${result.output}`);

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { electronBridge } from '../services/electronBridge';
+import { UniversalBridge } from '../bridge/UniversalBridge';
 
 interface PersistenceContextType {
     saveWeights: (weights: any) => Promise<void>;
@@ -14,7 +14,7 @@ export const PersistenceProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     const saveWeights = async (weights: any) => {
         try {
-            const result = await electronBridge.saveWeights(weights);
+            const result = await UniversalBridge.saveWeights(weights);
             if (result.success) {
                 setLastSaved(new Date().toISOString());
                 console.log("[PERSISTENCE] Weights saved to:", result.path);

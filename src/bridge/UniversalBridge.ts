@@ -1,13 +1,11 @@
-// Define the shape of our bridge to match the Main process logic
+import { ElectronBridge } from '../types/electron';
+
+// Define the shape of our bridge
 export interface IUniversalBridge {
     isElectron: boolean;
     installChips: () => Promise<{ success: boolean; message: string }>;
-    // Updated to match the { status, details } shape from main.ts
-    monitorPillars: () => Promise<{ 
-        status: string; 
-        details: { file: string; exists: boolean; isGrounded: boolean }[] 
-    }>;
-    runPowerShell: (command: string) => Promise<string>; // Main.ts returns a raw string
+    monitorPillars: () => Promise<{ name: string; status: string; integrity: number }[]>;
+    runPowerShell: (command: string) => Promise<{ output: string; error: boolean }>;
     saveWeights: (weights: any) => Promise<{ success: boolean; path: string; error?: string }>;
 }
 
@@ -15,24 +13,30 @@ export interface IUniversalBridge {
 const WebMockBridge: IUniversalBridge = {
     isElectron: false,
     installChips: async () => {
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        console.log("[WEB-MOCK] Simulating Chips Browser Installation...");
+        await new Promise(resolve => setTimeout(resolve, 2000));
         return { success: true, message: "Cloud Preview Installation Complete" };
     },
     monitorPillars: async () => {
-        return {
-            status: "CLOUD_SIM",
-            details: [
-                { file: 'ChipsBrowser.exe', exists: true, isGrounded: true },
-                { file: 'AgentCommandConsole.exe', exists: true, isGrounded: true },
-                { file: 'EKSBridgeService.exe', exists: true, isGrounded: true },
-                { file: 'qlang.exe', exists: true, isGrounded: true }
-            ]
-        };
+        console.log("[WEB-MOCK] Simulating Pillar Monitoring...");
+        // Return simulated data for the web preview
+        return [
+            { name: 'pillar_alpha.dat', status: 'CLOUD_SIM', integrity: 100 },
+            { name: 'pillar_beta.dat', status: 'CLOUD_SIM', integrity: 100 },
+            { name: 'pillar_gamma.dat', status: 'CLOUD_SIM', integrity: 100 },
+            { name: 'pillar_delta.dat', status: 'CLOUD_SIM', integrity: 100 }
+        ];
     },
     runPowerShell: async (command: string) => {
-        return `[CLOUD_PREVIEW] Simulated response for: ${command}\n> Physical hardware not detected.\n> Operating in Neural Simulation mode.`;
+        console.log(`[WEB-MOCK] Executing Neural Simulation Command: ${command}`);
+        await new Promise(resolve => setTimeout(resolve, 800));
+        return { 
+            output: `[CLOUD_PREVIEW] Simulated execution of: ${command}\n> Neural pathways aligned.\n> Quantum state: SUPERPOSITION`, 
+            error: false 
+        };
     },
     saveWeights: async (weights: any) => {
+        console.log("[WEB-MOCK] Saving weights to LocalStorage:", weights);
         localStorage.setItem('qiai_weights', JSON.stringify(weights));
         return { success: true, path: 'browser_local_storage' };
     }
@@ -40,16 +44,21 @@ const WebMockBridge: IUniversalBridge = {
 
 // The Universal Bridge - Environment Aware
 export const UniversalBridge: IUniversalBridge = (() => {
-    // Check for the API exposed by our updated preload.ts
-    const api = (window as any).electronAPI;
+    // Check if running in Electron by looking for the exposed API
+    // Note: We use 'window.electron' based on previous setup, but user asked for 'window.electronAPI'
+    // Let's support both or stick to the requested one. The user requested 'window.electronAPI'.
+    // However, my previous steps set up 'window.electron'. I will update preload to expose 'electronAPI' as requested,
+    // or check for both to be safe. Let's stick to the user's request for 'electronAPI' in the new files.
+    
+    const electronAPI = (window as any).electronAPI;
 
-    if (api) {
+    if (electronAPI) {
         return {
             isElectron: true,
-            installChips: api.installChips,
-            monitorPillars: api.monitorPillars,
-            runPowerShell: api.runPowerShell,
-            saveWeights: api.saveWeights
+            installChips: electronAPI.installChips,
+            monitorPillars: electronAPI.monitorPillars,
+            runPowerShell: electronAPI.runPowerShell,
+            saveWeights: electronAPI.saveWeights
         };
     }
 
