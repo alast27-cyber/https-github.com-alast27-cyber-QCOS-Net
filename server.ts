@@ -3,8 +3,8 @@ import cors from "cors";
 import { createServer as createViteServer } from "vite";
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { startSystemMonitor, systemMonitorState, trackRequest } from './server/services/monitor.ts';
-import { startRoadmapSimulation, roadmapState, INITIAL_ROADMAP_STAGES } from './server/services/roadmap.ts';
+import { startSystemMonitor, systemMonitorState, trackRequest } from './server/services/monitor';
+import { startRoadmapSimulation, roadmapState, INITIAL_ROADMAP_STAGES } from './server/services/roadmap';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,6 +37,12 @@ async function startServer() {
     });
     
     next();
+  });
+
+  // Health Check
+  app.get("/api/health", (req, res) => {
+    console.log("[API] Health check hit");
+    res.json({ status: "ok", uptime: process.uptime() });
   });
 
   // --- AGI Roadmap State ---

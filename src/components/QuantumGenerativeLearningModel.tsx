@@ -10,7 +10,7 @@ const QuantumGenerativeLearningModel: React.FC = () => {
     const [isActive, setIsActive] = useState(false);
     const [creativity, setCreativity] = useState(0.7);
     const [metrics, setMetrics] = useState<{step: number, gLoss: number, dLoss: number}[]>([]);
-    const [generatedArtifacts, setGeneratedArtifacts] = useState<string[]>([]);
+    const [generatedArtifacts, setGeneratedArtifacts] = useState<{color: string, id: number}[]>([]);
     
     // Simulation Loop
     useEffect(() => {
@@ -27,7 +27,10 @@ const QuantumGenerativeLearningModel: React.FC = () => {
                 // Generate artifacts occasionally
                 if (Math.random() > 0.8) {
                     const colors = ['#a855f7', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6'];
-                    const newArtifact = colors[Math.floor(Math.random() * colors.length)];
+                    const newArtifact = {
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        id: Math.floor(Math.random() * 1000)
+                    };
                     setGeneratedArtifacts(prev => [newArtifact, ...prev].slice(0, 9));
                 }
             }, 500);
@@ -103,12 +106,12 @@ const QuantumGenerativeLearningModel: React.FC = () => {
                             <LayersIcon className="w-4 h-4" /> Latent Space Artifacts
                         </h4>
                         <div className="grid grid-cols-3 gap-2 flex-grow">
-                            {generatedArtifacts.map((color, i) => (
+                            {generatedArtifacts.map((artifact, i) => (
                                 <div key={i} className="rounded border border-white/10 animate-fade-in relative overflow-hidden group aspect-square">
-                                    <div className="absolute inset-0 opacity-50" style={{ backgroundColor: color }}></div>
+                                    <div className="absolute inset-0 opacity-50" style={{ backgroundColor: artifact.color }}></div>
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                                     <div className="absolute bottom-1 left-1 text-[8px] font-mono text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                        GEN-{Math.floor(Math.random() * 1000)}
+                                        GEN-{artifact.id}
                                     </div>
                                 </div>
                             ))}
