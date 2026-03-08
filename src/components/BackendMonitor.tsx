@@ -19,25 +19,33 @@ const BackendMonitor: React.FC = () => {
     const [system, setSystem] = useState<any>(null);
 
     const fetchData = async () => {
-        setIsLoading(true);
+        // Don't set isLoading(true) here to avoid flashing on every update
         try {
-            const [roadmapRes, qceRes, ingestionRes, securityRes, podsRes, insightsRes, systemRes] = await Promise.all([
-                fetch('/api/roadmap').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
-                fetch('/api/qce').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
-                fetch('/api/ingestion').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
-                fetch('/api/security').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
-                fetch('/api/gateway/pods').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
-                fetch('/api/agentq/insights').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
-                fetch('/api/system/monitor').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); })
-            ]);
+            const endpoints = [
+                '/api/roadmap',
+                '/api/qce',
+                '/api/ingestion',
+                '/api/security',
+                '/api/gateway/pods',
+                '/api/agentq/insights',
+                '/api/system/monitor'
+            ];
 
-            setRoadmap(roadmapRes);
-            setQce(qceRes);
-            setIngestion(ingestionRes);
-            setSecurity(securityRes);
-            setPods(podsRes);
-            setInsights(insightsRes);
-            setSystem(systemRes);
+            const results = await Promise.allSettled(endpoints.map(url => fetch(url).then(r => {
+                if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+                return r.json();
+            })));
+
+            const [roadmapRes, qceRes, ingestionRes, securityRes, podsRes, insightsRes, systemRes] = results;
+
+            if (roadmapRes.status === 'fulfilled') setRoadmap(roadmapRes.value);
+            if (qceRes.status === 'fulfilled') setQce(qceRes.value);
+            if (ingestionRes.status === 'fulfilled') setIngestion(ingestionRes.value);
+            if (securityRes.status === 'fulfilled') setSecurity(securityRes.value);
+            if (podsRes.status === 'fulfilled') setPods(podsRes.value);
+            if (insightsRes.status === 'fulfilled') setInsights(insightsRes.value);
+            if (systemRes.status === 'fulfilled') setSystem(systemRes.value);
+            
             setLastUpdate(new Date());
         } catch (error) {
             console.error("Failed to fetch backend data:", error);

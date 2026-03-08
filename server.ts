@@ -17,8 +17,10 @@ async function startServer() {
   app.use(express.json());
 
   // Start Services
+  console.log("Starting QCOS Backend Services...");
   startSystemMonitor();
   startRoadmapSimulation();
+  console.log("System Monitor & Roadmap Simulation Active.");
 
   // Request Logging Middleware & Metrics
   app.use((req, res, next) => {
