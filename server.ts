@@ -9,6 +9,14 @@ async function startServer() {
   app.use(cors());
   app.use(express.json());
 
+  // Request Logging Middleware
+  app.use((req, res, next) => {
+    if (req.url.startsWith('/api')) {
+      console.log(`[API] ${req.method} ${req.url}`);
+    }
+    next();
+  });
+
   // --- AGI Roadmap State ---
   const INITIAL_ROADMAP_STAGES = [
     {
@@ -505,6 +513,12 @@ async function startServer() {
 
   app.get("/api/agentq/insights", (req, res) => {
       res.json({ message: "AgentQ insights", data: { efficiency: 0.95, load: 0.12 } });
+  });
+
+  // API 404 Handler - Prevent falling through to Vite SPA
+  app.use('/api/*', (req, res) => {
+    console.log(`[API] 404 Not Found: ${req.method} ${req.url}`);
+    res.status(404).json({ error: `API endpoint not found: ${req.method} ${req.url}` });
   });
 
   // Vite middleware for development

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, session } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as child_process from 'child_process';
@@ -6,6 +6,16 @@ import * as child_process from 'child_process';
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow() {
+  // Set Content Security Policy
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': ["default-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:3000 ws://localhost:3000; img-src 'self' data: https:; font-src 'self' data: https:;"]
+      }
+    });
+  });
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -13,6 +23,9 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
+      sandbox: true,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
     },
     frame: false, // Cyber-punk frameless window
     backgroundColor: '#000000',

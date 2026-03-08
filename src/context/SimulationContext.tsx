@@ -696,6 +696,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const fetchRoadmap = async () => {
             try {
                 const res = await fetch('/api/roadmap');
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setRoadmapState(data);
             } catch (e) {
@@ -711,6 +712,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const fetchQce = async () => {
             try {
                 const res = await fetch('/api/qce');
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setQceState(data);
             } catch (e) {
@@ -726,6 +728,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const fetchFoundation = async () => {
             try {
                 const res = await fetch('/api/foundation');
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setTraining(prev => ({ ...prev, ...data }));
             } catch (e) {
@@ -741,6 +744,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const toggleRoadmapTraining = useCallback(async () => {
         try {
             const res = await fetch('/api/roadmap/toggle', { method: 'POST' });
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             const data = await res.json();
             setRoadmapState(prev => ({ ...prev, isTraining: data.isTraining }));
         } catch (e) {
@@ -751,6 +755,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const resetRoadmap = useCallback(async () => {
         try {
             const res = await fetch('/api/roadmap/reset', { method: 'POST' });
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             const data = await res.json();
             setRoadmapState(data);
         } catch (e) {
@@ -762,6 +767,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const fetchIngestion = async () => {
             try {
                 const res = await fetch('/api/ingestion');
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setDataIngestion(data);
             } catch (e) {
@@ -777,6 +783,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const fetchQllm = async () => {
             try {
                 const res = await fetch('/api/qllm');
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setQllm(data);
             } catch (e) {

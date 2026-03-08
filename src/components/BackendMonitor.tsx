@@ -20,12 +20,12 @@ const BackendMonitor: React.FC = () => {
         setIsLoading(true);
         try {
             const [roadmapRes, qceRes, ingestionRes, securityRes, podsRes, insightsRes] = await Promise.all([
-                fetch('/api/roadmap').then(r => r.json()),
-                fetch('/api/qce').then(r => r.json()),
-                fetch('/api/ingestion').then(r => r.json()),
-                fetch('/api/security').then(r => r.json()),
-                fetch('/api/gateway/pods').then(r => r.json()),
-                fetch('/api/agentq/insights').then(r => r.json())
+                fetch('/api/roadmap').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+                fetch('/api/qce').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+                fetch('/api/ingestion').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+                fetch('/api/security').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+                fetch('/api/gateway/pods').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); }),
+                fetch('/api/agentq/insights').then(r => { if (!r.ok) throw new Error(r.statusText); return r.json(); })
             ]);
 
             setRoadmap(roadmapRes);

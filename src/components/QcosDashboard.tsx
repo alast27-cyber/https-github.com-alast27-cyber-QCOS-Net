@@ -34,6 +34,7 @@ const QcosDashboard: React.FC = () => {
             interval = window.setInterval(async () => {
                 try {
                     const res = await fetch('/api/qcos/actions');
+                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                     const data = await res.json();
                     setPredictedActions(prev => {
                         const newActions = [...prev];
@@ -54,6 +55,7 @@ const QcosDashboard: React.FC = () => {
         const fetchFiles = async () => {
             try {
                 const res = await fetch('/api/qcos/files');
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const initialOrbiters = await res.json();
                 setOrbitingFiles(initialOrbiters);
             } catch (e) {
