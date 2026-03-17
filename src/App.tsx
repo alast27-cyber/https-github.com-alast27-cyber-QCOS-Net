@@ -71,6 +71,7 @@ import QcosDashboard from './components/QcosDashboard';
 import ChipsDash from './components/ChipsDash';
 import GusDash from './components/GusDash';
 import BackendMonitor from './components/BackendMonitor';
+import InstinctiveAI from './components/InstinctiveAI';
 
 const QCOS_VERSION = 4.51; // Triggering refresh
 
@@ -103,7 +104,7 @@ const DashboardContent: React.FC = () => {
   });
   const [isInstalled, setIsInstalled] = useState(() => localStorage.getItem('chips_browser_installed') === 'true'); 
   const [isImmersive, setIsImmersive] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'qcos' | 'chips' | 'gus' | 'backend'>('qcos');
+  const [currentPage, setCurrentPage] = useState<'qcos' | 'chips' | 'gus' | 'backend' | 'iai'>('qcos');
 
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const dashboardRef = useRef<HTMLDivElement>(null);
@@ -367,6 +368,7 @@ const DashboardContent: React.FC = () => {
           {currentPage === 'chips' && <ChipsDash />}
           {currentPage === 'gus' && <GusDash />}
           {currentPage === 'backend' && <BackendMonitor />}
+          {currentPage === 'iai' && <InstinctiveAI />}
       </div>
 
       {maximizedPanelId && (
@@ -410,6 +412,12 @@ const DashboardContent: React.FC = () => {
                       className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${currentPage === 'backend' ? 'bg-orange-500/20 text-orange-300 shadow-[0_0_10px_rgba(249,115,22,0.3)]' : 'text-orange-800 hover:text-orange-500'}`}
                   >
                       BACKEND
+                  </button>
+                  <button 
+                      onClick={() => setCurrentPage('iai')}
+                      className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${currentPage === 'iai' ? 'bg-indigo-500/20 text-indigo-300 shadow-[0_0_10px_rgba(99,102,241,0.3)]' : 'text-indigo-800 hover:text-indigo-500'}`}
+                  >
+                      IAI
                   </button>
               </div>
           </div>

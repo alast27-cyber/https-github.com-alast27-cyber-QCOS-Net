@@ -6,6 +6,8 @@ import { EntanglementProtocol } from '../qcos/entanglement';
 import { InstructionSetArchitecture } from '../qcos/isa';
 import { ChipsProtocol } from '../qcos/chips';
 import { QubitProtocol } from '../qcos/qubit';
+import { IMOS } from '../qcos/imos';
+import { InfonProtocol } from '../qcos/infon';
 
 // --- Types ---
 
@@ -242,6 +244,13 @@ export interface SimulationConfig {
     isUniverseActive: boolean; 
 }
 
+export interface IMOSState {
+    status: 'STABLE' | 'DEGRADED' | 'CRITICAL';
+    energyBudget: number;
+    infons: any[];
+    circuits: any[];
+}
+
 interface SimulationContextType {
     training: TrainingState;
     evolution: EvolutionState;
@@ -262,6 +271,8 @@ interface SimulationContextType {
     simConfig: SimulationConfig;
     singularityBoost: number; 
     roadmapState: RoadmapState; // New
+    imosState: IMOSState;
+    triggerIMOSInterrupt: (data: any) => void;
     // Protocols
     memoryProtocol: QuantumMemoryProtocol;
     entanglementProtocol: EntanglementProtocol;
@@ -691,6 +702,21 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         logs: [],
         currentTask: 'Initializing Training Protocols...'
     });
+
+    // --- IMOS State ---
+    const imos = useMemo(() => new IMOS(), []);
+    const [imosState, setImosState] = useState<IMOSState>(imos.getSystemState());
+
+    const triggerIMOSInterrupt = useCallback((data: any) => {
+        const result = imos.handleInterrupt(data);
+        setImosState(imos.getSystemState());
+        if (result.type === 'INSTINCTIVE') {
+            addToast(`IPS Match: ${result.action}`, 'success');
+        } else if (result.type === 'COGNITIVE') {
+            addToast(`CLL Activated: Synthesizing Instinct`, 'info');
+        }
+    }, [imos, addToast]);
+
     // --- Backend Sync Loops ---
     useEffect(() => {
         const fetchRoadmap = async () => {
@@ -1092,7 +1118,8 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             updateQIAIIPS,
             toggleUniverseToKernel, toggleUniverseToAgentQ,
             toggleSourceEntanglement,
-            roadmapState, toggleRoadmapTraining, resetRoadmap // New
+            roadmapState, toggleRoadmapTraining, resetRoadmap,
+            imosState, triggerIMOSInterrupt
         }}>
             {children}
         </SimulationContext.Provider>

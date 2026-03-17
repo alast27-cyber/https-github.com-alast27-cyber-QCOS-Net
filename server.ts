@@ -483,8 +483,39 @@ async function startServer() {
   // --- Real-Time System Monitor API ---
   app.get("/api/system/monitor", (req, res) => res.json(systemMonitorState));
 
+  // --- QCOS Dashboard API ---
+  app.get("/api/qcos/actions", (req, res) => {
+      const actions = [
+          "Optimize Workspace Memory",
+          "Draft Quantum-Encryption Script",
+          "Visualize System Data Traffic",
+          "Re-calibrate Neural Weights",
+          "Synchronize Parallel Universes",
+          "Purge Stale Cache Nodes",
+          "Analyze Sub-space Anomalies",
+          "Compile Holographic Interface",
+          "Deploy Security Countermeasures",
+          "Simulate Timeline Divergence",
+          "Establish Q-Link Protocol",
+          "Bypass Firewall Constraints"
+      ];
+      const action = actions[Math.floor(Math.random() * actions.length)];
+      res.json({ action });
+  });
+
+  app.get("/api/qcos/files", (req, res) => {
+      const files = [
+          { id: 1, name: 'kernel_v4.bin', angle: 0, radius: 120, speed: 0.01 },
+          { id: 2, name: 'neural_weights.qdat', angle: 2, radius: 150, speed: 0.008 },
+          { id: 3, name: 'security_log.txt', angle: 4, radius: 180, speed: 0.005 },
+          { id: 4, name: 'universe_sync.cfg', angle: 1, radius: 200, speed: 0.012 },
+          { id: 5, name: 'agent_q_memory.dmp', angle: 5, radius: 220, speed: 0.007 }
+      ];
+      res.json(files);
+  });
+
   // API 404 Handler - Prevent falling through to Vite SPA
-  app.use('/api/*', (req, res) => {
+  app.use('/api/*all', (req, res) => {
     console.log(`[API] 404 Not Found: ${req.method} ${req.url}`);
     res.status(404).json({ error: `API endpoint not found: ${req.method} ${req.url}` });
   });
@@ -499,7 +530,7 @@ async function startServer() {
   } else {
     // Production: Serve static files from dist
     app.use(express.static(path.join(__dirname, 'dist')));
-    app.get('*', (req, res) => {
+    app.get('*all', (req, res) => {
       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
   }
