@@ -2,12 +2,13 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useToast } from './ToastContext';
 import { QuantumMemoryProtocol } from '../qcos/memory';
-import { EntanglementProtocol } from '../qcos/entanglement';
+import { InfonEntanglementProtocol } from '../qcos/entanglement';
 import { InstructionSetArchitecture } from '../qcos/isa';
-import { ChipsProtocol } from '../qcos/chips';
+import { SChipsProtocol } from '../qcos/chips';
 import { QubitProtocol } from '../qcos/qubit';
-import { IMOS } from '../qcos/imos';
-import { InfonProtocol } from '../qcos/infon';
+import { IBQOS } from '../qcos/imos';
+import { InfonProtocol, Infon, Infobond, InstinctCircuit } from '../qcos/infon';
+import { InfonBond } from '../qcos/entanglement';
 
 // --- Types ---
 
@@ -87,6 +88,7 @@ interface EntanglementMesh {
     isQRLtoQNNLinked: boolean;
     isQRLtoUniverseLinked: boolean;
     isQRLtoGatewayLinked: boolean;
+    isIBQOSToNeuralLinked: boolean;
     linkFidelity: number;
 }
 
@@ -244,11 +246,13 @@ export interface SimulationConfig {
     isUniverseActive: boolean; 
 }
 
-export interface IMOSState {
+export interface IBQOSState {
     status: 'STABLE' | 'DEGRADED' | 'CRITICAL';
     energyBudget: number;
-    infons: any[];
-    circuits: any[];
+    entropicPressure: number;
+    infons: Infon[];
+    infobonds: Infobond[];
+    circuits: InstinctCircuit[];
 }
 
 interface SimulationContextType {
@@ -271,13 +275,13 @@ interface SimulationContextType {
     simConfig: SimulationConfig;
     singularityBoost: number; 
     roadmapState: RoadmapState; // New
-    imosState: IMOSState;
-    triggerIMOSInterrupt: (data: any) => void;
+    ibqosState: IBQOSState;
+    triggerIBQOSSchedule: (data: any) => void;
     // Protocols
     memoryProtocol: QuantumMemoryProtocol;
-    entanglementProtocol: EntanglementProtocol;
+    entanglementProtocol: InfonEntanglementProtocol;
     isaProtocol: InstructionSetArchitecture;
-    chipsProtocol: ChipsProtocol;
+    chipsProtocol: SChipsProtocol;
     qubitProtocol: QubitProtocol;
     // Actions
     toggleTraining: () => void;
@@ -327,6 +331,7 @@ interface SimulationContextType {
     toggleSourceEntanglement: (id: string | 'ALL') => void; // Updated for bulk action
     toggleRoadmapTraining: () => void; // New
     resetRoadmap: () => void; // New
+    activateInfonEntanglement: () => void;
 }
 
 const SimulationContext = createContext<SimulationContextType | undefined>(undefined);
@@ -557,6 +562,12 @@ const INITIAL_ROADMAP_STAGES: RoadmapStage[] = [
 ];
 
 export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const memoryProtocol = useMemo(() => new QuantumMemoryProtocol(), []);
+    const entanglementProtocol = useMemo(() => new InfonEntanglementProtocol(), []);
+    const isaProtocol = useMemo(() => new InstructionSetArchitecture(), []);
+    const chipsProtocol = useMemo(() => new SChipsProtocol(), []);
+    const qubitProtocol = useMemo(() => new QubitProtocol(8), []);
+
     const { addToast } = useToast();
     
     const [training, setTraining] = useState<TrainingState>({
@@ -574,6 +585,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         isQRLtoQNNLinked: false, 
         isQRLtoUniverseLinked: false, 
         isQRLtoGatewayLinked: false, 
+        isIBQOSToNeuralLinked: false,
         linkFidelity: 0 
     });
     const [systemStatus, setSystemStatus] = useState<SystemStatus>({ currentTask: "System Idle", neuralLoad: 35, instinctsCataloged: 1240, activeThreads: 128, isRepairing: false, ipsThroughput: 850, isOptimized: false });
@@ -703,30 +715,33 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         currentTask: 'Initializing Training Protocols...'
     });
 
-    // --- IMOS State ---
-    const imos = useMemo(() => new IMOS(), []);
-    const [imosState, setImosState] = useState<IMOSState>(imos.getSystemState());
+    // --- IBQOS State ---
+    const ibqos = useMemo(() => new IBQOS(), []);
+    const [ibqosState, setIbqosState] = useState<IBQOSState>(ibqos.getSystemState());
 
-    const triggerIMOSInterrupt = useCallback((data: any) => {
-        const result = imos.handleInterrupt(data);
-        setImosState(imos.getSystemState());
+    const triggerIBQOSSchedule = useCallback((data: any) => {
+        const result = ibqos.schedule(data);
+        setIbqosState(ibqos.getSystemState());
         if (result.type === 'INSTINCTIVE') {
-            addToast(`IPS Match: ${result.action}`, 'success');
+            addToast(`Metabolic Match: ${result.action}`, 'success');
         } else if (result.type === 'COGNITIVE') {
-            addToast(`CLL Activated: Synthesizing Instinct`, 'info');
+            addToast(`RIE Activated: Synthesizing Instinct`, 'info');
         }
-    }, [imos, addToast]);
+    }, [ibqos, addToast]);
 
     // --- Backend Sync Loops ---
     useEffect(() => {
         const fetchRoadmap = async () => {
             try {
                 const res = await fetch('/api/roadmap');
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({}));
+                    throw new Error(`HTTP error! status: ${res.status}, message: ${errorData.message || 'Unknown'}`);
+                }
                 const data = await res.json();
                 setRoadmapState(data);
-            } catch (e) {
-                console.error("Failed to fetch roadmap", e);
+            } catch (e: any) {
+                console.error("Failed to fetch roadmap:", e.message || e);
             }
         };
         fetchRoadmap();
@@ -741,8 +756,8 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setQceState(data);
-            } catch (e) {
-                console.error("Failed to fetch QCE", e);
+            } catch (e: any) {
+                console.error("Failed to fetch QCE:", e.message || e);
             }
         };
         fetchQce();
@@ -757,8 +772,8 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setTraining(prev => ({ ...prev, ...data }));
-            } catch (e) {
-                console.error("Failed to fetch foundation training", e);
+            } catch (e: any) {
+                console.error("Failed to fetch foundation training:", e.message || e);
             }
         };
         fetchFoundation();
@@ -789,6 +804,23 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
     }, []);
 
+    const activateInfonEntanglement = useCallback(() => {
+        const bond = entanglementProtocol.entangleInfons('IBQOS_METABOLIC_CORE', 'NEURAL_PROGRAMMING_FABRIC');
+        setEntanglementMesh(prev => ({ 
+            ...prev, 
+            active: true,
+            isIBQOSToNeuralLinked: true, 
+            linkFidelity: bond.fidelity * 100 
+        }));
+        setNeuralInterface(prev => ({
+            ...prev,
+            isActive: true,
+            connectionType: 'QUANTUM_ENTANGLEMENT',
+            coherence: bond.fidelity * 100
+        }));
+        addToast("Infon-Entanglement Protocol Activated: IBQOS <-> Neural Programming Linked", "success");
+    }, [entanglementProtocol, addToast]);
+
     useEffect(() => {
         const fetchIngestion = async () => {
             try {
@@ -796,8 +828,8 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setDataIngestion(data);
-            } catch (e) {
-                console.error("Failed to fetch ingestion", e);
+            } catch (e: any) {
+                console.error("Failed to fetch ingestion:", e.message || e);
             }
         };
         fetchIngestion();
@@ -812,8 +844,8 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
                 setQllm(data);
-            } catch (e) {
-                console.error("Failed to fetch QLLM", e);
+            } catch (e: any) {
+                console.error("Failed to fetch QLLM:", e.message || e);
             }
         };
         fetchQllm();
@@ -997,10 +1029,11 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(config)
             });
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             const data = await res.json();
             setQllm(data);
-        } catch (e) {
-            console.error("Failed to update QLLM config", e);
+        } catch (e: any) {
+            console.error("Failed to update QLLM config:", e.message || e);
         }
     }, []);
     
@@ -1094,12 +1127,6 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
     }, [addToast]);
 
-    const memoryProtocol = useMemo(() => new QuantumMemoryProtocol(), []);
-    const entanglementProtocol = useMemo(() => new EntanglementProtocol(), []);
-    const isaProtocol = useMemo(() => new InstructionSetArchitecture(), []);
-    const chipsProtocol = useMemo(() => new ChipsProtocol(), []);
-    const qubitProtocol = useMemo(() => new QubitProtocol(8), []);
-
     return (
         <SimulationContext.Provider value={{ 
             training, evolution, systemStatus, inquiry, entanglementMesh, simConfig, neuralInterface, 
@@ -1119,13 +1146,14 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             toggleUniverseToKernel, toggleUniverseToAgentQ,
             toggleSourceEntanglement,
             roadmapState, toggleRoadmapTraining, resetRoadmap,
-            imosState, triggerIMOSInterrupt
+            ibqosState, triggerIBQOSSchedule, activateInfonEntanglement
         }}>
             {children}
         </SimulationContext.Provider>
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useSimulation = () => {
     const context = useContext(SimulationContext);
     if (!context) throw new Error("useSimulation must be used within a SimulationProvider");

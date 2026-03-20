@@ -10,11 +10,8 @@ import {
 import { useSimulation } from '../context/SimulationContext';
 
 const InstinctiveAI: React.FC = () => {
-    const { systemStatus } = useSimulation();
+    const { ibqosState, triggerIBQOSSchedule, systemStatus } = useSimulation();
     
-    // Local simulation of IMOS for UI demonstration
-    const [energy, setEnergy] = useState(1000);
-    const [status, setStatus] = useState<'STABLE' | 'DEGRADED' | 'CRITICAL'>('STABLE');
     const [activeLayer, setActiveLayer] = useState<'ILL' | 'IPS' | 'CLL'>('ILL');
     const [interrupts, setInterrupts] = useState<any[]>([]);
     
@@ -31,40 +28,36 @@ const InstinctiveAI: React.FC = () => {
             };
             setInterrupts(prev => [newInterrupt, ...prev].slice(0, 5));
             
-            // Energy minimization logic
-            setEnergy(prev => Math.max(0, prev - (Math.random() * 2)));
-            
-            if (energy < 300) setStatus('CRITICAL');
-            else if (energy < 600) setStatus('DEGRADED');
-            else setStatus('STABLE');
+            // Trigger IBQOS Schedule
+            triggerIBQOSSchedule(newInterrupt);
             
         }, 3000);
         return () => clearInterval(interval);
-    }, [energy]);
+    }, [triggerIBQOSSchedule]);
 
     return (
         <div className="space-y-6 p-4">
             {/* Header / Status */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <GlassPanel title="IMOS Status" className="p-4 flex items-center justify-between">
+                <GlassPanel title="IBQOS Status" className="p-4 flex items-center justify-between">
                     <div className="flex items-center justify-between w-full">
                         <div>
-                            <p className="text-xs uppercase tracking-wider text-white/50">System State</p>
-                            <h3 className={`text-xl font-bold ${status === 'STABLE' ? 'text-emerald-400' : status === 'DEGRADED' ? 'text-amber-400' : 'text-rose-400'}`}>
-                                {status}
+                            <p className="text-xs uppercase tracking-wider text-white/50">Metabolic State</p>
+                            <h3 className={`text-xl font-bold ${ibqosState.status === 'STABLE' ? 'text-emerald-400' : ibqosState.status === 'DEGRADED' ? 'text-amber-400' : 'text-rose-400'}`}>
+                                {ibqosState.status}
                             </h3>
                         </div>
-                        <div className={`p-3 rounded-full ${status === 'STABLE' ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`}>
-                            {status === 'STABLE' ? <ShieldCheckIcon className="w-6 h-6 text-emerald-400" /> : <AlertTriangleIcon className="w-6 h-6 text-rose-400" />}
+                        <div className={`p-3 rounded-full ${ibqosState.status === 'STABLE' ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`}>
+                            {ibqosState.status === 'STABLE' ? <ShieldCheckIcon className="w-6 h-6 text-emerald-400" /> : <AlertTriangleIcon className="w-6 h-6 text-rose-400" />}
                         </div>
                     </div>
                 </GlassPanel>
 
-                <GlassPanel title="Energy Budget" className="p-4 flex items-center justify-between">
+                <GlassPanel title="Entropic Pressure" className="p-4 flex items-center justify-between">
                     <div className="flex items-center justify-between w-full">
                         <div>
-                            <p className="text-xs uppercase tracking-wider text-white/50">Minimization Goal</p>
-                            <h3 className="text-xl font-bold text-sky-400">{energy.toFixed(0)} J</h3>
+                            <p className="text-xs uppercase tracking-wider text-white/50">System Tension</p>
+                            <h3 className="text-xl font-bold text-sky-400">{ibqosState.entropicPressure.toFixed(4)} Φ</h3>
                         </div>
                         <div className="p-3 rounded-full bg-sky-500/20">
                             <ZapIcon className="w-6 h-6 text-sky-400" />
@@ -72,11 +65,11 @@ const InstinctiveAI: React.FC = () => {
                     </div>
                 </GlassPanel>
 
-                <GlassPanel title="Active Threads" className="p-4 flex items-center justify-between">
+                <GlassPanel title="Active Infons" className="p-4 flex items-center justify-between">
                     <div className="flex items-center justify-between w-full">
                         <div>
-                            <p className="text-xs uppercase tracking-wider text-white/50">Neural Load</p>
-                            <h3 className="text-xl font-bold text-violet-400">{systemStatus.activeThreads}</h3>
+                            <p className="text-xs uppercase tracking-wider text-white/50">Fabric Density</p>
+                            <h3 className="text-xl font-bold text-violet-400">{ibqosState.infons.length}</h3>
                         </div>
                         <div className="p-3 rounded-full bg-violet-500/20">
                             <ActivityIcon className="w-6 h-6 text-violet-400" />

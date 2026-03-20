@@ -1,59 +1,77 @@
 // /src/qcos/imos.ts
 /**
- * IMOS: Instinctive Machine Operating System
- * A Hybrid Kernel implementation for QCOS.
- * Manages the IAI (Instinctive AI) layers and provides fail-safes.
+ * IBQOS: Infon-Based Quantum Operating System
+ * The metabolic kernel that governs the ripening process.
+ * Manages the Informational Hamiltonian to maintain system stability.
  */
 
 import { InfonProtocol, InfonState } from './infon';
 
-export class IMOS {
+export class IBQOS {
     private infonProtocol: InfonProtocol;
     private status: 'STABLE' | 'DEGRADED' | 'CRITICAL' = 'STABLE';
-    private energyBudget: number = 1000; // Computational Energy Minimization objective
+    private energyBudget: number = 1000; 
+    private entropicPressure: number = 0.0; // Metabolic metric
 
     constructor() {
         this.infonProtocol = new InfonProtocol();
+        console.log("[IBQOS] Metabolic Kernel Initialized.");
     }
 
     /**
-     * Kernel Instantiation: Transforms raw interrupts into neural tensors.
-     * Replaces traditional resource management policies.
+     * Entropic Scheduler: Instead of scheduling CPU cycles, the kernel
+     * manages Entropic Pressure. It navigates Rulial Space—the set of all possible
+     * computational histories—and prunes branches that lead to "informational
+     * scrambling" (high-entropy noise).
      */
-    public handleInterrupt(interruptData: any) {
-        // 1. ILL Processing
+    public schedule(interruptData: any) {
+        // 1. Calculate Entropic Pressure
+        this.entropicPressure = Math.random() * 1.0; // Simulated pressure
+
+        if (this.entropicPressure > 0.8) {
+            console.log("[IBQOS] High Entropic Pressure detected. Pruning Rulial branches...");
+            this.pruneRulialBranches();
+        }
+
+        // 2. Multiway System Optimization
+        // Prioritize branches that lead to the most stable 3D geometries
         const tensor = this.infonProtocol.processILL(interruptData);
-        
-        // 2. IPS Processing (Reflexive Action)
         const action = this.infonProtocol.processIPS(tensor);
         
         if (action) {
-            this.executeInstinctiveAction(action);
-            return { type: 'INSTINCTIVE', action };
+            this.executeMetabolicAction(action);
+            return { type: 'INSTINCTIVE', action, pressure: this.entropicPressure };
         }
 
-        // 3. Escalation to CLL if no instinct matches
-        const confidence = 0.4; // Simulated low confidence for novelty
+        // 3. AI-Native Core (I-II): Rulial Instinct Engine (RIE)
+        const confidence = 0.4;
         const newCircuit = this.infonProtocol.processCLL(tensor, confidence);
         
         if (newCircuit) {
-            this.energyBudget -= 50; // Cognitive processing is expensive
+            this.energyBudget -= 50; 
             return { type: 'COGNITIVE', action: 'SYNTHESIZING_INSTINCT', circuit: newCircuit };
         }
 
-        return { type: 'IDLE' };
+        return { type: 'IDLE', pressure: this.entropicPressure };
     }
 
-    private executeInstinctiveAction(action: string) {
-        this.energyBudget -= 1; // Instincts are energy-efficient
-        console.log(`[IMOS] Executing reflexive action: ${action}`);
+    private pruneRulialBranches() {
+        this.energyBudget -= 10;
+        console.log("[IBQOS] Pruning computational branches to reduce decoherence.");
+    }
+
+    private executeMetabolicAction(action: string) {
+        this.energyBudget -= 1; 
+        console.log(`[IBQOS] Executing metabolic action: ${action}`);
     }
 
     public getSystemState() {
         return {
             status: this.status,
             energyBudget: this.energyBudget,
+            entropicPressure: this.entropicPressure,
             infons: this.infonProtocol.getInfons(),
+            infobonds: this.infonProtocol.getInfobonds(),
             circuits: this.infonProtocol.getCircuits()
         };
     }
@@ -61,11 +79,11 @@ export class IMOS {
     /**
      * AI-Native Debugger: Analyzes state vectors to diagnose faults.
      */
-    public diagnose(stateVector: any) {
+    public diagnose() {
         if (this.energyBudget < 100) {
             this.status = 'CRITICAL';
             return "ENERGY_DEPLETION_RISK: Initiate emergency hibernation.";
         }
-        return "SYSTEM_STABLE: All instinct circuits firing within parameters.";
+        return "SYSTEM_STABLE: Rulial history synchronized.";
     }
 }

@@ -274,6 +274,11 @@ async function startServer() {
     res.json(qanState);
   });
 
+  app.post("/api/universe/entangle/agentq", (req, res) => {
+    universeState.isEntangledWithAgentQ = !universeState.isEntangledWithAgentQ;
+    res.json({ isEntangled: universeState.isEntangledWithAgentQ });
+  });
+
   app.get("/api/qllm", (req, res) => res.json(qllmState));
   app.post("/api/qllm/toggle", (req, res) => {
     qllmState.isActive = !qllmState.isActive;
@@ -290,46 +295,6 @@ async function startServer() {
   app.post("/api/qllm/auto-topology/toggle", (req, res) => {
     qllmState.isAutoTopology = !qllmState.isAutoTopology;
     res.json(qllmState);
-  });
-
-  // --- QCOS Dashboard API ---
-  const POSSIBLE_ACTIONS = [
-      "Optimize Workspace Memory",
-      "Draft Quantum-Encryption Script",
-      "Visualize System Data Traffic",
-      "Re-calibrate Neural Weights",
-      "Synchronize Parallel Universes",
-      "Purge Stale Cache Nodes",
-      "Analyze Sub-space Anomalies",
-      "Compile Holographic Interface",
-      "Deploy Security Countermeasures",
-      "Simulate Timeline Divergence",
-      "Establish Q-Link Protocol",
-      "Bypass Firewall Constraints"
-  ];
-
-  app.get("/api/qcos/actions", (req, res) => {
-      const action = POSSIBLE_ACTIONS[Math.floor(Math.random() * POSSIBLE_ACTIONS.length)];
-      res.json({ action });
-  });
-
-  app.get("/api/qcos/files", (req, res) => {
-      const files = [
-          'quantum_architecture.q',
-          'qiai_ips_core.rs',
-          'grand_universe_sim.py',
-          'qcos_kernel.ts',
-          'neural_link_config.json'
-      ];
-      
-      const orbiters = files.map((name, i) => ({
-          id: i,
-          name,
-          angle: Math.random() * Math.PI * 2,
-          radius: 80 + Math.random() * 60,
-          speed: 0.005 + Math.random() * 0.01
-      }));
-      res.json(orbiters);
   });
 
   // --- ChipsMail API ---
@@ -515,29 +480,47 @@ async function startServer() {
   });
 
   // API 404 Handler - Prevent falling through to Vite SPA
-  app.use('/api/*all', (req, res) => {
-    console.log(`[API] 404 Not Found: ${req.method} ${req.url}`);
-    res.status(404).json({ error: `API endpoint not found: ${req.method} ${req.url}` });
+  app.use('/api', (req, res) => {
+    console.warn(`[API] 404 Not Found: ${req.method} ${req.url}`);
+    res.status(404).json({ 
+      error: "Not Found", 
+      message: `API endpoint not found: ${req.method} ${req.url}`,
+      path: req.url 
+    });
   });
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
+    try {
+      console.log("[SERVER] Initializing Vite middleware...");
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+      console.log("[SERVER] Vite middleware integrated.");
+    } catch (e) {
+      console.error("[SERVER] Failed to initialize Vite middleware:", e);
+    }
   } else {
     // Production: Serve static files from dist
-    app.use(express.static(path.join(__dirname, 'dist')));
-    app.get('*all', (req, res) => {
-      res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    const distPath = path.join(__dirname, 'dist');
+    console.log(`[SERVER] Serving static files from ${distPath}`);
+    app.use(express.static(distPath));
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(distPath, 'index.html'));
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+  const server = app.listen(PORT, "0.0.0.0", () => {
+    console.log(`[SERVER] Running on http://localhost:${PORT}`);
+  });
+
+  server.on('error', (err: any) => {
+    console.error("[SERVER] Fatal error:", err);
   });
 }
 
-startServer();
+startServer().catch(err => {
+  console.error("[SERVER] Failed to start server:", err);
+});

@@ -15,7 +15,7 @@ const QuantumMemoryDataMatrix: React.FC<QuantumMemoryDataMatrixProps> = ({ shard
     const { memoryProtocol } = useSimulation();
     
     // Get shard data from protocol
-    const shard = useMemo(() => memoryProtocol.getShard(shardId) || memoryProtocol.allocateShard(shardId, rows * cols), [memoryProtocol, shardId, rows, cols]);
+    const shard = useMemo(() => memoryProtocol.getDefect(shardId) || memoryProtocol.allocateDefect(shardId, rows * cols), [memoryProtocol, shardId, rows, cols]);
 
     const getColorClass = (base: string) => {
         switch (base) {

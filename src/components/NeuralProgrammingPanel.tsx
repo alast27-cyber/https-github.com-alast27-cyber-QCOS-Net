@@ -67,6 +67,7 @@ const INITIAL_NEURAL_SCRIPTS: NeuralScript[] = [
 
 // --- Sub-component: Quantum Operations Interface ---
 const QuantumOpsInterface: React.FC = () => {
+    const { entanglementMesh, activateInfonEntanglement } = useSimulation();
     // State for animations
     const [pulseData, setPulseData] = useState<{t: number, v: number}[]>([]);
     const vectorRef = useRef<HTMLDivElement>(null);
@@ -144,6 +145,13 @@ const QuantumOpsInterface: React.FC = () => {
                                  <div className="h-full bg-purple-500 animate-pulse" style={{width: '85%'}}></div>
                              </div>
                          </div>
+                         <button 
+                            onClick={activateInfonEntanglement}
+                            className={`mt-2 py-2 px-3 rounded-lg border-2 font-black uppercase text-[9px] transition-all flex items-center justify-center gap-2 ${entanglementMesh.isIBQOSToNeuralLinked ? 'bg-green-900/40 border-green-500 text-green-300' : 'bg-orange-900/20 border-orange-500 text-orange-300 hover:bg-orange-900/40'}`}
+                         >
+                             <LinkIcon className="w-3 h-3" />
+                             {entanglementMesh.isIBQOSToNeuralLinked ? 'IBQOS LINKED' : 'ENTANGLE IBQOS'}
+                         </button>
                     </div>
                     <div className="w-2/3 relative bg-black/20 rounded border border-cyan-900/30 overflow-hidden">
                          <ResponsiveContainer width="100%" height="100%">
@@ -442,7 +450,10 @@ const EntanglementScriptForge: React.FC = () => {
 
 // --- Main Component ---
 const NeuralProgrammingPanel: React.FC = () => {
-    const { neuralInterface, connectNeuralInterface, disconnectNeuralInterface } = useSimulation();
+    const { 
+        neuralInterface, connectNeuralInterface, disconnectNeuralInterface, 
+        entanglementMesh, activateInfonEntanglement 
+    } = useSimulation();
     const { addToast } = useToast();
     const [mode, setMode] = useState<PanelMode>('LIVE');
     const [visualMode, setVisualMode] = useState<VisualMode>('WAVEFORM');
@@ -684,6 +695,18 @@ const NeuralProgrammingPanel: React.FC = () => {
                                         </button>
                                     )}
                                 </div>
+                                {hardware === 'QUANTUM_ENTANGLEMENT' && connectionState === 'CONNECTED' && (
+                                    <div className="mt-3 flex items-center justify-between bg-cyan-950/30 p-2 rounded-lg border border-cyan-800/50">
+                                        <span className="text-[10px] text-cyan-400 font-bold uppercase">IBQOS Metabolic Entanglement</span>
+                                        <button 
+                                            onClick={activateInfonEntanglement}
+                                            className={`px-4 py-1.5 rounded-lg border font-black uppercase text-[9px] transition-all flex items-center gap-2 ${entanglementMesh.isIBQOSToNeuralLinked ? 'bg-green-600/20 border-green-500 text-green-400' : 'bg-cyan-600/20 border-cyan-500 text-cyan-400 hover:bg-cyan-600/40'}`}
+                                        >
+                                            <LinkIcon className="w-3 h-3" />
+                                            {entanglementMesh.isIBQOSToNeuralLinked ? 'PROTOCOL_ACTIVE' : 'ACTIVATE_PROTOCOL'}
+                                        </button>
+                                    </div>
+                                )}
                              </div>
                         </div>
 

@@ -19,7 +19,7 @@ const POSSIBLE_ACTIONS = [
 ];
 
 const QcosDashboard: React.FC = () => {
-    const { qiaiIps, universeConnections, toggleUniverseToAgentQ } = useSimulation();
+    const { qiaiIps, universeConnections, toggleUniverseToAgentQ, ibqosState } = useSimulation();
     const [orbitingFiles, setOrbitingFiles] = useState<{ id: number; name: string; angle: number; radius: number; speed: number }[]>([]);
     const [predictedActions, setPredictedActions] = useState<string[]>([
         "Optimize Workspace Memory",
