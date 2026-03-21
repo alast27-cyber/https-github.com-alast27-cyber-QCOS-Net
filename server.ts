@@ -3,6 +3,7 @@ import cors from "cors";
 import { createServer as createViteServer } from "vite";
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { sendAgentQCommand } from './server/services/ollama';
 import { startSystemMonitor, systemMonitorState, trackRequest } from './server/services/monitor';
 import { startRoadmapSimulation, roadmapState, INITIAL_ROADMAP_STAGES } from './server/services/roadmap';
 
@@ -352,9 +353,42 @@ async function startServer() {
   app.get("/api/gateway/apps", (req, res) => res.json(appsData));
   app.get("/api/gateway/datasources", (req, res) => res.json(dataSources));
 
+  // CHIPS Network Simulation: Fetch
+  app.get("/api/gateway/fetch", (req, res) => {
+      res.json({
+          status: 'success',
+          data: {
+              message: 'Fetch request simulated successfully via CHIPS Gateway.',
+              timestamp: new Date().toISOString(),
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CHIPS-Protocol': 'v1.0'
+              },
+              body: {
+                  userId: 'user_7782',
+                  balance: '1,250.00 CyChips',
+                  lastSync: new Date().toISOString()
+              }
+          }
+      });
+  });
+
+  // CHIPS Network Simulation: XHR
   app.get("/api/gateway/xhr", (req, res) => {
       setTimeout(() => {
-          res.json({ data: "Stream buffer complete", size: "45kb" });
+          res.json({
+              status: 'success',
+              xhrResponse: {
+                  readyState: 4,
+                  status: 200,
+                  responseText: JSON.stringify({
+                      transactionId: 'tx_99210',
+                      status: 'CONFIRMED',
+                      quantumSignature: 'qs_0x9921...f82'
+                  }),
+                  responseType: 'json'
+              }
+          });
       }, 1000);
   });
 
@@ -425,9 +459,10 @@ async function startServer() {
   });
 
   // --- AgentQ API ---
-  app.post("/api/agentq/message", (req, res) => {
+  app.post("/api/agentq/message", async (req, res) => {
       const { message, context } = req.body;
-      res.json({ message: `AgentQ processed: ${message}`, data: { context } });
+      const result = await sendAgentQCommand(message, context);
+      res.json({ message: result.message, data: { context, reasoning: result.reasoning } });
   });
 
   app.get("/api/agentq/insights", (req, res) => {
@@ -487,6 +522,20 @@ async function startServer() {
       message: `API endpoint not found: ${req.method} ${req.url}`,
       path: req.url 
     });
+  });
+
+  // Global Error Handler for API
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (req.url.startsWith('/api')) {
+      console.error(`[API Error] ${req.method} ${req.url}:`, err);
+      res.status(err.status || 500).json({
+        error: "Internal Server Error",
+        message: err.message || "An unexpected error occurred",
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+      });
+    } else {
+      next(err);
+    }
   });
 
   // Vite middleware for development

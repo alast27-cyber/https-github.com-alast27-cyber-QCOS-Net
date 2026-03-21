@@ -2,15 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import GlassPanel from './GlassPanel';
 import { MicIcon, MicOffIcon, KeyIcon, ShieldCheckIcon, ActivityIcon } from './Icons';
+import { safeFetch } from '../utils/api';
 
 // --- QKD Simulation Service ---
 const establishSecureKey = async () => {
     try {
-        const res = await fetch('/api/voice/key');
-        const data = await res.json();
+        const data = await safeFetch<{ key: string }>('/api/voice/key');
         return data.key;
     } catch (e) {
-        console.error(e);
+        console.error('Failed to establish secure key:', e);
         return null;
     }
 };

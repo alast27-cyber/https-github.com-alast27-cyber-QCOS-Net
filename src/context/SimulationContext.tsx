@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useToast } from './ToastContext';
+import { safeFetch } from '../utils/api';
 import { QuantumMemoryProtocol } from '../qcos/memory';
 import { InfonEntanglementProtocol } from '../qcos/entanglement';
 import { InstructionSetArchitecture } from '../qcos/isa';
@@ -733,12 +734,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     useEffect(() => {
         const fetchRoadmap = async () => {
             try {
-                const res = await fetch('/api/roadmap');
-                if (!res.ok) {
-                    const errorData = await res.json().catch(() => ({}));
-                    throw new Error(`HTTP error! status: ${res.status}, message: ${errorData.message || 'Unknown'}`);
-                }
-                const data = await res.json();
+                const data = await safeFetch<RoadmapState>('/api/roadmap');
                 setRoadmapState(data);
             } catch (e: any) {
                 console.error("Failed to fetch roadmap:", e.message || e);
@@ -752,9 +748,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     useEffect(() => {
         const fetchQce = async () => {
             try {
-                const res = await fetch('/api/qce');
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const data = await res.json();
+                const data = await safeFetch<QCEState>('/api/qce');
                 setQceState(data);
             } catch (e: any) {
                 console.error("Failed to fetch QCE:", e.message || e);
@@ -768,9 +762,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     useEffect(() => {
         const fetchFoundation = async () => {
             try {
-                const res = await fetch('/api/foundation');
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const data = await res.json();
+                const data = await safeFetch<any>('/api/foundation');
                 setTraining(prev => ({ ...prev, ...data }));
             } catch (e: any) {
                 console.error("Failed to fetch foundation training:", e.message || e);
@@ -784,9 +776,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const toggleRoadmapTraining = useCallback(async () => {
         try {
-            const res = await fetch('/api/roadmap/toggle', { method: 'POST' });
-            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-            const data = await res.json();
+            const data = await safeFetch<{ isTraining: boolean }>('/api/roadmap/toggle', { method: 'POST' });
             setRoadmapState(prev => ({ ...prev, isTraining: data.isTraining }));
         } catch (e) {
             console.error("Failed to toggle roadmap training", e);
@@ -795,9 +785,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const resetRoadmap = useCallback(async () => {
         try {
-            const res = await fetch('/api/roadmap/reset', { method: 'POST' });
-            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-            const data = await res.json();
+            const data = await safeFetch<RoadmapState>('/api/roadmap/reset', { method: 'POST' });
             setRoadmapState(data);
         } catch (e) {
             console.error("Failed to reset roadmap", e);
@@ -824,9 +812,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     useEffect(() => {
         const fetchIngestion = async () => {
             try {
-                const res = await fetch('/api/ingestion');
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const data = await res.json();
+                const data = await safeFetch<DataSource[]>('/api/ingestion');
                 setDataIngestion(data);
             } catch (e: any) {
                 console.error("Failed to fetch ingestion:", e.message || e);
@@ -840,9 +826,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     useEffect(() => {
         const fetchQllm = async () => {
             try {
-                const res = await fetch('/api/qllm');
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const data = await res.json();
+                const data = await safeFetch<QLLMState>('/api/qllm');
                 setQllm(data);
             } catch (e: any) {
                 console.error("Failed to fetch QLLM:", e.message || e);
@@ -940,8 +924,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const toggleTraining = useCallback(async () => {
         try {
-            const res = await fetch('/api/foundation/toggle', { method: 'POST' });
-            const data = await res.json();
+            const data = await safeFetch<{ isActive: boolean }>('/api/foundation/toggle', { method: 'POST' });
             setTraining(prev => ({ ...prev, isActive: data.isActive }));
         } catch (e) {
             console.error("Failed to toggle foundation training", e);
@@ -991,8 +974,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const injectNeuralIntent = useCallback((intent: string) => setNeuralInterface(prev => ({ ...prev, lastIntent: intent })), []);
     const toggleQLLM = useCallback(async (active: boolean) => {
         try {
-            const res = await fetch('/api/qllm/toggle', { method: 'POST' });
-            const data = await res.json();
+            const data = await safeFetch<QLLMState>('/api/qllm/toggle', { method: 'POST' });
             setQllm(data);
             addToast(active ? "QLLM Core Activated" : "QLLM Core Deactivated", active ? 'success' : 'warning');
         } catch (e) {
@@ -1002,8 +984,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const setQLLMTraining = useCallback(async (isTraining: boolean) => {
         try {
-            const res = await fetch('/api/qllm/training/toggle', { method: 'POST' });
-            const data = await res.json();
+            const data = await safeFetch<QLLMState>('/api/qllm/training/toggle', { method: 'POST' });
             setQllm(data);
             addToast(isTraining ? "QLLM Weight Optimization Started" : "Training Halted", 'info');
         } catch (e) {
@@ -1013,8 +994,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const toggleQLLMAutoTopology = useCallback(async () => {
         try {
-            const res = await fetch('/api/qllm/auto-topology/toggle', { method: 'POST' });
-            const data = await res.json();
+            const data = await safeFetch<QLLMState>('/api/qllm/auto-topology/toggle', { method: 'POST' });
             setQllm(data);
             addToast(data.isAutoTopology ? "Recursive Topology Evolution Enabled" : "Manual Topology Mode", 'info');
         } catch (e) {
@@ -1024,13 +1004,11 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const updateQLLMConfig = useCallback(async (config: Partial<QLLMState>) => {
         try {
-            const res = await fetch('/api/qllm/config', {
+            const data = await safeFetch<QLLMState>('/api/qllm/config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(config)
             });
-            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-            const data = await res.json();
             setQllm(data);
         } catch (e: any) {
             console.error("Failed to update QLLM config:", e.message || e);
@@ -1094,9 +1072,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const toggleUniverseToAgentQ = useCallback(async (active: boolean) => {
         try {
-            const res = await fetch('/api/universe/entangle/agentq', { method: 'POST' });
-            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-            const data = await res.json();
+            const data = await safeFetch<{ isEntangled: boolean }>('/api/universe/entangle/agentq', { method: 'POST' });
             
             setUniverseConnections(prev => ({ ...prev, agentQ: data.isEntangled }));
             addToast(data.isEntangled ? "Grand Universe Simulator bridged to Agent Q Cognition." : "Agent Q link decoupled.", data.isEntangled ? 'success' : 'warning');
@@ -1109,12 +1085,11 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const toggleSourceEntanglement = useCallback(async (id: string | 'ALL') => {
         try {
-            const res = await fetch('/api/ingestion/toggle', {
+            const data = await safeFetch<any>('/api/ingestion/toggle', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
             });
-            const data = await res.json();
             if (Array.isArray(data)) {
                 setDataIngestion(data);
                 addToast("Global Entanglement Applied to All Sources.", "success");

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrainCircuitIcon, GalaxyIcon, ActivityIcon, SparklesIcon, FileIcon } from './Icons';
 import { useSimulation } from '../context/SimulationContext';
 import AgiTrainingSimulationRoadmap from './AgiTrainingSimulationRoadmap';
+import { safeFetch } from '../utils/api';
 
 const POSSIBLE_ACTIONS = [
     "Optimize Workspace Memory",
@@ -33,9 +34,7 @@ const QcosDashboard: React.FC = () => {
         if (isAutonomousRunning) {
             interval = window.setInterval(async () => {
                 try {
-                    const res = await fetch('/api/qcos/actions');
-                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                    const data = await res.json();
+                    const data = await safeFetch<{ action: string }>('/api/qcos/actions');
                     setPredictedActions(prev => {
                         const newActions = [...prev];
                         newActions.shift();
@@ -43,7 +42,7 @@ const QcosDashboard: React.FC = () => {
                         return newActions;
                     });
                 } catch (e) {
-                    console.error(e);
+                    console.error('Failed to fetch QCOS actions:', e);
                 }
             }, 2000);
         }
@@ -54,12 +53,10 @@ const QcosDashboard: React.FC = () => {
         // Initialize orbiting files for Semantic Gravity Well
         const fetchFiles = async () => {
             try {
-                const res = await fetch('/api/qcos/files');
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                const initialOrbiters = await res.json();
+                const initialOrbiters = await safeFetch<any[]>('/api/qcos/files');
                 setOrbitingFiles(initialOrbiters);
             } catch (e) {
-                console.error(e);
+                console.error('Failed to fetch QCOS files:', e);
             }
         };
         fetchFiles();

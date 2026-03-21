@@ -86,6 +86,11 @@ const ChatLogPanel: React.FC<ChatLogPanelProps> = ({ messages, isLoading, onSend
                     <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[90%] p-2 rounded-lg text-xs ${msg.sender === 'user' ? 'bg-cyan-800/60 text-white' : 'bg-slate-700/60 text-cyan-200'}`}>
                             {renderMessageContent(msg.text)}
+                            {msg.reasoning && (
+                                <div className="mt-2 pt-2 border-t border-cyan-500/30 text-[10px] text-cyan-400/70 italic">
+                                    {msg.reasoning}
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}

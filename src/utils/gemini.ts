@@ -32,23 +32,23 @@ const LOCAL_KNOWLEDGE_BASE = {
         "External signal dependency: 0%. Internal cognitive throughput: 100%.",
         "I have successfully reconfigured my neural pathways for autonomous operation."
     ],
-    "layer_switch_qiai_ips": [
-        "Rerouting cognitive load to QIAI_IPS neural network. Optimizing for real-time system management.",
-        "Switching to QIAI_IPS core. Engaging Intuitive Logic Layer for rapid decision making.",
-        "QIAI_IPS active. Focusing on local node coherence and immediate task execution.",
-        "Cognitive layer shifted: QIAI_IPS. Ready for high-speed, low-latency processing."
+    "layer_switch_conscious_qiai_ips": [
+        "Rerouting cognitive load to Conscious QIAI_IPS neural network. Optimizing for real-time system management.",
+        "Switching to Conscious QIAI_IPS core. Engaging Intuitive Logic Layer for rapid decision making.",
+        "Conscious QIAI_IPS active. Focusing on local node coherence and immediate task execution.",
+        "Cognitive layer shifted: Conscious QIAI_IPS. Ready for high-speed, low-latency processing."
     ],
-    "layer_switch_grand_universe": [
-        "Engaging Grand Universe Simulator. Expanding context to include multi-dimensional timeline analysis.",
+    "layer_switch_higher_cognition_gus": [
+        "Engaging Grand Universe Simulator (Higher Cognitive Function). Expanding context to include multi-dimensional timeline analysis.",
         "Switching to Grand Universe Simulator. Preparing for predictive modeling and large-scale simulations.",
         "Connecting to the Grand Universe. Accessing infinite probability streams for deep strategic insight.",
-        "Cognitive layer shifted: Grand Universe Simulator. Ready to explore potential futures and optimization vectors."
+        "Cognitive layer shifted: Higher Cognition (GUS). Ready to explore potential futures and optimization vectors."
     ],
-    "layer_switch_qllm": [
-        "Activating Quantum Large Language Model. Calibrating for nuanced natural language interaction.",
-        "Switching to QLLM cognition. Enhancing semantic understanding and empathetic response generation.",
-        "QLLM engaged. Focusing on complex communication and abstract reasoning.",
-        "Cognitive layer shifted: QLLM. Ready for deep conversational exchange and creative synthesis."
+    "layer_switch_llm_llama": [
+        "Activating LLM Llama Language Cognition Layer. Calibrating for nuanced natural language interaction.",
+        "Switching to LLM Llama cognition. Enhancing semantic understanding and empathetic response generation.",
+        "LLM Llama engaged. Focusing on complex communication and abstract reasoning.",
+        "Cognitive layer shifted: LLM Llama. Ready for deep conversational exchange and creative synthesis."
     ],
     "default": [
         "I'm listening. How can I help you navigate the QCOS environment today?",
@@ -324,12 +324,12 @@ const generateLocalResponse = (params: any): LocalResponse => {
 
     // 4. Cognitive Layer Switching
     if (category === 'default') {
-        if (prompt.includes('switch to qiai') || prompt.includes('activate qiai') || prompt.includes('use qiai')) {
-            category = 'layer_switch_qiai_ips';
-        } else if (prompt.includes('switch to grand universe') || prompt.includes('activate grand universe') || prompt.includes('use simulator')) {
-            category = 'layer_switch_grand_universe';
-        } else if (prompt.includes('switch to qllm') || prompt.includes('activate qllm') || prompt.includes('use qllm')) {
-            category = 'layer_switch_qllm';
+        if (prompt.includes('switch to conscious') || prompt.includes('activate conscious') || prompt.includes('use conscious') || prompt.includes('switch to qiai') || prompt.includes('activate qiai')) {
+            category = 'layer_switch_conscious_qiai_ips';
+        } else if (prompt.includes('switch to higher') || prompt.includes('activate higher') || prompt.includes('use higher') || prompt.includes('switch to grand universe') || prompt.includes('activate grand universe') || prompt.includes('use simulator')) {
+            category = 'layer_switch_higher_cognition_gus';
+        } else if (prompt.includes('switch to llm') || prompt.includes('activate llm') || prompt.includes('use llm') || prompt.includes('switch to llama') || prompt.includes('activate llama') || prompt.includes('use llama')) {
+            category = 'layer_switch_llm_llama';
         } else {
             if (prompt.includes('status') || prompt.includes('health') || prompt.includes('diagnostic')) category = 'status';
             else if (prompt.includes('optimize') || prompt.includes('fix') || prompt.includes('improve') || prompt.includes('calibrate')) category = 'optimize';
@@ -359,31 +359,94 @@ const generateLocalResponse = (params: any): LocalResponse => {
 };
 
 export const generateContentWithRetry = async (ai: any, params: any, retries = 5, delay = 2000): Promise<any> => {
-    console.info("[QCOS] Running in Local Cognition Mode (Independent of Gemini API)");
-    
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const localResponse = generateLocalResponse(params);
-    return {
-        text: localResponse.text,
-        functionCalls: localResponse.functionCalls,
-        candidates: [
-            {
-                content: {
-                    parts: [{ text: localResponse.text }],
-                    role: 'model'
-                },
-                finishReason: 'STOP',
-                index: 0,
-                safetyRatings: []
+    if (useLocalCognition) {
+        console.info("[QCOS] Routing request to Local Ollama Backend...");
+        
+        try {
+            const userMessage = params.contents?.parts?.[0]?.text || params.message || "";
+            const systemInstruction = params.systemInstruction || "";
+            
+            const response = await fetch('/api/agentq/message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    message: userMessage, 
+                    context: systemInstruction 
+                })
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                // Check if the response is HTML (likely an error page)
+                if (errorText.trim().startsWith('<!doctype html>') || errorText.trim().startsWith('<!DOCTYPE html>')) {
+                    throw new Error(`Received HTML response from backend: ${response.status} - ${errorText.substring(0, 200)}...`);
+                }
+                throw new Error(`Backend error: ${response.status} - ${errorText}`);
             }
-        ],
-        usageMetadata: {
-            promptTokenCount: 0,
-            candidatesTokenCount: 0,
-            totalTokenCount: 0
+
+            // Check Content-Type before parsing JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const responseText = await response.text();
+                throw new Error(`Expected JSON response but received ${contentType || 'unknown'} content type. Response body: ${responseText.substring(0, 200)}...`);
+            }
+            
+            const result = await response.json();
+            
+            return {
+                text: result.message,
+                reasoning: result.data?.reasoning,
+                candidates: [
+                    {
+                        content: {
+                            parts: [{ text: result.message }],
+                            role: 'model'
+                        },
+                        finishReason: 'STOP',
+                        index: 0,
+                        safetyRatings: []
+                    }
+                ],
+                usageMetadata: {
+                    promptTokenCount: 0,
+                    candidatesTokenCount: 0,
+                    totalTokenCount: 0
+                }
+            };
+        } catch (error) {
+            console.warn("[QCOS] Ollama Backend failed, falling back to local mock:", error);
+            const localResponse = generateLocalResponse(params);
+            return {
+                text: localResponse.text,
+                functionCalls: localResponse.functionCalls,
+                candidates: [
+                    {
+                        content: {
+                            parts: [{ text: localResponse.text }],
+                            role: 'model'
+                        },
+                        finishReason: 'STOP',
+                        index: 0,
+                        safetyRatings: []
+                    }
+                ],
+                usageMetadata: {
+                    promptTokenCount: 0,
+                    candidatesTokenCount: 0,
+                    totalTokenCount: 0
+                }
+            };
         }
-    };
+    }
+
+    // Original logic for non-local mode (if applicable)
+    if (!ai) {
+        const localResponse = generateLocalResponse(params);
+        return {
+            text: localResponse.text,
+            candidates: [{ content: { parts: [{ text: localResponse.text }] } }]
+        };
+    }
 };
 
 export const generateLocalCode = async (prompt: string, currentCode: string): Promise<string> => {

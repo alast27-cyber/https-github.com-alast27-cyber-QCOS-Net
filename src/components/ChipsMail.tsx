@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { KeyIcon, PlusIcon, InboxIcon, SendIcon, ShieldCheckIcon } from './Icons';
 import { Button } from './Button';
+import { safeFetch } from '../utils/api';
 
 interface SecureMailClientProps {
   userAddress: string;
@@ -16,15 +17,13 @@ const SecureMailClient: React.FC<SecureMailClientProps> = ({ userAddress }) => {
   useEffect(() => {
     const fetchMail = async () => {
       try {
-        const inboxRes = await fetch('/api/mail/inbox');
-        const inboxData = await inboxRes.json();
+        const inboxData = await safeFetch<any[]>('/api/mail/inbox');
         setInboxMessages(inboxData);
 
-        const sentRes = await fetch('/api/mail/sent');
-        const sentData = await sentRes.json();
+        const sentData = await safeFetch<any[]>('/api/mail/sent');
         setSentMessages(sentData);
       } catch (e) {
-        console.error(e);
+        console.error('Failed to fetch mail:', e);
       }
     };
 
@@ -42,7 +41,7 @@ const SecureMailClient: React.FC<SecureMailClientProps> = ({ userAddress }) => {
     const body = (document.getElementById('body') as HTMLTextAreaElement).value;
 
     try {
-      await fetch('/api/mail/send', {
+      await safeFetch('/api/mail/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to, subject, body })
@@ -51,13 +50,12 @@ const SecureMailClient: React.FC<SecureMailClientProps> = ({ userAddress }) => {
       alert('Message sent securely via CHIPS network!');
       
       // Refresh sent messages
-      const sentRes = await fetch('/api/mail/sent');
-      const sentData = await sentRes.json();
+      const sentData = await safeFetch<any[]>('/api/mail/sent');
       setSentMessages(sentData);
       
       setActiveTab('sent');
     } catch (e) {
-      console.error(e);
+      console.error('Failed to send message:', e);
       alert('Failed to send message.');
     }
   };

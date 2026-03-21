@@ -257,22 +257,22 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         try {
             // Cognitive Mode Determination
             const lowerInput = input.toLowerCase();
-            let mode = 'QIAI_IPS'; 
+            let mode = 'CONSCIOUS_QIAI_IPS'; 
             let modeMessage = "";
             let processingDelay = 1000;
 
             if (lowerInput.includes('simulate') || lowerInput.includes('predict') || lowerInput.includes('timeline') || lowerInput.includes('universe') || lowerInput.includes('analyze') || input.length > 120) {
-                mode = 'GRAND_UNIVERSE';
-                modeMessage = "[QIAI_IPS] Complexity Threshold Exceeded. Rerouting to **Grand Universe Simulator** for multi-dimensional analysis...";
+                mode = 'HIGHER_COGNITION_GUS';
+                modeMessage = "[QIAI_IPS] Complexity Threshold Exceeded. Engaging **Grand Universe Simulator** (Higher Cognitive Function) for multi-dimensional analysis...";
                 processingDelay = 2500; 
             } else if (lowerInput.includes('write') || lowerInput.includes('explain') || lowerInput.includes('story') || lowerInput.includes('creative') || lowerInput.includes('poem') || lowerInput.includes('why') || lowerInput.includes('how') || lowerInput.includes('feel')) {
-                mode = 'QLLM';
-                modeMessage = "[QIAI_IPS] Semantic Density Detected. Engaging **QLLM** (Quantum Large Language Model) for empathetic synthesis...";
+                mode = 'LLM_LLAMA';
+                modeMessage = "[QIAI_IPS] Semantic Density Detected. Engaging **LLM Llama Language Cognition Layer** for empathetic synthesis...";
                 processingDelay = 1500; 
             }
 
             // UI Feedback for Mode Switch
-            if (mode !== 'QIAI_IPS') {
+            if (mode !== 'CONSCIOUS_QIAI_IPS') {
                 setMessages(prev => [...prev, { 
                     id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     sender: 'system', 
@@ -282,7 +282,7 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
             }
 
             // Dynamic QIAI_IPS Bridge Context
-            let bridgeStateContext = "Current QIAI_IPS State:\n";
+            let bridgeStateContext = "Current Conscious QIAI_IPS State:\n";
             const { cognitiveEfficiency, decoherenceFactor, neuralLoad, semanticIntegrity } = systemHealth;
 
             if (decoherenceFactor > 0.1) {
@@ -303,15 +303,22 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
             // Call Local Cognition via generateContentWithRetry (which uses generateLocalResponse)
             const response = await generateContentWithRetry(null, {
                 contents: { parts: [{ text: `[mode: ${mode.toLowerCase()}] ${input}` }] },
-                systemInstruction: `You are AGENT Q. Mode: ${mode}. Context: ${activeContext}. ${bridgeStateContext}`
+                systemInstruction: `You are AGENT Q. 
+Cognitive Layer: ${mode}. 
+Active Workspace: ${activeContext}. 
+System Health: Efficiency=${(systemHealth.cognitiveEfficiency * 100).toFixed(1)}%, Load=${systemHealth.neuralLoad}%, Integrity=${(systemHealth.semanticIntegrity * 100).toFixed(1)}%.
+${bridgeStateContext}
+When in HIGHER_COGNITION_GUS mode, you are connected to the Grand Universe Simulator. Access multi-dimensional data and predict timeline collapses.`
             });
 
             const text = response.text;
+            const reasoning = response.reasoning;
             
             setMessages(prev => [...prev, { 
                 id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 sender: 'ai', 
-                text 
+                text,
+                reasoning
             }]);
             speak(text);
 
