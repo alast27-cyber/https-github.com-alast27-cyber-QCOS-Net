@@ -11,6 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function startServer() {
+  console.log("[SERVER] Starting QCOS Backend...");
   const app = express();
   const PORT = 3000;
 
@@ -215,7 +216,7 @@ async function startServer() {
     // Roadmap logs are now handled in server/services/roadmap.ts
   }, 5000);
 
-  app.get("/api/roadmap", (req, res) => res.json(roadmapState));
+  app.get("/api/roadmap", (req, res) => { console.log("[SERVER] /api/roadmap"); res.json(roadmapState); });
   app.post("/api/roadmap/toggle", (req, res) => {
     roadmapState.isTraining = !roadmapState.isTraining;
     res.json({ isTraining: roadmapState.isTraining });
@@ -227,14 +228,14 @@ async function startServer() {
     res.json(roadmapState);
   });
 
-  app.get("/api/qce", (req, res) => res.json(qceState));
-  app.get("/api/foundation", (req, res) => res.json(foundationTraining));
+  app.get("/api/qce", (req, res) => { console.log("[SERVER] /api/qce"); res.json(qceState); });
+  app.get("/api/foundation", (req, res) => { console.log("[SERVER] /api/foundation"); res.json(foundationTraining); });
   app.post("/api/foundation/toggle", (req, res) => {
     foundationTraining.isActive = !foundationTraining.isActive;
     res.json({ isActive: foundationTraining.isActive });
   });
 
-  app.get("/api/ingestion", (req, res) => res.json(dataIngestion));
+  app.get("/api/ingestion", (req, res) => { console.log("[SERVER] /api/ingestion"); res.json(dataIngestion); });
   app.post("/api/ingestion/toggle", (req, res) => {
     const { id } = req.body;
     const ds = dataIngestion.find(d => d.id === id);
@@ -283,7 +284,7 @@ async function startServer() {
     res.json({ isEntangled: universeState.isEntangledWithAgentQ });
   });
 
-  app.get("/api/qllm", (req, res) => res.json(qllmState));
+  app.get("/api/qllm", (req, res) => { console.log("[SERVER] /api/qllm"); res.json(qllmState); });
   app.post("/api/qllm/toggle", (req, res) => {
     qllmState.isActive = !qllmState.isActive;
     res.json(qllmState);
@@ -488,6 +489,7 @@ async function startServer() {
 
   // --- QCOS Dashboard API ---
   app.get("/api/qcos/actions", (req, res) => {
+      console.log("[SERVER] Received request for /api/qcos/actions");
       const actions = [
           "Optimize Workspace Memory",
           "Draft Quantum-Encryption Script",

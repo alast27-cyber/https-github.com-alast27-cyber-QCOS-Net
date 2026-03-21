@@ -10,6 +10,9 @@
   --animate-pulse-fast: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-fade-in: fadeIn 0.5s ease-out;
   --animate-border-shimmer: borderShimmer 2s linear infinite;
+  --animate-voice-bar-1: voice-bar 1.2s ease-in-out infinite;
+  --animate-voice-bar-2: voice-bar 1.2s ease-in-out 0.2s infinite;
+  --animate-voice-bar-3: voice-bar 1.2s ease-in-out 0.4s infinite;
 
   @keyframes spin-reverse {
     from { transform: rotate(360deg); }
@@ -23,6 +26,10 @@
     0% { border-color: rgba(6, 182, 212, 0.3); }
     50% { border-color: rgba(6, 182, 212, 1); }
     100% { border-color: rgba(6, 182, 212, 0.3); }
+  }
+  @keyframes voice-bar {
+    0%, 100% { height: 4px; }
+    50% { height: 16px; }
   }
 }
 

@@ -12,7 +12,7 @@ import {
     Mic, MicOff, Trash, PenSquare, Brackets, TrendingUp, Truck, Dna, Info, MapPin, Inbox, BookOpen, EyeOff, Menu,
     Server, XCircle, Bug, ChevronUp, ChevronDown, Orbit, ServerCog, Puzzle,
     Warehouse, Users, GraduationCap, Paperclip, File, MessageCircle, Plus, Phone, GitFork, Wifi, Save, Folder, LogIn, Crosshair, Thermometer, CalendarDays,
-    Grid, GripVertical, GripHorizontal, ZoomIn, ZoomOut, Move, Ruler, Radio, Wind
+    Grid, GripVertical, GripHorizontal, ZoomIn, ZoomOut, Move, Ruler, Radio, Wind, Volume2, VolumeX
 } from 'lucide-react';
 
 // --- SAFE FALLBACK ---
@@ -149,3 +149,5 @@ export const CircleStackIcon = Database || Fallback;
 export const CuboidIcon = Box || Fallback;
 export const CubeTransparentIcon = Box || Fallback;
 export const WindIcon = Wind || Fallback;
+export const Volume2Icon = Volume2 || Fallback;
+export const VolumeXIcon = VolumeX || Fallback;

@@ -1,8 +1,16 @@
 import React from 'react';
-import { CpuChipIcon, ActivityIcon, GlobeIcon, ServerCogIcon, ShieldCheckIcon, ZapIcon } from './Icons';
+import { CpuChipIcon, ActivityIcon, GlobeIcon, ServerCogIcon, ShieldCheckIcon, ZapIcon, SettingsIcon } from './Icons';
+import CHIPSBackOffice from './CHIPSBackOffice';
+import { useQuantumApps } from '../hooks/useQuantumApps';
 
 const ChipsDash: React.FC = () => {
     const [barHeights] = React.useState(() => Array.from({ length: 20 }).map(() => 20 + Math.random() * 80));
+    
+    // Dummy functions for useQuantumApps
+    const addLog = () => {};
+    const handlePanelSelect = () => {};
+    
+    const { marketApps, uriAssignments } = useQuantumApps(addLog, handlePanelSelect);
 
     return (
         <div className="h-full flex flex-col p-6 bg-black/40 rounded-xl border-2 border-emerald-500/30 text-emerald-100 font-mono relative overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.15)]">
@@ -130,28 +138,11 @@ const ChipsDash: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="bg-black/50 border border-emerald-900/50 rounded-xl p-4 h-1/2 min-h-[200px]">
+                    <div className="bg-black/50 border border-emerald-900/50 rounded-xl p-4 h-1/3 min-h-[150px]">
                         <h3 className="text-emerald-400 font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <ServerCogIcon className="w-4 h-4" /> Services
+                            <SettingsIcon className="w-4 h-4" /> Backoffice
                         </h3>
-                        <div className="space-y-2">
-                             <div className="flex items-center justify-between text-xs p-2 bg-black/40 rounded border border-emerald-900/30">
-                                <span className="text-gray-300">Auth Service</span>
-                                <span className="px-1.5 py-0.5 bg-emerald-900/50 text-emerald-400 rounded text-[9px] border border-emerald-800">RUNNING</span>
-                             </div>
-                             <div className="flex items-center justify-between text-xs p-2 bg-black/40 rounded border border-emerald-900/30">
-                                <span className="text-gray-300">Data Stream</span>
-                                <span className="px-1.5 py-0.5 bg-emerald-900/50 text-emerald-400 rounded text-[9px] border border-emerald-800">RUNNING</span>
-                             </div>
-                             <div className="flex items-center justify-between text-xs p-2 bg-black/40 rounded border border-emerald-900/30">
-                                <span className="text-gray-300">Quantum Bridge</span>
-                                <span className="px-1.5 py-0.5 bg-cyan-900/50 text-cyan-400 rounded text-[9px] border border-cyan-800">SYNCING</span>
-                             </div>
-                             <div className="flex items-center justify-between text-xs p-2 bg-black/40 rounded border border-emerald-900/30">
-                                <span className="text-gray-300">Neural Net</span>
-                                <span className="px-1.5 py-0.5 bg-purple-900/50 text-purple-400 rounded text-[9px] border border-purple-800">TRAINING</span>
-                             </div>
-                        </div>
+                        <CHIPSBackOffice uriAssignments={uriAssignments} marketApps={marketApps} />
                     </div>
                 </div>
             </div>

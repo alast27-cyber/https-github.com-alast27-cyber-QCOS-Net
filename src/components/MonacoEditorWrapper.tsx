@@ -5,6 +5,14 @@ import Editor, { loader, OnMount } from '@monaco-editor/react';
 // Define the CDN path
 const MONACO_VS_PATH = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs';
 
+const QLANG_KEYWORDS = [
+    'QREG', 'CREG', 'ALLOC', 'EXECUTE', 'IF', 'THEN', 'ELSE', 'LOOP', 'EOF', 'MEASURE', 'BARRIER', 'RESET', 'FOR', 'FROM', 'TO', 'IMPORT', 'MODULE', 'FUNCTION', 'RETURN', 'START', 'END', 'JUMP-IF', 'END_JOB'
+];
+
+const QLANG_OPERATORS = [
+    'OP::H', 'OP::X', 'OP::Y', 'OP::Z', 'OP::S', 'OP::T', 'OP::CNOT', 'OP::C4Z', 'OP::MEASURE', 'OP::RETURN_RESULT', 'OP::I', 'OP::CZ', 'OP::RZ', 'OP::RY', 'OP::SWAP', 'OP::TOFFOLI', 'OP::QAE', 'OP::QUANTUM_WALK', 'OP::INIT_STATE', 'OP::DEPLOY', 'OP::ROUTE'
+];
+
 // --- Fix: Worker Configuration for CDN (Global Scope) ---
 if (typeof window !== 'undefined' && !(window as any).MonacoEnvironment) {
     (window as any).MonacoEnvironment = {
@@ -105,39 +113,95 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
         const value = model.getValue();
         const markers = [];
         const lines = value.split('\n');
+        const braceStack: { line: number, col: number }[] = [];
 
         for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
+            const originalLine = lines[i];
+            const line = originalLine.trim();
             if (!line || line.startsWith('//') || line.startsWith('#')) continue;
 
-            // Rule 1: Lines should usually end with ; or { or } or be a comment/directive
+            // Rule 1: Semicolon check
             if (!line.endsWith(';') && !line.endsWith('{') && !line.endsWith('}')) {
                 const keywordsWithoutSemi = ['IF', 'ELSE', 'LOOP', 'FOR', 'WHILE', 'MODULE', 'FUNCTION'];
-                const firstWord = line.split(' ')[0];
+                const firstWord = line.split(/[ \t(]/)[0];
                 
                 if (!keywordsWithoutSemi.includes(firstWord)) {
                      markers.push({
                         severity: monaco.MarkerSeverity.Warning,
                         startLineNumber: i + 1,
-                        startColumn: lines[i].length + 1,
+                        startColumn: originalLine.length + 1,
                         endLineNumber: i + 1,
-                        endColumn: lines[i].length + 1,
+                        endColumn: originalLine.length + 1,
                         message: "Missing semicolon",
                     });
                 }
             }
 
-            // Rule 2: Invalid OP code check (simple heuristic)
-            if (line.includes('OP::') && !line.match(/OP::[A-Z0-9_]+/)) {
-                 markers.push({
-                    severity: monaco.MarkerSeverity.Error,
-                    startLineNumber: i + 1,
-                    startColumn: line.indexOf('OP::') + 1,
-                    endLineNumber: i + 1,
-                    endColumn: line.indexOf('OP::') + 5,
-                    message: "Malformed Operator syntax",
-                });
+            // Rule 2: Operator validation & Malformed OP syntax
+            // We look for anything that starts with OP:: and check if it's in our valid list
+            const opMatches = originalLine.matchAll(/OP::[^ \t,;{}()]+/g);
+            for (const match of opMatches) {
+                const op = match[0];
+                if (!QLANG_OPERATORS.includes(op)) {
+                    markers.push({
+                        severity: monaco.MarkerSeverity.Error,
+                        startLineNumber: i + 1,
+                        startColumn: match.index! + 1,
+                        endLineNumber: i + 1,
+                        endColumn: match.index! + op.length + 1,
+                        message: `Invalid or malformed operator: ${op}`,
+                    });
+                }
             }
+
+            // Rule 3: Unknown keyword validation (first word)
+            const firstWordMatch = line.match(/^[A-Z_]+/);
+            if (firstWordMatch) {
+                const firstWord = firstWordMatch[0];
+                if (!QLANG_KEYWORDS.includes(firstWord) && !QLANG_OPERATORS.includes(firstWord) && !firstWord.startsWith('OP::')) {
+                    markers.push({
+                        severity: monaco.MarkerSeverity.Error,
+                        startLineNumber: i + 1,
+                        startColumn: originalLine.indexOf(firstWord) + 1,
+                        endLineNumber: i + 1,
+                        endColumn: originalLine.indexOf(firstWord) + firstWord.length + 1,
+                        message: `Unknown keyword or instruction: ${firstWord}`,
+                    });
+                }
+            }
+
+            // Rule 4: Brace tracking for syntax errors
+            for (let charIndex = 0; charIndex < originalLine.length; charIndex++) {
+                if (originalLine[charIndex] === '{') {
+                    braceStack.push({ line: i + 1, col: charIndex + 1 });
+                } else if (originalLine[charIndex] === '}') {
+                    if (braceStack.length === 0) {
+                        markers.push({
+                            severity: monaco.MarkerSeverity.Error,
+                            startLineNumber: i + 1,
+                            startColumn: charIndex + 1,
+                            endLineNumber: i + 1,
+                            endColumn: charIndex + 2,
+                            message: "Unexpected closing brace '}'",
+                        });
+                    } else {
+                        braceStack.pop();
+                    }
+                }
+            }
+        }
+
+        // Rule 5: Unclosed braces
+        while (braceStack.length > 0) {
+            const unclosed = braceStack.pop()!;
+            markers.push({
+                severity: monaco.MarkerSeverity.Error,
+                startLineNumber: unclosed.line,
+                startColumn: unclosed.col,
+                endLineNumber: unclosed.line,
+                endColumn: unclosed.col + 1,
+                message: "Unclosed brace '{'",
+            });
         }
         
         // Double check before setting markers
@@ -187,12 +251,8 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
             
             // Syntax Highlighting Configuration
             monaco.languages.setMonarchTokensProvider('q-lang', {
-                keywords: [
-                    'QREG', 'CREG', 'ALLOC', 'EXECUTE', 'IF', 'THEN', 'ELSE', 'LOOP', 'EOF', 'MEASURE', 'BARRIER', 'RESET', 'FOR', 'FROM', 'TO', 'IMPORT', 'MODULE', 'FUNCTION', 'RETURN', 'START', 'END', 'JUMP-IF', 'END_JOB'
-                ],
-                operators: [
-                    'OP::H', 'OP::X', 'OP::Y', 'OP::Z', 'OP::S', 'OP::T', 'OP::CNOT', 'OP::C4Z', 'OP::MEASURE', 'OP::RETURN_RESULT', 'OP::I', 'OP::CZ', 'OP::RZ', 'OP::RY', 'OP::SWAP', 'OP::TOFFOLI', 'OP::QAE', 'OP::QUANTUM_WALK', 'OP::INIT_STATE', 'OP::DEPLOY', 'OP::ROUTE'
-                ],
+                keywords: QLANG_KEYWORDS,
+                operators: QLANG_OPERATORS,
                 symbols:  /[=><!~?:&|+\-*/^%]+/,
                 escapes: /\\(?:[abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
                 

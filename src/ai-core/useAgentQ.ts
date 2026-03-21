@@ -136,6 +136,7 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
     const [lastActivity, setLastActivity] = useState(0);
     const [isTtsEnabled, setIsTtsEnabled] = useState(true);
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isVoiceModeEnabled, setIsVoiceModeEnabled] = useState(false);
     const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [memorySummary, setMemorySummary] = useState<string | null>(null);
     const [lastAttachedFile, setLastAttachedFile] = useState<File | null>(null);
@@ -423,6 +424,8 @@ When in HIGHER_COGNITION_GUS mode, you are connected to the Grand Universe Simul
             isTtsEnabled,
             onToggleTts: () => setIsTtsEnabled(!isTtsEnabled),
             isSpeaking,
+            isVoiceModeEnabled,
+            onToggleVoiceMode: () => setIsVoiceModeEnabled(!isVoiceModeEnabled),
             memorySummary,
             onClearMemory: () => setMessages([]),
             activeContext, 

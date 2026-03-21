@@ -3,7 +3,8 @@ import {
     MessageSquareIcon, XIcon, SendIcon, LoaderIcon, MicIcon, MicOffIcon, 
     RefreshCwIcon, PaperclipIcon, FileIcon, BrainCircuitIcon, SearchIcon, 
     CheckCircle2Icon, SparklesIcon, ActivityIcon, LinkIcon, CpuChipIcon, 
-    GalaxyIcon, AlertTriangleIcon, LayoutGridIcon, ArrowRightIcon, TerminalIcon, ShieldCheckIcon 
+    GalaxyIcon, AlertTriangleIcon, LayoutGridIcon, ArrowRightIcon, TerminalIcon, ShieldCheckIcon,
+    Volume2Icon, VolumeXIcon
 } from '../components/Icons';
 import { Message, ChartData } from '../utils/agentUtils';
 import { 
@@ -11,9 +12,11 @@ import {
     XAxis, YAxis, CartesianGrid, Tooltip, Legend 
 } from 'recharts';
 import { useSimulation } from '../context/SimulationContext';
+import { useVoiceConversation } from '../hooks/useVoiceConversation';
 
 // Local Component Import
 import MemoryMatrix from '../components/MemoryMatrix';
+import AudioSynthesizer from '../components/AudioSynthesizer';
 
 interface AgentQProps {
   isOpen: boolean;
@@ -27,6 +30,8 @@ interface AgentQProps {
   isTtsEnabled?: boolean;
   onToggleTts?: () => void;
   isSpeaking?: boolean;
+  isVoiceModeEnabled?: boolean;
+  onToggleVoiceMode?: () => void;
   memorySummary?: string | null;
   onClearMemory?: () => void;
   activeContext?: string | null;
@@ -50,6 +55,8 @@ const AgentQ: React.FC<AgentQProps> = ({
     isTtsEnabled,
     onToggleTts,
     isSpeaking,
+    isVoiceModeEnabled,
+    onToggleVoiceMode,
     onClearMemory,
     memorySummary,
     activeContext,
@@ -68,6 +75,13 @@ const AgentQ: React.FC<AgentQProps> = ({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
+  const { state: voiceState, isSupported: isVoiceSupported } = useVoiceConversation({
+    onSendMessage: (text) => onSendMessage(text, null),
+    isAgentSpeaking: !!isSpeaking,
+    isAgentLoading: isLoading,
+    enabled: !!isVoiceModeEnabled
+  });
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -100,6 +114,9 @@ const AgentQ: React.FC<AgentQProps> = ({
 
   const renderUnifiedInterface = () => (
     <div className="flex flex-col gap-4 p-4 h-full overflow-y-auto">
+        {/* Live Audio Synthesizer Enhancement */}
+        <AudioSynthesizer isActive={isOpen} isSpeaking={isSpeaking} />
+        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-purple-900/20 border border-purple-500/30 p-4 rounded-lg">
                 <h4 className="text-purple-300 font-bold flex items-center gap-2"><SparklesIcon className="w-4 h-4"/> QLLM Core</h4>
@@ -210,6 +227,11 @@ const AgentQ: React.FC<AgentQProps> = ({
 
   const consoleView = (
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative bg-black font-mono text-xs p-4">
+          {/* Live Audio Synthesizer Enhancement */}
+          <div className="mb-4">
+              <AudioSynthesizer isActive={isOpen} isSpeaking={isSpeaking} />
+          </div>
+          
           <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-green-900 scrollbar-track-transparent">
               {filteredMessages.map((msg, idx) => {
                   const timestamp = new Date().toLocaleTimeString();
@@ -241,6 +263,11 @@ const AgentQ: React.FC<AgentQProps> = ({
 
   const chatHistoryView = (
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+          {/* Live Audio Synthesizer Enhancement */}
+          <div className="px-4 py-2">
+              <AudioSynthesizer isActive={isOpen} isSpeaking={isSpeaking} />
+          </div>
+          
           <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-cyan-900 scrollbar-track-transparent">
               {filteredMessages.length === 0 && !isLoading && (
                   <div className="flex flex-col items-center justify-center h-full opacity-60 px-4">
@@ -365,6 +392,16 @@ const AgentQ: React.FC<AgentQProps> = ({
                 
                 <div className="flex-grow relative">
                     {viewMode === 'console' && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-green-500 font-mono text-sm">{'>'}</span>}
+                    {isVoiceModeEnabled && voiceState === 'listening' && (
+                        <div className="absolute inset-0 bg-cyan-900/20 rounded-lg flex items-center px-3 pointer-events-none">
+                            <div className="flex gap-1 items-center">
+                                <div className="w-1 h-3 bg-cyan-400 animate-voice-bar-1"></div>
+                                <div className="w-1 h-5 bg-cyan-400 animate-voice-bar-2"></div>
+                                <div className="w-1 h-2 bg-cyan-400 animate-voice-bar-3"></div>
+                                <span className="ml-2 text-[10px] text-cyan-400 font-mono uppercase animate-pulse">Listening...</span>
+                            </div>
+                        </div>
+                    )}
                     <input 
                       type="text"
                       value={input}
@@ -438,6 +475,12 @@ const AgentQ: React.FC<AgentQProps> = ({
                     </button>
                 </div>
             </div>
+            
+            {/* Live Audio Synthesizer Enhancement for Embedded View */}
+            <div className="px-3 py-2 border-b border-cyan-900/20">
+                <AudioSynthesizer isActive={isOpen} isSpeaking={isSpeaking} />
+            </div>
+            
             {showMemory ? memoryView : chatHistoryView}
         </div>
     );
@@ -484,7 +527,16 @@ const AgentQ: React.FC<AgentQProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 relative z-10">
+                <div className="flex items-center gap-2 relative z-10">
+                {isVoiceSupported && (
+                  <button 
+                    onClick={onToggleVoiceMode}
+                    className={`p-2 rounded-lg border transition-all ${isVoiceModeEnabled ? 'bg-red-500/10 border-red-500/50 text-red-400' : 'bg-slate-900 border-slate-800 text-gray-600'}`}
+                    title={isVoiceModeEnabled ? "Disable Voice Conversation" : "Enable Voice Conversation"}
+                  >
+                    {isVoiceModeEnabled ? <MicIcon className="w-4 h-4 animate-pulse" /> : <MicOffIcon className="w-4 h-4" />}
+                  </button>
+                )}
                 <button 
                   onClick={() => setViewMode(prev => prev === 'chat' ? 'console' : prev === 'console' ? 'unified' : 'chat')}
                   className={`p-2 rounded-lg border transition-all ${viewMode === 'unified' ? 'bg-purple-900/20 border-purple-500/50 text-purple-400' : viewMode === 'console' ? 'bg-green-900/20 border-green-500/50 text-green-400' : 'bg-slate-900 border-slate-800 text-gray-600'}`}
@@ -497,7 +549,7 @@ const AgentQ: React.FC<AgentQProps> = ({
                   className={`p-2 rounded-lg border transition-all ${isTtsEnabled ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-300' : 'bg-slate-900 border-slate-800 text-gray-600'}`}
                   title={isTtsEnabled ? "Mute Agent" : "Enable Voice"}
                 >
-                  {isTtsEnabled ? <MicIcon className="w-4 h-4" /> : <MicOffIcon className="w-4 h-4" />}
+                  {isTtsEnabled ? <Volume2Icon className="w-4 h-4" /> : <VolumeXIcon className="w-4 h-4" />}
                 </button>
                 <button 
                   onClick={() => setShowMemory(!showMemory)}
