@@ -44,6 +44,8 @@ import DERGridOptimizer from '../components/DERGridOptimizer';
 import QOSKernelConsole from '../components/QOSKernelConsole';
 import QuantumEngineeringDesign from '../components/QuantumEngineeringDesign';
 import GoldDatasetCuration from '../components/GoldDatasetCuration';
+import KernelDebugger from '../components/KernelDebugger';
+import SystemArchitectureMap from '../components/SystemArchitectureMap';
 import AgentQSelfTrainingEvolution from '../ai-core/AgentQSelfTrainingEvolution';
 
 const ChipsDevPlatform = React.lazy(() => import('../components/ChipsDevPlatform'));
@@ -155,6 +157,8 @@ export const usePanelContent = (props: UsePanelContentProps) => {
             case 'qkd-sim': return <QKDSimulator />;
             case 'q-denoise': return <QDeNoiseProcessor />;
             case 'gold-dataset-curation': return <GoldDatasetCuration />;
+            case 'kernel-debugger': return <KernelDebugger />;
+            case 'system-architecture-map': return <SystemArchitectureMap />;
             default: {
                 const installedApp = hydratedApps.find(a => a.id === id && a.status === 'installed');
                 if (installedApp) {

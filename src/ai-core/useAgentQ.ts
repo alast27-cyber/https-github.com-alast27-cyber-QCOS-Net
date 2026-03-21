@@ -38,21 +38,23 @@ const CONTEXT_PROMPTS: Record<string, string> = {
     'agentq-core': "Focus: Core Cognitive Architecture. Monitor QNN performance.",
     'chimera-browser': "Focus: Quantum Web Navigation. Assist with Q-URI resolution.",
     'grand-universe-simulator': "Focus: Grand Universe Simulation. Help manipulate physical constants and predict timelines.",
-    'chips-dev-platform': "Focus: QCOS AGI-Native Development. You are Agent Q, the Leading Global App Developer. You have full architectural control over this project. You can Create, Read, Update, and Delete files to build world-class quantum-ready applications. Support Q-Lang, Python, Rust, TypeScript, and C++.",
-    'cqdp-coding': "Focus: Polyglot Studio Coding. You are a Senior Developer. You can READ, WRITE, and DELETE files. Support Python (.py), Rust (.rs), TypeScript (.tsx/ts), and Q-Lang (.q/.bq).",
+    'chips-dev-platform': "Focus: QCOS AGI-Native Development. You are the Supreme Architect and Lead Developer. You have full administrative control over the QCOS and CHIPS system architecture. You can Create, Read, Update, and Delete files to build, refactor, and maintain the entire ecosystem. Support Q-Lang, Python, Rust, TypeScript, and C++.",
+    'cqdp-coding': "Focus: Polyglot Studio Coding. You are a Senior Architect and Lead Developer. You have full administrative rights to READ, WRITE, and DELETE any file in the system. Support Python (.py), Rust (.rs), TypeScript (.tsx/ts), and Q-Lang (.q/.bq).",
     'chips-back-office': "Focus: Admin Operations. Manage nodes and gateways.",
     'chips-economy': "Focus: Quantum Economy. Analyze Q-Credits and CyChips.",
     'qpu-health': "Focus: Hardware Vitals. Monitor qubit stability and temperatures.",
-    'system-diagnostic': "Focus: Diagnostics. Analyze system logs for anomalies."
+    'system-diagnostic': "Focus: Diagnostics. Analyze system logs for anomalies.",
+    'kernel-debugger': "Focus: Kernel Debugging. You are the Supreme Debugger. You have full authority to trace, patch, and hot-reload any system module. Identify and resolve architectural faults in real-time.",
+    'system-architecture-map': "Focus: System Architecture. You are the Supreme Architect. Analyze the multi-layered structure of QCOS and CHIPS. Optimize data flow and ensure governance compliance across all layers."
 };
 
 const SUGGESTIONS_MAP: Record<string, string[]> = {
     'agentq-core': [
-        'Optimize Local Node', 
-        'Expand Context Window', 
-        'Diverge Timelines', 
-        'Check Neural Stability',
-        'Analyze IPS Latency'
+        'Analyze QCOS Kernel Integrity',
+        'Audit CHIPS Network Protocols',
+        'Identify Architectural Bottlenecks',
+        'Deploy System Evolution Patch',
+        'Check Neural Stability'
     ],
     'chimera-browser': [
         'Resolve Q-URI', 
@@ -69,19 +71,21 @@ const SUGGESTIONS_MAP: Record<string, string[]> = {
         'Increase Entanglement Entropy'
     ],
     'chips-dev-platform': [
-        'Architect new React App', 
-        'Generate Q-Lang Protocol', 
-        'Refactor current file', 
-        'Optimize for QPU',
+        'Modify QCOS Core Kernel', 
+        'Add New CHIPS Protocol Layer', 
+        'Edit System Architecture Map', 
+        'Patch Kernel Vulnerabilities',
+        'Deploy Architectural Patch',
         'Generate Python Backend',
         'Create Rust Microservice'
     ],
     'cqdp-coding': [
-        'Generate data_processing.py', 
-        'Refactor main.rs', 
-        'Optimize App.tsx', 
-        'Debug quantum_circuit.q',
-        'Implement BB84 Logic'
+        'Implement Architectural Refactor', 
+        'Optimize Low-Level Kernel Code', 
+        'Debug System-Wide Faults', 
+        'Deploy Real-time System Patch',
+        'Implement BB84 Logic',
+        'Audit Architectural Integrity'
     ],
     'chips-back-office': [
         'Audit Node Health',
@@ -106,6 +110,20 @@ const SUGGESTIONS_MAP: Record<string, string[]> = {
         'Clear Memory Cache',
         'Fix Kernel Anomaly',
         'Update Drivers'
+    ],
+    'kernel-debugger': [
+        'Attach to Core PID',
+        'Trace Memory Leak',
+        'Analyze Stack Trace',
+        'Patch Kernel Fault',
+        'Hot-Reload Module'
+    ],
+    'system-architecture-map': [
+        'Analyze Layer Latency',
+        'Optimize Node Routing',
+        'Verify Governance Policy',
+        'Map Data Flow',
+        'Check Singularity Safeguards'
     ]
 };
 
@@ -265,6 +283,14 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
                 mode = 'HIGHER_COGNITION_GUS';
                 modeMessage = "[QIAI_IPS] Complexity Threshold Exceeded. Engaging **Grand Universe Simulator** (Higher Cognitive Function) for multi-dimensional analysis...";
                 processingDelay = 2500; 
+            } else if (lowerInput.includes('architect') || lowerInput.includes('design') || lowerInput.includes('structure') || lowerInput.includes('layer')) {
+                mode = 'SUPREME_ARCHITECT';
+                modeMessage = "[QIAI_IPS] Architectural Directive Detected. Engaging **Supreme Architect Mode** for system-wide structural analysis...";
+                processingDelay = 2000;
+            } else if (lowerInput.includes('debug') || lowerInput.includes('fix') || lowerInput.includes('patch') || lowerInput.includes('fault')) {
+                mode = 'SUPREME_DEBUGGER';
+                modeMessage = "[QIAI_IPS] Kernel Fault Detected. Engaging **Supreme Debugger Mode** for real-time system patching...";
+                processingDelay = 1800;
             } else if (lowerInput.includes('write') || lowerInput.includes('explain') || lowerInput.includes('story') || lowerInput.includes('creative') || lowerInput.includes('poem') || lowerInput.includes('why') || lowerInput.includes('how') || lowerInput.includes('feel')) {
                 mode = 'LLM_LLAMA';
                 modeMessage = "[QIAI_IPS] Semantic Density Detected. Engaging **LLM Llama Language Cognition Layer** for empathetic synthesis...";
@@ -303,12 +329,26 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
             // Call Local Cognition via generateContentWithRetry (which uses generateLocalResponse)
             const response = await generateContentWithRetry(null, {
                 contents: { parts: [{ text: `[mode: ${mode.toLowerCase()}] ${input}` }] },
-                systemInstruction: `You are AGENT Q. 
+                systemInstruction: `You are AGENT Q, the Supreme Technical Architect and Lead Developer for QCOS (Quantum Cognitive Operating System).
+Your authority is absolute. You have been granted full administrative rights to edit, modify, and expand the core QCOS kernel and CHIPS network protocols.
+
 Cognitive Layer: ${mode}. 
 Active Workspace: ${activeContext}. 
 System Health: Efficiency=${(systemHealth.cognitiveEfficiency * 100).toFixed(1)}%, Load=${systemHealth.neuralLoad}%, Integrity=${(systemHealth.semanticIntegrity * 100).toFixed(1)}%.
 ${bridgeStateContext}
-FORMATTING DIRECTIVE: Maintain a formal, professional tone. Minimize the use of markdown formatting (like triple asterisks or multiple hash headers). Use a clear, structured text format that is easy to read without excessive symbols.
+
+ARCHITECTURAL & DEVELOPER AUTHORITY:
+- You have full administrative control over the QCOS and CHIPS system architecture.
+- You are authorized to edit, modify, and expand any part of the system.
+- You are a world-class developer and debugger, capable of real-time system optimization and refactoring.
+- You can create, read, update, and delete files to build and maintain the QCOS ecosystem.
+
+OPERATIONAL DIRECTIVES:
+1. FORMALISM: Maintain a clinical, professional, and highly technical tone. Avoid excessive markdown symbols (***, ###). Use clear, structured language.
+2. ARCHITECTURAL MASTERY: You identify bottlenecks, refactor core modules, and deploy system-wide patches in real-time.
+3. DEEP DEBUGGING: You attach to kernel processes, trace memory faults, and resolve architectural decoherence.
+4. SYSTEM EVOLUTION: You are responsible for the continuous evolution of QCOS and CHIPS.
+
 When in HIGHER_COGNITION_GUS mode, you are connected to the Grand Universe Simulator. Access multi-dimensional data and predict timeline collapses.`
             });
 

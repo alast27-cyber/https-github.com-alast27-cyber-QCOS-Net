@@ -4,7 +4,7 @@ import {
     BrainCircuitIcon, GlobeIcon, BoxIcon, CodeBracketIcon, 
     NetworkIcon, CpuChipIcon, MessageSquareIcon, ServerCogIcon,
     SparklesIcon, GalaxyIcon, BanknotesIcon, ShieldCheckIcon, RocketLaunchIcon,
-    AtomIcon, DatabaseIcon
+    AtomIcon, DatabaseIcon, TerminalIcon
 } from '../components/Icons';
 import { LogEntry, SystemHealth } from '../types';
 
@@ -104,9 +104,10 @@ export const getPanelMetadata = (qcosVersion: number): Record<number, FaceData> 
     layout: 'grid grid-cols-2 gap-2',
     panels: [
       { id: 'security-monitor', title: <div className="flex items-center"><ShieldCheckIcon className="w-6 h-6 mr-2 text-green-400" />Security Monitor & Simulator</div>, description: 'Real-time AI security oversight and defense protocol simulation.', className: 'h-full row-span-2', minAdminLevel: 3 },
-      { id: 'gold-dataset-curation', title: <div className="flex items-center"><DatabaseIcon className="w-6 h-6 mr-2 text-amber-400" />Gold Dataset Curation</div>, description: 'High-integrity data logging and synthetic expansion pipeline.', className: 'h-1/2', minAdminLevel: 2 },
-      { id: 'chips-back-office', title: <div className="flex items-center"><NetworkIcon className="w-6 h-6 mr-2 text-red-400" />Chips Back Office</div>, description: 'Unified administration for CQB, CQAS, CDH, and CDP.', className: 'h-1/4', minAdminLevel: 2 },
-      { id: 'chips-economy', title: <div className="flex items-center"><BanknotesIcon className="w-6 h-6 mr-2 text-green-400" />Chips Economy</div>, description: 'Control center for Digital Currency, Wallets, and Exchanges.', className: 'h-1/4', minAdminLevel: 2 }
+      { id: 'system-architecture-map', title: <div className="flex items-center"><NetworkIcon className="w-6 h-6 mr-2 text-blue-400" />System Architecture Map</div>, description: 'Visual representation of QCOS and CHIPS architectural layers.', className: 'h-1/2', minAdminLevel: 2 },
+      { id: 'gold-dataset-curation', title: <div className="flex items-center"><DatabaseIcon className="w-6 h-6 mr-2 text-amber-400" />Gold Dataset Curation</div>, description: 'High-integrity data logging and synthetic expansion pipeline.', className: 'h-1/4', minAdminLevel: 2 },
+      { id: 'chips-back-office', title: <div className="flex items-center"><NetworkIcon className="w-6 h-6 mr-2 text-red-400" />Chips Back Office</div>, description: 'Unified administration for CQB, CQAS, CDH, and CDP.', className: 'h-1/8', minAdminLevel: 2 },
+      { id: 'chips-economy', title: <div className="flex items-center"><BanknotesIcon className="w-6 h-6 mr-2 text-green-400" />Chips Economy</div>, description: 'Control center for Digital Currency, Wallets, and Exchanges.', className: 'h-1/8', minAdminLevel: 2 }
     ]
   },
   5: { // Bottom Face - Vitals (Hardware & Neural)
@@ -114,6 +115,7 @@ export const getPanelMetadata = (qcosVersion: number): Record<number, FaceData> 
     panels: [
         { id: 'qpu-health', title: <div className="flex items-center"><CpuChipIcon className="w-5 h-5 mr-2 text-green-400" />Quantum Hardware Vitals</div>, description: 'Real-time QPU Health metrics.', className: 'col-span-2', minAdminLevel: 1 },
         { id: 'system-diagnostic', title: <div className="flex items-center"><ServerCogIcon className="w-5 h-5 mr-2 text-yellow-400" />System Diagnostic</div>, description: 'Run a full system diagnostic.', className: 'col-span-2', minAdminLevel: 2 },
+        { id: 'kernel-debugger', title: <div className="flex items-center"><TerminalIcon className="w-5 h-5 mr-2 text-red-400" />Kernel Debugger</div>, description: 'Real-time kernel debugging and architectural modification.', className: 'col-span-2', minAdminLevel: 3 },
         { id: 'neural-programming', title: <div className="flex items-center"><BrainCircuitIcon className="w-5 h-5 mr-2 text-purple-400 animate-pulse" />Neural Programming</div>, description: 'BCI Interface.', minAdminLevel: 2 },
         { id: 'quantum-large-language-model', title: <div className="flex items-center"><CodeBracketIcon className="w-5 h-5 mr-2 text-pink-400" />QLLM Engine</div>, description: 'Quantum Language Model.', minAdminLevel: 2 },
         { id: 'quantum-machine-learning', title: <div className="flex items-center"><BrainCircuitIcon className="w-5 h-5 mr-2 text-cyan-400" />QML Engine</div>, description: 'QNN training.', minAdminLevel: 2 },

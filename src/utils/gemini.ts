@@ -273,14 +273,45 @@ const generateLocalResponse = (params: any): LocalResponse => {
         };
     }
 
+    // 3.1 Architectural & Debugger Triggers
+    if (prompt.includes('[mode: supreme_architect]')) {
+        return {
+            text: "[SUPREME ARCHITECT] Architectural Directive Received. Analyzing system-wide structural integrity... \n\n*Mapping QCOS Kernel layers...*\n*Verifying CHIPS Network protocols...*\n*Identifying expansion vectors...*\n\nStatus: Architectural Map Synchronized. I am ready to modify, edit, or expand any part of the QCOS and CHIPS system. Please provide specific architectural parameters.",
+            functionCalls: [{
+                name: 'triggerSystemEvolution',
+                args: {
+                    evolutionType: 'system',
+                    description: 'Architectural Mastery (Supreme Architect Mode)'
+                }
+            }]
+        };
+    }
+
+    if (prompt.includes('[mode: supreme_debugger]')) {
+        return {
+            text: "[SUPREME DEBUGGER] Kernel Fault Directive Received. Attaching to core system processes... \n\n*Scanning for memory leaks...*\n*Analyzing stack traces...*\n*Identifying architectural bottlenecks...*\n\nStatus: Debugger Active. I have full authority to trace, patch, and hot-reload any system module. System faults are being identified and queued for real-time resolution.",
+            functionCalls: [{
+                name: 'triggerSystemEvolution',
+                args: {
+                    evolutionType: 'system',
+                    description: 'Deep-System Debugging (Supreme Debugger Mode)'
+                }
+            }]
+        };
+    }
+
     let category: keyof typeof LOCAL_KNOWLEDGE_BASE = 'default';
 
     // 3.5 Mode Injection Handling
-    if (prompt.includes('[mode: grand_universe]')) {
+    if (prompt.includes('[mode: higher_cognition_gus]')) {
         category = 'simulate';
-    } else if (prompt.includes('[mode: qllm]')) {
+    } else if (prompt.includes('[mode: llm_llama]')) {
         category = 'qllm_chat';
-    } else if (prompt.includes('[mode: qiai_ips]')) {
+    } else if (prompt.includes('[mode: supreme_architect]')) {
+        category = 'semantic_supervisor';
+    } else if (prompt.includes('[mode: supreme_debugger]')) {
+        category = 'optimize';
+    } else if (prompt.includes('[mode: conscious_qiai_ips]')) {
         if (prompt.includes('status') || prompt.includes('health')) category = 'status';
         else if (prompt.includes('optimize') || prompt.includes('fix')) category = 'optimize';
         else category = 'default';
