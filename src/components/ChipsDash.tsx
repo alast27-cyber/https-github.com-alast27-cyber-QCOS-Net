@@ -5,12 +5,22 @@ import { useQuantumApps } from '../hooks/useQuantumApps';
 
 const ChipsDash: React.FC = () => {
     const [barHeights] = React.useState(() => Array.from({ length: 20 }).map(() => 20 + Math.random() * 80));
+    const [backofficeMode, setBackofficeMode] = React.useState<'collapsed' | 'normal' | 'fullscreen'>('normal');
     
     // Dummy functions for useQuantumApps
     const addLog = () => {};
     const handlePanelSelect = () => {};
     
     const { marketApps, uriAssignments } = useQuantumApps(addLog, handlePanelSelect);
+
+    const toggleBackoffice = () => {
+        if (backofficeMode === 'collapsed') setBackofficeMode('normal');
+        else if (backofficeMode === 'normal') setBackofficeMode('fullscreen');
+        else setBackofficeMode('collapsed');
+    };
+
+    const isFullscreen = backofficeMode === 'fullscreen';
+    const isCollapsed = backofficeMode === 'collapsed';
 
     return (
         <div className="h-full flex flex-col p-6 bg-black/40 rounded-xl border-2 border-emerald-500/30 text-emerald-100 font-mono relative overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.15)]">
@@ -138,11 +148,23 @@ const ChipsDash: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="bg-black/50 border border-emerald-900/50 rounded-xl p-4 h-1/3 min-h-[150px]">
-                        <h3 className="text-emerald-400 font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <SettingsIcon className="w-4 h-4" /> Backoffice
-                        </h3>
-                        <CHIPSBackOffice uriAssignments={uriAssignments} marketApps={marketApps} />
+                    <div className={`bg-black/50 border border-emerald-900/50 rounded-xl p-4 ${isFullscreen ? 'fixed inset-4 z-[100] flex flex-col' : 'h-auto min-h-[150px]'}`}>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-emerald-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                                <SettingsIcon className="w-4 h-4" /> Backoffice
+                            </h3>
+                            <button 
+                                onClick={toggleBackoffice}
+                                className="text-emerald-500 hover:text-emerald-300 transition-colors"
+                            >
+                                {isCollapsed ? '▼' : isFullscreen ? '▣' : '▲'}
+                            </button>
+                        </div>
+                        {!isCollapsed && (
+                            <div className={isFullscreen ? 'flex-grow overflow-auto' : ''}>
+                                <CHIPSBackOffice uriAssignments={uriAssignments} marketApps={marketApps} />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -10,7 +10,7 @@ import {
 } from './Icons';
 import MemoryMatrix from './MemoryMatrix';
 import { useAgentQ } from '../ai-core/useAgentQ';
-import { useSimulation } from '../context/SimulationContext';
+import { useSimulation, QIAIIPSState } from '../context/SimulationContext';
 import { useToast } from '../context/ToastContext';
 
 // --- Types ---
@@ -114,13 +114,13 @@ const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> 
         
         if (universeName.includes("Neural")) {
             boostType = "Synaptic Efficiency";
-            updateQIAIIPS({ qcl: { ...qiaiIps.qcl, coherence: Math.min(1.0, qiaiIps.qcl.coherence + 0.005), load: 45 } });
+            updateQIAIIPS((prev: QIAIIPSState) => ({ ...prev, qcl: { ...prev.qcl, coherence: Math.min(1.0, prev.qcl.coherence + 0.005), load: 45 } }));
         } else if (universeName.includes("Engineering")) {
             boostType = "Circuit Depth";
-            updateQIAIIPS({ qips: { ...qiaiIps.qips, coherence: Math.min(1.0, qiaiIps.qips.coherence + 0.005) } });
+            updateQIAIIPS((prev: QIAIIPSState) => ({ ...prev, qips: { ...prev.qips, coherence: Math.min(1.0, prev.qips.coherence + 0.005) } }));
         } else if (universeName.includes("Material")) {
             boostType = "Molecular Simulation Speed";
-            updateQIAIIPS({ qil: { ...qiaiIps.qil, coherence: Math.min(1.0, qiaiIps.qil.coherence + 0.005) } });
+            updateQIAIIPS((prev: QIAIIPSState) => ({ ...prev, qil: { ...prev.qil, coherence: Math.min(1.0, prev.qil.coherence + 0.005) } }));
         }
 
         // 2. Notify User
@@ -129,7 +129,7 @@ const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> 
         
         // 3. Update Visuals
         setGlobalCoherence(prev => Math.min(100, prev + 0.05));
-    }, [updateQIAIIPS, qiaiIps, addToast]);
+    }, [updateQIAIIPS, addToast]);
 
     // --- Simulation Loop ---
     useEffect(() => {

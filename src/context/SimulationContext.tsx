@@ -204,12 +204,14 @@ interface QCEState {
     isEntangled: boolean;
 }
 
-interface QIAIIPSState {
+export interface QIAIIPSState {
     qil: { coherence: number; status: 'INGESTING' | 'IDLE'; load: number };
     qips: { coherence: number; status: 'SOLVING' | 'IDLE'; load: number };
     qcl: { coherence: number; status: 'GOVERNING' | 'IDLE'; load: number };
     globalSync: number;
 }
+
+export type QIAIIPSUpdate = Partial<QIAIIPSState> | ((prev: QIAIIPSState) => QIAIIPSState);
 
 interface TelemetryFeed {
     name: string;
@@ -326,7 +328,7 @@ interface SimulationContextType {
     toggleQRLtoUniverseLink: (active: boolean) => void;
     toggleQRLtoGatewayLink: (active: boolean) => void;
     toggleQLLMAutoTopology: () => void;
-    updateQIAIIPS: (updates: Partial<QIAIIPSState>) => void;
+    updateQIAIIPS: (updates: QIAIIPSUpdate) => void;
     toggleUniverseToKernel: (active: boolean) => void; 
     toggleUniverseToAgentQ: (active: boolean) => void;
     toggleSourceEntanglement: (id: string | 'ALL') => void; // Updated for bulk action
@@ -1063,7 +1065,15 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         addToast("Global Simulation Matrix Activated", "success");
     }, [addToast]);
 
-    const updateQIAIIPS = useCallback((updates: Partial<QIAIIPSState>) => setQiaiIps(prev => ({ ...prev, ...updates })), []);
+    const updateQIAIIPS = useCallback((updates: QIAIIPSUpdate) => {
+        setQiaiIps(prev => {
+            if (typeof updates === 'function') {
+                return updates(prev);
+            } else {
+                return { ...prev, ...updates };
+            }
+        });
+    }, []);
 
     const toggleUniverseToKernel = useCallback((active: boolean) => {
         setUniverseConnections(prev => ({ ...prev, kernel: active }));
