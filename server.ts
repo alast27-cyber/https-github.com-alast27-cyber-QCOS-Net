@@ -46,6 +46,9 @@ async function startServer() {
     res.json({ status: "ok", uptime: process.uptime() });
   });
 
+  // Serve scripts directory for downloads
+  app.use('/scripts', express.static(path.join(process.cwd(), 'scripts')));
+
   // --- AGI Roadmap State ---
   // (Moved to server/services/roadmap.ts)
 

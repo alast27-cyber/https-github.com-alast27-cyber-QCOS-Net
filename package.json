@@ -18,6 +18,7 @@
     "cleanup": "node scripts/cleanup.js"
   },
   "dependencies": {
+    "@google/genai": "^1.46.0",
     "@monaco-editor/react": "^4.6.0",
     "@tailwindcss/vite": "^4.2.0",
     "@webcontainer/api": "^1.1.0",

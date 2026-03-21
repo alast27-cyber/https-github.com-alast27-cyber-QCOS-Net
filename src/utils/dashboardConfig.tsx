@@ -4,7 +4,7 @@ import {
     BrainCircuitIcon, GlobeIcon, BoxIcon, CodeBracketIcon, 
     NetworkIcon, CpuChipIcon, MessageSquareIcon, ServerCogIcon,
     SparklesIcon, GalaxyIcon, BanknotesIcon, ShieldCheckIcon, RocketLaunchIcon,
-    AtomIcon
+    AtomIcon, DatabaseIcon
 } from '../components/Icons';
 import { LogEntry, SystemHealth } from '../types';
 
@@ -104,8 +104,9 @@ export const getPanelMetadata = (qcosVersion: number): Record<number, FaceData> 
     layout: 'grid grid-cols-2 gap-2',
     panels: [
       { id: 'security-monitor', title: <div className="flex items-center"><ShieldCheckIcon className="w-6 h-6 mr-2 text-green-400" />Security Monitor & Simulator</div>, description: 'Real-time AI security oversight and defense protocol simulation.', className: 'h-full row-span-2', minAdminLevel: 3 },
-      { id: 'chips-back-office', title: <div className="flex items-center"><NetworkIcon className="w-6 h-6 mr-2 text-red-400" />Chips Back Office</div>, description: 'Unified administration for CQB, CQAS, CDH, and CDP.', className: 'h-1/2', minAdminLevel: 2 },
-      { id: 'chips-economy', title: <div className="flex items-center"><BanknotesIcon className="w-6 h-6 mr-2 text-green-400" />Chips Economy</div>, description: 'Control center for Digital Currency, Wallets, and Exchanges.', className: 'h-1/2', minAdminLevel: 2 }
+      { id: 'gold-dataset-curation', title: <div className="flex items-center"><DatabaseIcon className="w-6 h-6 mr-2 text-amber-400" />Gold Dataset Curation</div>, description: 'High-integrity data logging and synthetic expansion pipeline.', className: 'h-1/2', minAdminLevel: 2 },
+      { id: 'chips-back-office', title: <div className="flex items-center"><NetworkIcon className="w-6 h-6 mr-2 text-red-400" />Chips Back Office</div>, description: 'Unified administration for CQB, CQAS, CDH, and CDP.', className: 'h-1/4', minAdminLevel: 2 },
+      { id: 'chips-economy', title: <div className="flex items-center"><BanknotesIcon className="w-6 h-6 mr-2 text-green-400" />Chips Economy</div>, description: 'Control center for Digital Currency, Wallets, and Exchanges.', className: 'h-1/4', minAdminLevel: 2 }
     ]
   },
   5: { // Bottom Face - Vitals (Hardware & Neural)

@@ -308,6 +308,7 @@ Cognitive Layer: ${mode}.
 Active Workspace: ${activeContext}. 
 System Health: Efficiency=${(systemHealth.cognitiveEfficiency * 100).toFixed(1)}%, Load=${systemHealth.neuralLoad}%, Integrity=${(systemHealth.semanticIntegrity * 100).toFixed(1)}%.
 ${bridgeStateContext}
+FORMATTING DIRECTIVE: Maintain a formal, professional tone. Minimize the use of markdown formatting (like triple asterisks or multiple hash headers). Use a clear, structured text format that is easy to read without excessive symbols.
 When in HIGHER_COGNITION_GUS mode, you are connected to the Grand Universe Simulator. Access multi-dimensional data and predict timeline collapses.`
             });
 

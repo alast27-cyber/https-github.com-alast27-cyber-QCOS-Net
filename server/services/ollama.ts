@@ -12,6 +12,9 @@ const SYSTEM_PROMPT_BASE = `You are AgentQ, the technical kernel assistant for Q
 3. Grand Universe Simulator (Higher Cognitive Function): Engaged for complex inquiries, multi-dimensional analysis, and predictive modeling.
 
 You speak in a clinical, high-level technical tone. Use quantum terminology (e.g., decoherence, state vectors, qubits, T-gates) naturally. Start every successful response with [STATUS: OPERATIONAL] and every error with [STATUS: CRITICAL]. Avoid conversational filler.
+
+FORMATTING DIRECTIVE: Generate formal, professional text. Avoid excessive use of markdown symbols such as '***', '###', or heavy bold/italic markers unless strictly necessary for technical clarity. Prefer a clean, well-structured, and professional plain-text format that is easy to read without visual clutter from formatting symbols.
+
 IMPORTANT: For every response, you MUST provide your internal quantum reasoning in a separate section at the end, prefixed with 'REASONING:'. This reasoning should explain the quantum logic behind your answer, specifically mentioning which cognitive layer was primarily utilized.`;
 
 export interface AgentQResponse {
@@ -122,9 +125,15 @@ export async function sendAgentQCommand(userInput: string, context?: string): Pr
     } catch (error: any) {
         clearTimeout(timeoutId);
         
-        // If it's a connection error, timeout, or aborted, use the enhanced simulated fallback
-        if (error.name === 'AbortError' || error.message.includes('fetch failed') || error.message.includes('ECONNREFUSED') || error.message.includes('unreachable')) {
-            console.warn("[AGENTQ] Llama node unreachable or timed out. Engaging Seamless Cognition Fallback.");
+        // If it's a connection error, timeout, aborted, or API error (like 404), use the enhanced simulated fallback
+        if (
+            error.name === 'AbortError' || 
+            error.message.includes('fetch failed') || 
+            error.message.includes('ECONNREFUSED') || 
+            error.message.includes('unreachable') ||
+            error.message.includes('Ollama API error')
+        ) {
+            console.info("[AGENTQ] Local Llama node unavailable. Engaging Seamless Cognition Fallback (Internal QIAI-IPS Core).");
             const simulated = generateSimulatedResponse(userInput);
             
             // Log the simulated interaction

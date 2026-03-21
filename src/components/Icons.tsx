@@ -67,6 +67,7 @@ export const AlertTriangleIcon = AlertTriangle || Fallback;
 export const TimelineIcon = Activity || Fallback; 
 export const BugAntIcon = Bug || Fallback;
 export const FileCodeIcon = FileCode || Fallback;
+export const FileJsonIcon = FileCode || Fallback;
 export const ArrowRightIcon = ArrowRight || Fallback;
 export const MessageSquareIcon = MessageSquare || Fallback;
 export const ChevronLeftIcon = ChevronLeft || Fallback;

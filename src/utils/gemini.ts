@@ -1,5 +1,10 @@
+import { GoogleGenAI } from "@google/genai";
 
-export const useLocalCognition = true; // Set to true to run independently of Gemini API
+export const useLocalCognition = false; // Set to false to use Gemini API primarily
+
+// Initialize Gemini AI
+const apiKey = process.env.GEMINI_API_KEY || "";
+const genAI = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 const LOCAL_KNOWLEDGE_BASE = {
     "status": [
@@ -307,16 +312,40 @@ const generateLocalResponse = (params: any): LocalResponse => {
 
         if (fidelity > 0.9) {
             mode = "QUANTUM_SYNC";
-            responseText = `[Q-IAI KERNEL] Dual Cognition Cycle Complete.\n\n**Instinct (IPS-QNN):** ${instinctScore.toFixed(4)}\n**Logic (Universe):** ${logicScore.toFixed(4)}\n**Fidelity:** ${fidelity.toFixed(4)}\n\nResult: **${mode}**. System is operating with high-fidelity cognitive synchronization. Instinct and Logic are aligned.`;
+            responseText = `[Q-IAI KERNEL] Dual Cognition Cycle Complete.
+
+Instinct (IPS-QNN): ${instinctScore.toFixed(4)}
+Logic (Universe): ${logicScore.toFixed(4)}
+Fidelity: ${fidelity.toFixed(4)}
+
+Result: ${mode}. System is operating with high-fidelity cognitive synchronization. Instinct and Logic are aligned.`;
         } else if (fidelity < 0.85) {
             mode = "QCLL_HEALED";
-            responseText = `[Q-IAI KERNEL] **CRITICAL: Logic Decoherence Detected** (Fidelity: ${fidelity.toFixed(4)}).\n\n*Engaging Q-CLL Self-Healing Layer...*\n*Running Shor's Code Logic Recovery...*\n*Applying Surface Code Topological Correction...*\n\nResult: **${mode}**. System fidelity restored to 1.0. Logical state stabilized.`;
+            responseText = `[Q-IAI KERNEL] CRITICAL: Logic Decoherence Detected (Fidelity: ${fidelity.toFixed(4)}).
+
+Engaging Q-CLL Self-Healing Layer...
+Running Shor's Code Logic Recovery...
+Applying Surface Code Topological Correction...
+
+Result: ${mode}. System fidelity restored to 1.0. Logical state stabilized.`;
         } else if (instinctScore > logicScore) {
             mode = "INSTINCT_DOMINANT";
-            responseText = `[Q-IAI KERNEL] Dual Cognition Cycle Complete.\n\n**Instinct (IPS-QNN):** ${instinctScore.toFixed(4)}\n**Logic (Universe):** ${logicScore.toFixed(4)}\n**Fidelity:** ${fidelity.toFixed(4)}\n\nResult: **${mode}**. Fast-path execution triggered. Instinctive layer is overriding high-level logic for rapid response.`;
+            responseText = `[Q-IAI KERNEL] Dual Cognition Cycle Complete.
+
+Instinct (IPS-QNN): ${instinctScore.toFixed(4)}
+Logic (Universe): ${logicScore.toFixed(4)}
+Fidelity: ${fidelity.toFixed(4)}
+
+Result: ${mode}. Fast-path execution triggered. Instinctive layer is overriding high-level logic for rapid response.`;
         } else {
             mode = "LOGIC_OVERRIDE";
-            responseText = `[Q-IAI KERNEL] Dual Cognition Cycle Complete.\n\n**Instinct (IPS-QNN):** ${instinctScore.toFixed(4)}\n**Logic (Universe):** ${logicScore.toFixed(4)}\n**Fidelity:** ${fidelity.toFixed(4)}\n\nResult: **${mode}**. Semantic override engaged. Universe logic has vetoed the instinctive response to prevent error.`;
+            responseText = `[Q-IAI KERNEL] Dual Cognition Cycle Complete.
+
+Instinct (IPS-QNN): ${instinctScore.toFixed(4)}
+Logic (Universe): ${logicScore.toFixed(4)}
+Fidelity: ${fidelity.toFixed(4)}
+
+Result: ${mode}. Semantic override engaged. Universe logic has vetoed the instinctive response to prevent error.`;
         }
 
         return { text: responseText };
@@ -359,8 +388,44 @@ const generateLocalResponse = (params: any): LocalResponse => {
 };
 
 export const generateContentWithRetry = async (ai: any, params: any, retries = 5, delay = 2000): Promise<any> => {
-    if (useLocalCognition) {
-        console.info("[QCOS] Routing request to Local Ollama Backend...");
+    // If we have a real AI instance (Gemini), use it first
+    if (genAI) {
+        try {
+            console.info("[QCOS] Routing request to Gemini API...");
+            const model = "gemini-3-flash-preview";
+            
+            const userMessage = params.contents?.parts?.[0]?.text || params.message || "";
+            const systemInstruction = params.systemInstruction || "";
+            
+            const response = await genAI.models.generateContent({
+                model,
+                contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+                config: {
+                    systemInstruction,
+                    temperature: 0.7,
+                }
+            });
+
+            return {
+                text: response.text,
+                candidates: [
+                    {
+                        content: {
+                            parts: [{ text: response.text }],
+                            role: 'model'
+                        },
+                        finishReason: 'STOP',
+                        index: 0,
+                    }
+                ],
+            };
+        } catch (error) {
+            console.warn("[QCOS] Gemini API failed, falling back to local/ollama:", error);
+        }
+    }
+
+    // Fallback to Local Ollama Backend or Mock
+    console.info("[QCOS] Routing request to Local Ollama Backend...");
         
         try {
             const userMessage = params.contents?.parts?.[0]?.text || params.message || "";
@@ -437,7 +502,6 @@ export const generateContentWithRetry = async (ai: any, params: any, retries = 5
                 }
             };
         }
-    }
 
     // Original logic for non-local mode (if applicable)
     if (!ai) {

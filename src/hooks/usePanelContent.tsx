@@ -43,6 +43,7 @@ import AGISingularityInterface from '../components/AGISingularityInterface';
 import DERGridOptimizer from '../components/DERGridOptimizer';
 import QOSKernelConsole from '../components/QOSKernelConsole';
 import QuantumEngineeringDesign from '../components/QuantumEngineeringDesign';
+import GoldDatasetCuration from '../components/GoldDatasetCuration';
 import AgentQSelfTrainingEvolution from '../ai-core/AgentQSelfTrainingEvolution';
 
 const ChipsDevPlatform = React.lazy(() => import('../components/ChipsDevPlatform'));
@@ -153,6 +154,7 @@ export const usePanelContent = (props: UsePanelContentProps) => {
             case 'generic-solver': return <GenericQuantumSolver />;
             case 'qkd-sim': return <QKDSimulator />;
             case 'q-denoise': return <QDeNoiseProcessor />;
+            case 'gold-dataset-curation': return <GoldDatasetCuration />;
             default: {
                 const installedApp = hydratedApps.find(a => a.id === id && a.status === 'installed');
                 if (installedApp) {
