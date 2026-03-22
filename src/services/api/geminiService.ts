@@ -62,9 +62,11 @@ export const generateImageContent = async (
     let imageUrl: string | null = null;
     const text: string | null = response.text || null;
 
-    for (const part of response.candidates[0].content.parts) {
-      if (part.inlineData) {
-        imageUrl = `data:image/png;base64,${part.inlineData.data}`;
+    if (response.candidates && response.candidates.length > 0 && response.candidates[0].content && response.candidates[0].content.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          imageUrl = `data:image/png;base64,${part.inlineData.data}`;
+        }
       }
     }
 
