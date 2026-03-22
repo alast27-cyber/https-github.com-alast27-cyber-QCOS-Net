@@ -16,7 +16,7 @@ import { useSimulation } from '../context/SimulationContext';
 import { useToast } from '../context/ToastContext';
 import { ResponsiveContainer, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend, BarChart, Bar, XAxis, YAxis, Tooltip, AreaChart, Area } from 'recharts';
 
-type HardwareType = 'EEG' | 'fNIRS' | 'INVASIVE_LACE' | 'RF_WIFI' | 'BLUETOOTH_6' | 'QUANTUM_ENTANGLEMENT';
+type HardwareType = 'EEG' | 'fNIRS' | 'INVASIVE_LACE' | 'RF_WIFI' | 'BLUETOOTH_6' | 'QUANTUM_ENTANGLEMENT' | 'infon_entanglement_B_IBQS';
 type ConnectionState = 'DISCONNECTED' | 'SCANNING' | 'CALIBRATING' | 'CONNECTED';
 type PanelMode = 'LIVE' | 'SIMULATOR' | 'PROGRAM' | 'CLINICAL' | 'QUANTUM_OPS';
 type VisualMode = 'WAVEFORM' | 'MANIFOLD';
@@ -598,6 +598,14 @@ const NeuralProgrammingPanel: React.FC = () => {
         }
     }, []);
 
+    // Auto-activate Infon Entanglement for B-IBQS
+    useEffect(() => {
+        if (hardware === 'infon_entanglement_B_IBQS' && connectionState === 'CONNECTED' && !entanglementMesh.isIBQOSToNeuralLinked) {
+            activateInfonEntanglement();
+            addToast('Infon Entanglement Protocol Engaged: Bridging Human Cognition & QCOS', 'success');
+        }
+    }, [hardware, connectionState, entanglementMesh.isIBQOSToNeuralLinked, activateInfonEntanglement, addToast]);
+
     // Physics Loop for Metrics
     useEffect(() => {
         if (connectionState !== 'CONNECTED') return;
@@ -760,6 +768,7 @@ const NeuralProgrammingPanel: React.FC = () => {
                                         <option value="EEG">EEG-CAP (32-CH NON-INVASIVE)</option>
                                         <option value="INVASIVE_LACE">Q-LACE (INVASIVE HI-FIDELITY)</option>
                                         <option value="QUANTUM_ENTANGLEMENT">NON-LOCAL ENTANGLEMENT BRIDGE</option>
+                                        <option value="infon_entanglement_B_IBQS">INFON ENTANGLEMENT B-IBQS</option>
                                     </select>
                                     {connectionState === 'CONNECTED' ? (
                                         <button onClick={disconnectNeuralInterface} className="px-6 py-2.5 bg-red-600/30 border-2 border-red-500 text-red-200 font-black rounded-xl text-xs uppercase hover:bg-red-600/50 transition-all">Detach</button>

@@ -1,5 +1,6 @@
 
 export async function safeFetch<T>(url: string, options?: RequestInit, retries = 3, backoff = 1000): Promise<T> {
+    console.log(`[API] Fetching ${url}`);
     const response = await fetch(url, options);
 
     if (response.status === 429 && retries > 0) {

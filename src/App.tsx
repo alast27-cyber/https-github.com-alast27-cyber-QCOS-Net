@@ -348,7 +348,7 @@ const DashboardContent: React.FC = () => {
   const hudVisibility = maximizedPanelId ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
 
   return (
-    <div ref={dashboardRef} className="relative w-screen h-screen bg-black text-cyan-100 font-mono overflow-hidden flex flex-col perspective-viewport">
+    <div ref={dashboardRef} className="relative w-screen h-screen bg-black text-cyan-100 font-mono overflow-auto flex flex-col perspective-viewport">
       <AnimatedBackground />
       <EntanglementBeams active={qllm.efficiencyBoost > 1} isLinked={entanglementMesh.isUniverseLinkedToQLang} />
       

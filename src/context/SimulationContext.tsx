@@ -95,7 +95,7 @@ interface EntanglementMesh {
 
 interface NeuralInterfaceState {
     isActive: boolean;
-    connectionType: 'EEG' | 'fNIRS' | 'INVASIVE_LACE' | 'RF_WIFI' | 'BLUETOOTH_6' | 'QUANTUM_ENTANGLEMENT';
+    connectionType: 'EEG' | 'fNIRS' | 'INVASIVE_LACE' | 'RF_WIFI' | 'BLUETOOTH_6' | 'QUANTUM_ENTANGLEMENT' | 'infon_entanglement_B_IBQS';
     coherence: number; 
     pairCognitionActive: boolean;
     lastIntent: string | null;

@@ -1,5 +1,6 @@
 import React from 'react';
 import NeuralProgrammingPanel from './NeuralProgrammingPanel';
+import PhiSyncWidget from './PhiSyncWidget';
 
 const NeuralDash: React.FC = () => {
     return (
@@ -11,8 +12,9 @@ const NeuralDash: React.FC = () => {
                 NEURAL - DASH
             </h2>
             
-            <div className="flex-grow z-10 overflow-hidden">
+            <div className="flex-grow z-10 overflow-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <NeuralProgrammingPanel />
+                <PhiSyncWidget />
             </div>
         </div>
     );

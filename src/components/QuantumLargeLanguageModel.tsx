@@ -12,7 +12,7 @@ import { useToast } from '../context/ToastContext';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 const QuantumLargeLanguageModel: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
-    const { qllm, toggleQLLM, setQLLMTraining, updateQLLMConfig, toggleQLLMAutoTopology, systemStatus } = useSimulation();
+    const { qllm, toggleQLLM, setQLLMTraining, updateQLLMConfig, toggleQLLMAutoTopology, systemStatus, entanglementProtocol } = useSimulation();
     const { addToast } = useToast();
 
     // Local UI State
@@ -22,6 +22,13 @@ const QuantumLargeLanguageModel: React.FC<{ embedded?: boolean }> = ({ embedded 
     const [qllmLossHistory, setQllmLossHistory] = useState<{step: number, loss: number}[]>([]);
     const [qllmTrainingStep, setQllmTrainingStep] = useState(0);
     const lossRef = useRef(qllm.loss || 2.5);
+
+    const simulateEntanglement = useCallback(() => {
+        const nodeA = `INFON_NODE_${Math.floor(Math.random() * 1000)}`;
+        const nodeB = `INFON_NODE_${Math.floor(Math.random() * 1000)}`;
+        const bond = entanglementProtocol.entangleInfons(nodeA, nodeB);
+        addToast(`Rulial-Link established between ${nodeA} and ${nodeB} (Fidelity: ${bond.fidelity})`, 'success');
+    }, [entanglementProtocol, addToast]);
 
     useEffect(() => {
         lossRef.current = qllm.loss || 2.5;
@@ -129,6 +136,15 @@ const QuantumLargeLanguageModel: React.FC<{ embedded?: boolean }> = ({ embedded 
                         >
                             {qllm.isAutoTopology ? <RefreshCwIcon className="w-4 h-4 animate-spin" /> : <FastForwardIcon className="w-4 h-4" />}
                             {qllm.isAutoTopology ? 'AUTO-EVOLVE: ACTIVE' : 'AUTO-EVOLVE TOPOLOGY'}
+                        </button>
+
+                        <button 
+                            onClick={simulateEntanglement}
+                            disabled={!qllm.isActive}
+                            className="w-full holographic-button py-3 text-[10px] font-black rounded flex items-center justify-center gap-2 transition-all bg-purple-900/30 border-purple-500/50 text-purple-200 hover:bg-purple-600/30"
+                        >
+                            <BrainCircuitIcon className="w-4 h-4" />
+                            SIMULATE EPR ENTANGLEMENT
                         </button>
 
                         <button 
