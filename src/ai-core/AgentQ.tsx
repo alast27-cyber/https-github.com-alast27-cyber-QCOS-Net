@@ -443,7 +443,7 @@ const AgentQ: React.FC<AgentQProps> = ({
                 onClick={onClearMemory}
                 className="flex-1 py-2 bg-red-900/20 border border-red-800 text-red-400 text-xs font-bold rounded"
             >
-                FLUSH RECALL
+                CLEAR MEMORY
             </button>
             <button 
                 onClick={() => setShowMemory(false)}
