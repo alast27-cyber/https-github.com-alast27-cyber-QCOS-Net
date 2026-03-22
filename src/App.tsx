@@ -31,7 +31,7 @@ import {
 
 // Utils & Types
 import { initialLogs, initialSystemHealth, getPanelMetadata, FaceData } from './utils/dashboardConfig';
-import { LogEntry } from './types';
+import { DashboardAction, LogEntry } from './types';
 
 // Panel Components
 import IAIKernelStatus from './components/IAIKernelStatus';
@@ -165,12 +165,40 @@ const DashboardContent: React.FC = () => {
     setLogs(prev => [{ id: Date.now() + Math.random(), time: new Date().toLocaleTimeString(), level, msg }, ...prev].slice(0, 50));
   }, []);
 
-  const handlePanelSelect = useCallback((panelId: string) => {
-      setMaximizePanelId(panelId);
-      setIsSwitcherOpen(false);
-  }, []);
+  const handleDashboardAction = useCallback((action: DashboardAction) => {
+      switch (action.type) {
+          case 'MAXIMIZE_PANEL':
+              setMaximizePanelId(action.payload);
+              setIsSwitcherOpen(false);
+              addLog('INFO', `[Q-NATIVE] Panel ${action.payload} maximized.`);
+              addToast(`System Panel maximized: ${action.payload}`, 'info');
+              break;
+          case 'SWITCH_PAGE':
+              setCurrentPage(action.payload);
+              addLog('INFO', `[Q-NATIVE] Page switched to ${action.payload}.`);
+              addToast(`Page switched: ${action.payload}`, 'info');
+              break;
+          case 'TOGGLE_IMMERSIVE':
+              setIsImmersive(prev => !prev);
+              addLog('INFO', `[Q-NATIVE] Immersive mode toggled.`);
+              break;
+          case 'TOGGLE_EDITOR':
+              setIsEditorOpen(prev => !prev);
+              addLog('INFO', `[Q-NATIVE] Editor toggled.`);
+              break;
+          case 'CLOSE_ALL':
+              setMaximizePanelId(null);
+              setIsSwitcherOpen(false);
+              addLog('INFO', `[Q-NATIVE] All panels closed.`);
+              break;
+          case 'EVOLVE':
+              addLog('INFO', `[Q-NATIVE] Evolution Triggered: ${action.payload}`);
+              addToast(`Evolution Protocol Initiated: ${action.payload}`, 'warning');
+              break;
+      }
+  }, [addLog, addToast]);
 
-  const { marketApps, uriAssignments, handleInstallApp, handleFullDeployment, handleTogglePublic } = useQuantumApps(addLog, handlePanelSelect);
+  const { marketApps, uriAssignments, handleInstallApp, handleFullDeployment, handleTogglePublic } = useQuantumApps(addLog, (panelId) => handleDashboardAction({ type: 'MAXIMIZE_PANEL', payload: panelId }));
   const { isOpen: isAdminChatOpen, onToggle: toggleAdminChat, adminChatProps } = useAdminChat();
 
   const panelInfoMap = useMemo(() => {
@@ -191,21 +219,7 @@ const DashboardContent: React.FC = () => {
       panelInfoMap,
       qcosVersion: QCOS_VERSION,
       systemHealth: { ...initialSystemHealth, ...systemStatus },
-      onDashboardControl: (action, target) => {
-          if (action === 'modify_panel' && target) {
-              try {
-                  const data = JSON.parse(target);
-                  addLog('INFO', `[Q-NATIVE] Panel ${data.action}: ${data.panelName}`);
-                  addToast(`System Panel ${data.action} initiated for ${data.panelName}`, 'info');
-              } catch (e) { console.error("Error processing modify_panel action:", e); }
-          } else if (action === 'trigger_evolution' && target) {
-              try {
-                  const data = JSON.parse(target);
-                  addLog('INFO', `[Q-NATIVE] ${data.evolutionType.toUpperCase()} Evolution Triggered: ${data.description}`);
-                  addToast(`Evolution Protocol Initiated: ${data.evolutionType}`, 'warning');
-              } catch (e) { console.error("Error processing trigger_evolution action:", e); }
-          }
-      }
+      onDashboardControl: handleDashboardAction
   });
 
   const { listeningState, toggleListening, isSupported } = useVoiceCommands([
@@ -343,7 +357,7 @@ const DashboardContent: React.FC = () => {
       <FullScreenSwitcher 
           isOpen={isSwitcherOpen}
           onToggle={() => setIsSwitcherOpen(!isSwitcherOpen)}
-          onPanelSelect={handlePanelSelect}
+          onPanelSelect={(panelId) => handleDashboardAction({ type: 'MAXIMIZE_PANEL', payload: panelId })}
           corePanels={[
             { id: 'agentq-core', title: 'QIAI-IPS Core', icon: BrainCircuitIcon },
             { id: 'backend-monitor', title: 'Backend Monitor', icon: ServerCogIcon },

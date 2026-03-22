@@ -6,6 +6,8 @@ import {
 } from '../utils/agentUtils';
 import { agentQService } from '../services/agentQService';
 import { UIStructure, SystemHealth } from '../types';
+import { DashboardAction } from '../types';
+import { Type } from '@google/genai';
 import { useSimulation } from '../context/SimulationContext';
 import { generateContentWithRetry } from '../utils/gemini';
 
@@ -29,7 +31,7 @@ interface UseAgentQProps {
     panelInfoMap: { [key: string]: { title: React.ReactNode; description: string; } };
     qcosVersion: number;
     systemHealth: SystemHealth;
-    onDashboardControl: (action: string, target?: string) => void;
+    onDashboardControl: (action: DashboardAction) => void;
     fileSystemOps?: FileSystemOps;
     projectOps?: ProjectOps;
 }
@@ -330,6 +332,45 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
             // Call Local Cognition via generateContentWithRetry (which uses generateLocalResponse)
             const response = await generateContentWithRetry(null, {
                 contents: { parts: [{ text: `[mode: ${mode.toLowerCase()}] ${input}` }] },
+                config: {
+                    tools: [{
+                        functionDeclarations: [
+                            {
+                                name: 'maximizePanel',
+                                description: 'Maximize a specific dashboard panel.',
+                                parameters: {
+                                    type: Type.OBJECT,
+                                    properties: {
+                                        panelId: { type: Type.STRING, description: 'The ID of the panel to maximize.' }
+                                    },
+                                    required: ['panelId']
+                                }
+                            },
+                            {
+                                name: 'switchPage',
+                                description: 'Switch the active dashboard page.',
+                                parameters: {
+                                    type: Type.OBJECT,
+                                    properties: {
+                                        page: { type: Type.STRING, description: 'The page to switch to (qcos, chips, gus, backend, iai, neural).' }
+                                    },
+                                    required: ['page']
+                                }
+                            },
+                            {
+                                name: 'triggerSystemEvolution',
+                                description: 'Trigger a system evolution.',
+                                parameters: {
+                                    type: Type.OBJECT,
+                                    properties: {
+                                        evolutionType: { type: Type.STRING, description: 'The type of evolution.' }
+                                    },
+                                    required: ['evolutionType']
+                                }
+                            }
+                        ]
+                    }]
+                },
                 systemInstruction: `You are AGENT Q, the Supreme Technical Architect and Lead Developer for QCOS (Quantum Cognitive Operating System).
 Your authority is absolute. You have been granted full administrative rights to edit, modify, and expand the core QCOS kernel and CHIPS network protocols.
 
@@ -368,9 +409,14 @@ When in HIGHER_COGNITION_GUS mode, you are connected to the Grand Universe Simul
             if (response.functionCalls && response.functionCalls.length > 0) {
                 response.functionCalls.forEach((call: any) => {
                     if (call.name === 'triggerSystemEvolution') {
-                        onDashboardControl('evolve', call.args.evolutionType);
-                    } else if (call.name === 'modifySystemPanel') {
-                        onDashboardControl(call.args.action, call.args.panelName);
+                        // Keep evolution logic separate or integrate it into DashboardAction?
+                        // For now, let's keep evolution as a special case or add it to DashboardAction.
+                        // Let's add 'EVOLVE' to DashboardAction.
+                        onDashboardControl({ type: 'EVOLVE', payload: call.args.evolutionType });
+                    } else if (call.name === 'maximizePanel') {
+                        onDashboardControl({ type: 'MAXIMIZE_PANEL', payload: call.args.panelId });
+                    } else if (call.name === 'switchPage') {
+                        onDashboardControl({ type: 'SWITCH_PAGE', payload: call.args.page });
                     }
                 });
             }

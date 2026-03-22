@@ -7,6 +7,11 @@ export interface ChartDataPoint {
   [key: string]: string | number;
 }
 
+export interface DashboardAction {
+    type: 'MAXIMIZE_PANEL' | 'SWITCH_PAGE' | 'TOGGLE_IMMERSIVE' | 'TOGGLE_EDITOR' | 'CLOSE_ALL' | 'EVOLVE';
+    payload?: any;
+}
+
 export interface LogEntry {
   id: number;
   level: 'INFO' | 'WARN' | 'ERROR' | 'CMD' | 'SUCCESS';
