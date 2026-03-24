@@ -398,7 +398,8 @@ const DashboardContent: React.FC = () => {
           </div>
       )}
 
-      <div className={`h-16 flex-shrink-0 flex items-center justify-between px-8 bg-black/60 border-t border-cyan-900/30 z-50 transition-opacity duration-500 backdrop-blur-md ${hudVisibility}`}>
+      <div className={`fixed bottom-0 left-0 w-full z-50 group ${hudVisibility}`}>
+        <div className="h-16 flex items-center justify-between px-8 bg-black/60 border-t border-cyan-900/30 backdrop-blur-md opacity-0 group-hover:opacity-100 translate-y-12 group-hover:translate-y-0 transition-all duration-500">
           <div className="flex items-center gap-6">
               <ResourceSteward listeningState={listeningState} onToggleListen={toggleListening} isVoiceSupported={isSupported} />
               <div className="h-8 w-px bg-cyan-900/40"></div>
@@ -445,16 +446,16 @@ const DashboardContent: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-6">
-               <div className="flex gap-6 text-[10px] font-mono text-cyan-600 bg-black/40 px-6 py-2 rounded-full border border-cyan-900/30">
-                   <div className="flex items-center gap-2">
-                       <CpuChipIcon className="w-3 h-3" />
-                       LOAD: <span className={systemStatus.neuralLoad > 80 ? 'text-red-400' : 'text-green-400'}>{(systemStatus.neuralLoad || 0).toFixed(1)}%</span>
-                   </div>
-                   <div className="flex items-center gap-2">
-                       <ActivityIcon className="w-3 h-3" />
-                       DIM_SHIFT: <span className="text-white">ACTIVE</span>
-                   </div>
-               </div>
+                <div className="flex gap-6 text-[10px] font-mono text-cyan-600 bg-black/40 px-6 py-2 rounded-full border border-cyan-900/30">
+                    <div className="flex items-center gap-2">
+                        <CpuChipIcon className="w-3 h-3" />
+                        LOAD: <span className={systemStatus.neuralLoad > 80 ? 'text-red-400' : 'text-green-400'}>{(systemStatus.neuralLoad || 0).toFixed(1)}%</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <ActivityIcon className="w-3 h-3" />
+                        DIM_SHIFT: <span className="text-white">ACTIVE</span>
+                    </div>
+                </div>
 
               <AgentQ 
                 isOpen={isAgentQOpen} 
@@ -463,6 +464,7 @@ const DashboardContent: React.FC = () => {
                 {...agentQProps} 
               />
           </div>
+        </div>
       </div>
 
       <AdminChat 
