@@ -58,6 +58,7 @@ interface MonacoEditorWrapperProps {
     theme?: string;
     className?: string;
     onEditorMount?: (editor: any, monaco: any) => void;
+    onEditorBeforeMount?: (monaco: any) => void;
 }
 
 const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({ 
@@ -67,7 +68,8 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
     readOnly = false, 
     theme = 'qcos-dark', 
     className = "",
-    onEditorMount
+    onEditorMount,
+    onEditorBeforeMount
 }) => {
     const editorRef = useRef<any>(null);
     const monacoRef = useRef<any>(null);
@@ -104,6 +106,23 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
             }
         };
     }, []);
+
+    const handleBeforeMount = (monaco: any) => {
+        if (onEditorBeforeMount) {
+            onEditorBeforeMount(monaco);
+        }
+        
+        try {
+            // Disable JSON schema validation to avoid the "Cannot read properties of undefined (reading 'schemas')" error
+            if (monaco.languages && monaco.languages.json && monaco.languages.json.jsonDefaults) {
+                monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                    validate: false
+                });
+            }
+        } catch (e) {
+            console.warn("Could not configure JSON diagnostics:", e);
+        }
+    };
 
     // --- Q-Lang Linter Logic ---
     const validateQLang = (model: any, monaco: any) => {
@@ -365,6 +384,7 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
                 onChange={onChange}
                 theme={theme}
                 onMount={handleEditorDidMount}
+                beforeMount={handleBeforeMount}
                 options={{
                     readOnly,
                     minimap: { enabled: false },

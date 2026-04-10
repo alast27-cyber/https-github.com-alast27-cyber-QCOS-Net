@@ -1,13 +1,13 @@
 import React from 'react';
 import { CpuChipIcon, ActivityIcon, GlobeIcon, ServerCogIcon, ShieldCheckIcon, ZapIcon, SettingsIcon, BoxIcon } from './Icons';
 import CHIPSBackOffice from './CHIPSBackOffice';
-import CHIPSAppStore from './CHIPSAppStore';
+import CHIPSBrowser from './CHIPSBrowser';
 import { useQuantumApps } from '../hooks/useQuantumApps';
 
 const ChipsDash: React.FC = () => {
     const [barHeights] = React.useState(() => Array.from({ length: 20 }).map(() => 20 + Math.random() * 80));
     const [backofficeMode, setBackofficeMode] = React.useState<'collapsed' | 'normal' | 'fullscreen'>('normal');
-    const [appStoreMode, setAppStoreMode] = React.useState<'collapsed' | 'normal' | 'fullscreen'>('normal');
+    const [browserMode, setBrowserMode] = React.useState<'collapsed' | 'normal' | 'fullscreen'>('normal');
     
     // Dummy functions for useQuantumApps
     const addLog = () => {};
@@ -21,17 +21,17 @@ const ChipsDash: React.FC = () => {
         else setBackofficeMode('collapsed');
     };
 
-    const toggleAppStore = () => {
-        if (appStoreMode === 'collapsed') setAppStoreMode('normal');
-        else if (appStoreMode === 'normal') setAppStoreMode('fullscreen');
-        else setAppStoreMode('collapsed');
+    const toggleBrowser = () => {
+        if (browserMode === 'collapsed') setBrowserMode('normal');
+        else if (browserMode === 'normal') setBrowserMode('fullscreen');
+        else setBrowserMode('collapsed');
     };
 
     const isFullscreen = backofficeMode === 'fullscreen';
     const isCollapsed = backofficeMode === 'collapsed';
     
-    const isAppStoreFullscreen = appStoreMode === 'fullscreen';
-    const isAppStoreCollapsed = appStoreMode === 'collapsed';
+    const isBrowserFullscreen = browserMode === 'fullscreen';
+    const isBrowserCollapsed = browserMode === 'collapsed';
 
     return (
         <div className="h-full flex flex-col p-6 bg-black/40 rounded-xl border-2 border-emerald-500/30 text-emerald-100 font-mono relative overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.15)]">
@@ -178,21 +178,29 @@ const ChipsDash: React.FC = () => {
                         )}
                     </div>
 
-                    <div className={`bg-black/50 border border-emerald-900/50 rounded-xl p-4 ${isAppStoreFullscreen ? 'fixed inset-4 z-[100] flex flex-col' : 'h-auto min-h-[150px]'}`}>
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-emerald-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                                <BoxIcon className="w-4 h-4" /> CHIPS App Store
-                            </h3>
-                            <button 
-                                onClick={toggleAppStore}
-                                className="text-emerald-500 hover:text-emerald-300 transition-colors"
-                            >
-                                {isAppStoreCollapsed ? '▼' : isAppStoreFullscreen ? '▣' : '▲'}
-                            </button>
-                        </div>
-                        {!isAppStoreCollapsed && (
-                            <div className={isAppStoreFullscreen ? 'flex-grow overflow-auto' : ''}>
-                                <CHIPSAppStore apps={marketApps} onInstall={handleInstallApp} onLaunch={(id) => console.log('Launch', id)} />
+                    <div className={`bg-black/50 border border-emerald-900/50 rounded-xl p-4 ${isBrowserFullscreen ? 'fixed inset-4 z-[100] flex flex-col' : 'h-auto min-h-[150px]'}`}>
+                        {!isBrowserFullscreen && (
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-emerald-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                                    <GlobeIcon className="w-4 h-4" /> CHIPS Browser
+                                </h3>
+                                <button 
+                                    onClick={toggleBrowser}
+                                    className="text-emerald-500 hover:text-emerald-300 transition-colors"
+                                >
+                                    {isBrowserCollapsed ? '▼' : isBrowserFullscreen ? '▣' : '▲'}
+                                </button>
+                            </div>
+                        )}
+                        {!isBrowserCollapsed && (
+                            <div className={isBrowserFullscreen ? 'flex-grow overflow-auto' : ''}>
+                                <CHIPSBrowser 
+                                    apps={marketApps} 
+                                    onInstallApp={handleInstallApp} 
+                                    onToggleAgentQ={() => console.log('Toggle AgentQ')} 
+                                    isFullScreen={isBrowserFullscreen}
+                                    onToggleFullScreen={toggleBrowser}
+                                />
                             </div>
                         )}
                     </div>

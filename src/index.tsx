@@ -12,6 +12,25 @@ loader.config({
   },
 });
 
+// Suppress ResizeObserver loop error
+const originalError = console.error;
+console.error = (...args) => {
+  if (args[0] && typeof args[0] === 'string' && args[0].includes('ResizeObserver loop')) return;
+  originalError(...args);
+};
+
+// Robust ResizeObserver suppression
+const originalResizeObserver = window.ResizeObserver;
+window.ResizeObserver = class ResizeObserver extends originalResizeObserver {
+  constructor(callback: ResizeObserverCallback) {
+    super((entries, observer) => {
+      window.requestAnimationFrame(() => {
+        callback(entries, observer);
+      });
+    });
+  }
+};
+
 // --- SYSTEM PATCH: NOISE CANCELLATION PROTOCOL ---
 // Intercepts and suppresses benign "Canceled" errors from Monaco Editor workers and other async ops.
 window.addEventListener('unhandledrejection', (event) => {

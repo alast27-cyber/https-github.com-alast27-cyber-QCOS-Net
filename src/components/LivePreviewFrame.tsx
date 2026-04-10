@@ -56,6 +56,13 @@ const LivePreviewFrame: React.FC<LivePreviewFrameProps> = ({ code, files }) => {
                             if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
                             originalWarn(...args);
                         };
+
+                        // Suppress ResizeObserver loop error
+                        const originalError = console.error;
+                        console.error = (...args) => {
+                            if (args[0] && typeof args[0] === 'string' && args[0].includes('ResizeObserver loop')) return;
+                            originalError(...args);
+                        };
                     </script>
                     <script src="https://cdn.tailwindcss.com"></script>
                     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>

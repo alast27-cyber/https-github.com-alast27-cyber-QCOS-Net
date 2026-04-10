@@ -38,6 +38,8 @@ interface CHIPSBrowserProps {
     apps: AppDefinition[];
     onInstallApp: (id: string) => void;
     onDeployApp?: (details: { name: string; description: string; code: string; uiStructure?: UIStructure }) => void;
+    isFullScreen?: boolean;
+    onToggleFullScreen?: () => void;
 }
 
 interface AIContextData {
@@ -309,7 +311,7 @@ const AIContextSidebar: React.FC<{ context: AIContextData | undefined, isLoading
     </div>
 );
 
-const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ, apps, onInstallApp, onDeployApp }) => {
+const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ, apps, onInstallApp, onDeployApp, isFullScreen = false, onToggleFullScreen }) => {
     const [tabs, setTabs] = useState<BrowserTab[]>(() => {
         if (initialApp) {
             const startUri = initialApp.q_uri || initialApp.https_url || '';
@@ -345,9 +347,14 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
     const [intentInput, setIntentInput] = useState('');
     const [showAISidebar, setShowAISidebar] = useState(false);
     const [isCoreStatusOpen, setIsCoreStatusOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchMode, setSearchMode] = useState<'tabs' | 'bookmarks' | 'page'>('tabs');
     const [bookmarks, setBookmarks] = useState<{ uri: string, title: string }[]>([
         { uri: 'chips://qmc-finance', title: 'QMC Finance' }
     ]);
+
+    const filteredTabs = searchQuery ? tabs.filter(t => t.title.toLowerCase().includes(searchQuery.toLowerCase()) || t.uri.toLowerCase().includes(searchQuery.toLowerCase())) : tabs;
+    const filteredBookmarks = searchQuery ? bookmarks.filter(b => b.title.toLowerCase().includes(searchQuery.toLowerCase()) || b.uri.toLowerCase().includes(searchQuery.toLowerCase())) : bookmarks;
 
     const [eksDetails, setEksDetails] = useState({
         status: 'SYNCED',
@@ -497,6 +504,55 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
         fetchContext();
     }, []);
 
+    const handleFetchData = useCallback(async () => {
+        if (!activeTabId) return;
+
+        // Create a new tab for the fetched data
+        const newTabId = `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const newTab: BrowserTab = {
+            id: newTabId,
+            title: 'CHIPS Network Data',
+            uri: 'chips://data-fetch',
+            history: ['chips://data-fetch'],
+            historyIndex: 0,
+            isLoading: true,
+            aiContext: {
+                summary: "Fetching data from CHIPS network...",
+                entities: [],
+                actions: [],
+                confidence: 0
+            }
+        };
+        setTabs(prev => [...prev, newTab]);
+        setActiveTabId(newTabId);
+
+        // Simulate network fetch
+        setTimeout(() => {
+            const fetchedData = `CHIPS Network Data Packet [${new Date().toISOString()}]:
+- Node: DQN-LOCAL-BROWSER
+- Status: Entangled
+- Data: { "quantum_state": "superposition", "fidelity": 0.9999, "nodes": 128 }`;
+            
+            setTabs(prev => prev.map(tab => {
+                if (tab.id === newTabId) {
+                    return {
+                        ...tab,
+                        isLoading: false,
+                        codeContent: fetchedData,
+                        codeLanguage: 'json',
+                        aiContext: {
+                            summary: "Data fetched successfully from CHIPS network.",
+                            entities: ["Quantum Data", "Node Status"],
+                            actions: ["Analyze", "Export"],
+                            confidence: 100
+                        }
+                    };
+                }
+                return tab;
+            }));
+        }, 2000);
+    }, [activeTabId]);
+
     const handleIntentSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && activeTabId) {
             navigateTab(activeTabId, intentInput);
@@ -524,7 +580,7 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
         }
 
         if (tab.uri === STORE_URI_CHIPS || tab.uri === STORE_URI_WEB) {
-            return <CHIPSAppStore apps={apps} onInstall={onInstallApp} onLaunch={(id) => navigateTab(tab.id, apps.find(a => a.id === id)?.q_uri || `chips://app/${id}`)} />;
+            return <CHIPSAppStore apps={apps} onInstall={onInstallApp} onLaunch={(id) => navigateTab(tab.id, apps?.find(a => a.id === id)?.q_uri || `chips://app/${id}`)} />;
         }
         if (tab.uri === PROTOCOLS_URI) return <QuantumProtocolLibrary />;
         if (tab.uri === DEV_URI) return (
@@ -539,7 +595,7 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
         if (tab.uri === NEW_TAB_URI) return <SmartNewTab apps={apps} onNavigate={(uri) => navigateTab(tab.id, uri)} />;
         if (tab.uri.includes('q-vox')) return <QuantumVoiceChat />;
 
-        const app = apps.find(a => 
+        const app = apps?.find(a => 
             a.q_uri === tab.uri || 
             a.https_url === tab.uri || 
             `chips://app/${a.id}` === tab.uri ||
@@ -640,10 +696,11 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
     };
 
     return (
-        <div className="h-full flex flex-col bg-black/40 rounded-lg overflow-hidden border border-cyan-900/50 shadow-2xl relative backdrop-blur-md">
+        <div className={`h-full flex flex-col bg-black/40 rounded-lg overflow-hidden border border-cyan-900/50 shadow-2xl relative backdrop-blur-md ${isFullScreen ? 'border-none rounded-none' : ''}`}>
             
-            <div className="flex items-end px-2 pt-2 bg-black/60 border-b border-cyan-800/50 gap-1 overflow-x-auto no-scrollbar">
-                {tabs.map(tab => (
+            {!isFullScreen && (
+                <div className="flex items-end px-2 pt-2 bg-black/60 border-b border-cyan-800/50 gap-1 overflow-x-auto no-scrollbar">
+                {filteredTabs.map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTabId(tab.id)}
@@ -673,7 +730,17 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
                     <PlusIcon className="w-5 h-5" />
                 </button>
             </div>
+            )}
+            {isFullScreen && (
+                <button 
+                    onClick={onToggleFullScreen} 
+                    className="absolute top-2 right-2 z-50 p-2 bg-black/50 text-white rounded-full hover:bg-black/80 transition-colors"
+                >
+                    <XIcon className="w-4 h-4" />
+                </button>
+            )}
 
+            {!isFullScreen && (
             <div className="flex flex-col bg-black/40 border-b border-cyan-800/30 backdrop-blur-sm relative z-30">
                 <div className="flex items-center gap-2 p-2">
                     <div className="flex items-center gap-1">
@@ -686,13 +753,20 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
                     </div>
 
                     {/* Agentic Address Bar */}
-                    <div className="flex-grow w-full max-w-4xl mx-auto">
+                    <div className="flex-grow w-full max-w-4xl mx-auto flex items-center gap-2">
                         <AgenticAddressBar 
                             value={intentInput}
                             onChange={setIntentInput}
                             onNavigate={(val) => activeTabId && navigateTab(activeTabId, val)}
                             isLoading={activeTab?.isLoading}
                         />
+                        <button 
+                            onClick={handleFetchData}
+                            className="p-2 rounded-md bg-cyan-900/30 border border-cyan-700/50 text-cyan-400 hover:bg-cyan-800 hover:text-cyan-200 transition-colors"
+                            title="Fetch CHIPS Network Data"
+                        >
+                            <DatabaseIcon className="w-4 h-4" />
+                        </button>
                     </div>
 
                     <div className="flex items-center gap-1 ml-2">
@@ -716,10 +790,27 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
                     </div>
                 </div>
                 
+                {/* New Search Bar */}
+                <div className="flex items-center gap-2 p-2 bg-black/30 border-t border-cyan-900/30">
+                    <SearchIcon className="w-4 h-4 text-cyan-600" />
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder={`Search ${searchMode}...`}
+                        className="flex-grow bg-black/60 border border-cyan-800 rounded px-2 py-1 text-xs text-white"
+                    />
+                    <select value={searchMode} onChange={(e) => setSearchMode(e.target.value as any)} className="bg-black/60 border border-cyan-800 text-xs text-cyan-400 rounded px-1 py-1">
+                        <option value="tabs">Tabs</option>
+                        <option value="bookmarks">Bookmarks</option>
+                        <option value="page">Find in Page</option>
+                    </select>
+                </div>
+                
                 {/* Bookmarks Bar */}
                 <div className="flex items-center gap-1 px-2 py-1 bg-black/30 border-t border-cyan-900/30 text-xs overflow-x-auto no-scrollbar">
-                    {bookmarks.map(b => {
-                        const app = apps.find(a => a.q_uri === b.uri || `chips://app/${a.id}` === b.uri);
+                    {filteredBookmarks.map(b => {
+                        const app = apps?.find(a => a.q_uri === b.uri || `chips://app/${a.id}` === b.uri);
                         const Icon = app ? app.icon : (b.uri.includes('store') ? BoxIcon : GlobeIcon);
                         return (
                             <button 
@@ -735,6 +826,7 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
                     })}
                 </div>
             </div>
+            )}
 
             <main className="flex-grow bg-slate-950/30 relative overflow-hidden flex flex-row">
                 <div className="flex-grow flex flex-col relative overflow-hidden">

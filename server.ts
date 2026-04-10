@@ -216,27 +216,16 @@ async function startServer() {
     // Roadmap logs are now handled in server/services/roadmap.ts
   }, 5000);
 
-  app.get("/api/roadmap", (req, res) => { console.log("[SERVER] /api/roadmap"); res.json(roadmapState); });
-  app.post("/api/roadmap/toggle", (req, res) => {
-    roadmapState.isTraining = !roadmapState.isTraining;
-    res.json({ isTraining: roadmapState.isTraining });
-  });
-  app.post("/api/roadmap/reset", (req, res) => {
-    roadmapState.stages = [...INITIAL_ROADMAP_STAGES];
-    roadmapState.isTraining = true;
-    roadmapState.logs = [];
-    res.json(roadmapState);
-  });
+  app.get("/api/roadmap", (req, res) => { console.log("[SERVER] /api/roadmap hit"); res.json(roadmapState); });
+  app.post("/api/roadmap/toggle", (req, res) => { console.log("[SERVER] /api/roadmap/toggle hit"); roadmapState.isTraining = !roadmapState.isTraining; res.json({ isTraining: roadmapState.isTraining }); });
+  app.post("/api/roadmap/reset", (req, res) => { console.log("[SERVER] /api/roadmap/reset hit"); roadmapState.stages = [...INITIAL_ROADMAP_STAGES]; roadmapState.isTraining = true; roadmapState.logs = []; res.json(roadmapState); });
 
-  app.get("/api/qce", (req, res) => { console.log("[SERVER] /api/qce"); res.json(qceState); });
-  app.get("/api/foundation", (req, res) => { console.log("[SERVER] /api/foundation"); res.json(foundationTraining); });
-  app.post("/api/foundation/toggle", (req, res) => {
-    foundationTraining.isActive = !foundationTraining.isActive;
-    res.json({ isActive: foundationTraining.isActive });
-  });
+  app.get("/api/qce", (req, res) => { console.log("[SERVER] /api/qce hit"); res.json(qceState); });
+  app.get("/api/foundation", (req, res) => { console.log("[SERVER] /api/foundation hit"); res.json(foundationTraining); });
+  app.post("/api/foundation/toggle", (req, res) => { console.log("[SERVER] /api/foundation/toggle hit"); foundationTraining.isActive = !foundationTraining.isActive; res.json({ isActive: foundationTraining.isActive }); });
 
-  app.get("/api/ingestion", (req, res) => { console.log("[SERVER] /api/ingestion"); res.json(dataIngestion); });
-  app.post("/api/ingestion/toggle", (req, res) => {
+  app.get("/api/ingestion", (req, res) => { console.log("[SERVER] /api/ingestion hit"); res.json(dataIngestion); });
+  app.post("/api/ingestion/toggle", (req, res) => { console.log("[SERVER] /api/ingestion/toggle hit");
     const { id } = req.body;
     const ds = dataIngestion.find(d => d.id === id);
     if (ds) {

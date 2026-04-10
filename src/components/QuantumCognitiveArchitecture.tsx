@@ -137,6 +137,8 @@ const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> 
 
         if (isSimulating) {
             interval = setInterval(() => {
+                const sideEffects: Array<() => void> = [];
+
                 setUniverses(prevUniverses => prevUniverses.map(u => {
                     const { 
                         optimizationScore, status, engines
@@ -238,10 +240,15 @@ const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> 
                              patchContent = `// MATERIAL SCIENCE PATCH\n// TARGET: MOLECULAR FOUNDRY\nCONVERGE_GROUND_STATE();\nSIMULATE_FOLDING_PATH();`;
                         }
 
-                        if (onApplyPatch) {
-                            onApplyPatch(patchName, patchContent);
-                        }
-                        commitUpgradeToCore(u.targetName, currentVersion);
+                        // Queue side effects to run outside the state updater
+                        const currentTargetName = u.targetName;
+                        const appliedVersion = currentVersion;
+                        sideEffects.push(() => {
+                            if (onApplyPatch) {
+                                onApplyPatch(patchName, patchContent);
+                            }
+                            commitUpgradeToCore(currentTargetName, appliedVersion);
+                        });
                     }
 
                     // 2. Engine Load Balancing (Visuals)
@@ -275,6 +282,9 @@ const QuantumCognitiveArchitecture: React.FC<QuantumCognitiveArchitectureProps> 
                         upgradesApplied
                     };
                 }));
+
+                // Execute side effects after the state update has been queued
+                sideEffects.forEach(effect => effect());
             }, 100); // 100ms Tick
         }
 

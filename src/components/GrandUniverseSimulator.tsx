@@ -606,6 +606,34 @@ upgrade.applyPatch();
                                 </button>
                             </div>
                         </div>
+
+                        {/* Cognitive-Neural Bridge Controls */}
+                        <div className="mt-4 pt-4 border-t border-purple-800/50">
+                            <h4 className="text-emerald-400 font-bold flex items-center justify-between mb-3 text-xs uppercase tracking-widest">
+                                <BrainCircuitIcon className="w-4 h-4 mr-2" /> Cognitive-Neural Bridge
+                            </h4>
+                            <button 
+                                onClick={() => {
+                                    addToast("Simulating Cognitive-Neural Bridge Protocol...", "info");
+                                    setTimeout(() => {
+                                        addToast("Protocol Predicted: CognitiveNeuralBridgeProtocol", "success");
+                                        setOptLogs(prev => [...prev, `[BRIDGE] Predicted: CognitiveNeuralBridgeProtocol. Fidelity: 0.99999.`]);
+                                    }, 2000);
+                                }}
+                                className="w-full p-2 bg-emerald-900/30 border border-emerald-700 rounded text-[10px] font-bold text-emerald-200 hover:bg-emerald-800/50 transition-colors mb-2"
+                            >
+                                Run Bridge Prediction
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    addToast("Applying CognitiveNeuralBridgeProtocol...", "success");
+                                    setOptLogs(prev => [...prev, `[BRIDGE] CognitiveNeuralBridgeProtocol applied.`]);
+                                }}
+                                className="w-full p-2 bg-emerald-900/30 border border-emerald-700 rounded text-[10px] font-bold text-emerald-200 hover:bg-emerald-800/50 transition-colors"
+                            >
+                                Apply Protocol
+                            </button>
+                        </div>
                         
                         <div className="mt-auto pt-4 border-t border-purple-800/50">
                              <div className="flex-grow bg-black/60 rounded p-2 text-[9px] font-mono text-purple-100 space-y-1 overflow-y-auto custom-scrollbar h-24">

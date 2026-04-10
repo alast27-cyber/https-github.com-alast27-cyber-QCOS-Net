@@ -76,4 +76,21 @@ export class InfonEntanglementProtocol {
         }
         return 0.9998 + Math.random() * 0.0001;
     }
+
+    /**
+     * Rule 5: Cognitive-Neural Bridge Protocol
+     * Bridges human cognition and neural interface platform using Infon entanglement.
+     */
+    public bridgeCognitionToNeural(cognitionNode: string, neuralNode: string): InfonBond {
+        const bond: InfonBond = {
+            nodeA: cognitionNode,
+            nodeB: neuralNode,
+            fidelity: 0.99999,
+            state: 'COGNITIVE_NEURAL_SYNCHRONIZED'
+        };
+        const key = `${cognitionNode}:${neuralNode}`;
+        this.bonds.set(key, bond);
+        console.log(`[INFON] Cognitive-Neural Bridge established: ${key} via Rulial_Manifold_Instantaneous`);
+        return bond;
+    }
 }

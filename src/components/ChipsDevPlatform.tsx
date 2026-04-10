@@ -347,10 +347,60 @@ const Terminal: React.FC<{ onLog: (msg: string) => void }> = ({ onLog }) => {
     );
 };
 
-const InspirationView: React.FC<{ templates: any[]; onFork: (template: any) => void }> = ({ templates, onFork }) => {
+const InspirationView: React.FC<{ templates: any[]; onFork: (template: any) => void; onCreateProject: (name: string, description: string) => void }> = ({ templates, onFork, onCreateProject }) => {
+    const [isCreating, setIsCreating] = useState(false);
+    const [title, setTitle] = useState('');
+    const [desc, setDesc] = useState('');
+
+    if (isCreating) {
+        return (
+            <div className="p-6 h-full flex flex-col items-center justify-center">
+                <div className="bg-black/50 border border-cyan-900/50 rounded-xl p-6 w-full max-w-md">
+                    <h3 className="text-lg font-bold text-cyan-400 mb-4 flex items-center gap-2"><PlusIcon className="w-5 h-5"/> Create Custom Project</h3>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-xs text-cyan-500 mb-1">Project Name</label>
+                            <input value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-black/60 border border-cyan-800 rounded p-2 text-white text-sm outline-none focus:border-cyan-500 transition-colors" placeholder="e.g. Neural Controller" autoFocus />
+                        </div>
+                        <div>
+                            <label className="block text-xs text-cyan-500 mb-1">Description</label>
+                            <textarea value={desc} onChange={e => setDesc(e.target.value)} className="w-full bg-black/60 border border-cyan-800 rounded p-2 text-white text-sm h-24 resize-none outline-none focus:border-cyan-500 transition-colors" placeholder="Describe your project..." />
+                        </div>
+                        <div className="flex gap-2 justify-end mt-4">
+                            <button onClick={() => setIsCreating(false)} className="px-4 py-2 rounded text-xs font-bold text-gray-400 hover:text-white transition-colors">Cancel</button>
+                            <button 
+                                onClick={() => {
+                                    if (title.trim()) {
+                                        onCreateProject(title, desc);
+                                        setIsCreating(false);
+                                        setTitle('');
+                                        setDesc('');
+                                    }
+                                }}
+                                disabled={!title.trim()}
+                                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Create Project
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return <div className="p-4 grid grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto h-full">
+        {/* Create New Card */}
+        <div onClick={() => setIsCreating(true)} className="bg-cyan-950/20 border border-cyan-700/50 border-dashed rounded-lg p-4 hover:bg-cyan-900/20 hover:border-cyan-400 transition-all group flex flex-col cursor-pointer items-center justify-center text-center min-h-[160px]">
+            <div className="p-3 bg-cyan-900/40 rounded-full group-hover:scale-110 transition-transform mb-3">
+                <PlusIcon className="w-8 h-8 text-cyan-400" />
+            </div>
+            <h3 className="text-sm font-bold text-cyan-300 mb-1">Create Own Project</h3>
+            <p className="text-xs text-cyan-600/80">Start from a blank canvas</p>
+        </div>
+
         {templates.map(tpl => (
-            <div key={tpl.id} className="bg-black/30 border border-cyan-900/50 rounded-lg p-4 hover:bg-cyan-900/10 hover:border-cyan-500 transition-all group flex flex-col">
+            <div key={tpl.id} className="bg-black/30 border border-cyan-900/50 rounded-lg p-4 hover:bg-cyan-900/10 hover:border-cyan-500 transition-all group flex flex-col min-h-[160px]">
                 <div className="flex items-start justify-between mb-2">
                     <div className="p-2 bg-cyan-950/40 rounded-full group-hover:scale-110 transition-transform">
                         <tpl.icon className="w-6 h-6 text-cyan-400" />
@@ -856,7 +906,16 @@ const ChipsDevPlatform: React.FC<ChipsDevPlatformProps> = ({ onAiAssist, onDeplo
                 {/* Main Content */}
                 <div className="flex-grow min-h-0 overflow-hidden relative">
                     {activeTab === 'inspiration' && (
-                        <InspirationView templates={allTemplates} onFork={handleForkTemplate} />
+                        <InspirationView 
+                            templates={allTemplates} 
+                            onFork={handleForkTemplate} 
+                            onCreateProject={(name, desc) => {
+                                handleCreateProject(name, desc, {
+                                    'App.tsx': `import React from 'react';\n\nexport default function App() {\n  return (\n    <div className="p-4 text-white h-full bg-slate-900">\n      <h1 className="text-2xl font-bold text-cyan-400">${name}</h1>\n      <p className="text-gray-400 mt-2">${desc}</p>\n    </div>\n  );\n}`,
+                                    'package.json': `{\n  "name": "custom-app",\n  "version": "0.1.0",\n  "dependencies": {\n    "react": "^18.2.0"\n  }\n}`
+                                });
+                            }}
+                        />
                     )}
                     
                     {activeTab === 'planning' && activeProject && (
