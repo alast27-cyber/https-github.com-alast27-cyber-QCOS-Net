@@ -16,7 +16,7 @@ To deploy this standalone app successfully, follow these exact settings in the V
 - **Root Directory**: `.` (Keep as the project root, **NOT** `AgentQstandalone`)
 
 ### 2. Build & Development Settings
-- **Build Command**: `npm run build:standalone`
+- **Build Command**: `npm run build:vercel-standalone`
 - **Output Directory**: `AgentQstandalone/dist`
 
 ### 3. Environment Variables
