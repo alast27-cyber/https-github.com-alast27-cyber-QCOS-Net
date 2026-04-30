@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import StandaloneApp from './StandaloneApp'
-import '../src/index.css'
+import './index.css'
 
 /**
  * Standalone entry point for AgentQ.

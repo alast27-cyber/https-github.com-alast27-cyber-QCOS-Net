@@ -6,12 +6,12 @@ import {
     ToggleRightIcon, GalaxyIcon, BanknotesIcon, HeartIcon,
     RefreshCwIcon, PlayIcon, ActivityIcon, ArrowTrendingUpIcon,
     LockIcon, ShieldCheckIcon, EyeIcon
-} from '../../src/components/Icons';
-import { SystemHealth } from '../../src/types';
-import IAIKernelStatus from '../../src/components/IAIKernelStatus';
-import DistributedCognitiveArchitecture from '../../src/components/DistributedCognitiveArchitecture';
-import { useSimulation } from '../../src/context/SimulationContext';
-import GlassPanel from '../../src/components/GlassPanel';
+} from '../shared/components/Icons';
+import { SystemHealth } from '../shared/types';
+import IAIKernelStatus from '../shared/components/IAIKernelStatus';
+import DistributedCognitiveArchitecture from '../shared/components/DistributedCognitiveArchitecture';
+import { useSimulation } from '../shared/context/SimulationContext';
+import GlassPanel from '../shared/components/GlassPanel';
 
 interface AgentQCoreProps {
     systemHealth: SystemHealth;

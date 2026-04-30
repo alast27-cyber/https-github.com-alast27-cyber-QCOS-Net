@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider, useToast } from './context/ToastContext';
+import { ToastProvider as StandaloneToastProvider } from '../AgentQstandalone/shared/context/ToastContext';
 import { SimulationProvider, useSimulation } from './context/SimulationContext';
+import { SimulationProvider as StandaloneSimulationProvider } from '../AgentQstandalone/shared/context/SimulationContext';
 import { useQuantumApps } from './hooks/useQuantumApps';
 import { useAgentQ } from '../AgentQstandalone/ai-core/useAgentQ';
 import { useAdminChat } from './hooks/useAdminChat';
@@ -508,9 +510,13 @@ const DashboardContent: React.FC = () => {
 const App: React.FC = () => (
   <AuthProvider>
     <ToastProvider>
-      <SimulationProvider>
-        <DashboardContent />
-      </SimulationProvider>
+      <StandaloneToastProvider>
+        <StandaloneSimulationProvider>
+          <SimulationProvider>
+            <DashboardContent />
+          </SimulationProvider>
+        </StandaloneSimulationProvider>
+      </StandaloneToastProvider>
     </ToastProvider>
   </AuthProvider>
 );

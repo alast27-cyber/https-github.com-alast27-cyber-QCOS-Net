@@ -1,9 +1,9 @@
 import React from 'react';
 import AgentQ from './ai-core/AgentQ';
 import { useAgentQ } from './ai-core/useAgentQ';
-import { SimulationProvider } from '../src/context/SimulationContext';
-import { ToastProvider } from '../src/context/ToastContext';
-import { AuthProvider } from '../src/context/AuthContext';
+import { SimulationProvider } from './shared/context/SimulationContext';
+import { ToastProvider } from './shared/context/ToastContext';
+import { AuthProvider } from './shared/context/AuthContext';
 import QAPI from './QAPI';
 import { useEffect } from 'react';
 

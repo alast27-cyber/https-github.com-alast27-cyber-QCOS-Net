@@ -22,7 +22,7 @@ export default defineConfig({
   root: __dirname,
   base: '/',
   build: {
-    outDir: resolve(process.cwd(), 'AgentQstandalone/dist'),
+    outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {
       input: {

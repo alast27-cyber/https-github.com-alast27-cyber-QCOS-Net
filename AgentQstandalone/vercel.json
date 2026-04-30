@@ -1,15 +1,9 @@
 {
   "version": 2,
-  "name": "agentq-standalone",
-  "cleanUrls": true,
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "https://ais-dev-3vyenztlmseo5wsqoabxvp-23731076667.us-east1.run.app/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

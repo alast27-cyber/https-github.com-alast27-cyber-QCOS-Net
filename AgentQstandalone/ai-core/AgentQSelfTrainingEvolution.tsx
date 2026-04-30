@@ -19,11 +19,11 @@ import {
   ZapIcon,
   LinkIcon,
   TimelineIcon
-} from '../../src/components/Icons';
-import { SystemHealth } from '../../src/types';
-import { useToast } from '../../src/context/ToastContext';
-import { useSimulation } from '../../src/context/SimulationContext';
-import GlassPanel from '../../src/components/GlassPanel';
+} from '../shared/components/Icons';
+import { SystemHealth } from '../shared/types';
+import { useToast } from '../shared/context/ToastContext';
+import { useSimulation } from '../shared/context/SimulationContext';
+import GlassPanel from '../shared/components/GlassPanel';
 
 interface AgentQSelfTrainingEvolutionProps {
     isRecalibrating: boolean;
