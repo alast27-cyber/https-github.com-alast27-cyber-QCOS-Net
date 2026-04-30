@@ -3,10 +3,10 @@
   "name": "agentq-standalone",
   "builds": [
     {
-      "src": "AgentQstandalone/vite.config.ts",
+      "src": "vite.config.ts",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist-standalone"
+        "distDir": "dist"
       }
     }
   ],
@@ -17,7 +17,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/AgentQstandalone/index.html"
+      "destination": "/index.html"
     }
   ]
 }

@@ -4,6 +4,8 @@ import { useAgentQ } from './ai-core/useAgentQ';
 import { SimulationProvider } from '../src/context/SimulationContext';
 import { ToastProvider } from '../src/context/ToastContext';
 import { AuthProvider } from '../src/context/AuthContext';
+import QAPI from './QAPI';
+import { useEffect } from 'react';
 
 /**
  * StandaloneApp: The isolated UI entry point for AgentQ.
@@ -37,6 +39,11 @@ const StandaloneApp: React.FC = () => {
         },
         onDashboardControl: (action) => console.log("[STANDALONE] Control Command Received:", action)
     });
+
+    useEffect(() => {
+        QAPI.entangle('standalone-agentq-interface');
+        QAPI.resolveDecoherence();
+    }, []);
 
     return (
         <AuthProvider>

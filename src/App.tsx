@@ -13,6 +13,7 @@ import LoginScreen from './components/LoginScreen';
 import ResourceSteward from './components/ResourceSteward';
 import ToastContainer from './components/ToastContainer';
 import AgentQ from '../AgentQstandalone/ai-core/AgentQ';
+import QAPI from '../AgentQstandalone/QAPI';
 import AdminChat from './components/AdminChat';
 import AnimatedBackground from './components/AnimatedBackground';
 import EditorView from './components/EditorView';
@@ -222,8 +223,29 @@ const DashboardContent: React.FC = () => {
       onDashboardControl: handleDashboardAction
   });
 
+  // Quantum Entanglement Initialization
+  useEffect(() => {
+    // Entangle the dashboard with the universal AgentQ field
+    QAPI.entangle('qcos-dashboard-primary');
+    
+    // Subscribe to reactions from the standalone chat or other apps
+    const unsubscribe = QAPI.subscribe((payload) => {
+      console.log("[QAPI] Entangled Message Received:", payload);
+      if (payload.type === 'COMMAND_DISPATCHED' && payload.command.toLowerCase().includes('open dashboard')) {
+        // Shared response logic could go here
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleToggleAgentQ = useCallback(() => {
+    toggleAgentQ();
+    QAPI.resolveDecoherence(); // Maintain field stability when interacting
+  }, [toggleAgentQ]);
+
   const { listeningState, toggleListening, isSupported } = useVoiceCommands([
-      { command: ['open agent q', 'agent q', 'help'], callback: () => !isAgentQOpen && toggleAgentQ() },
+      { command: ['open agent q', 'agent q', 'help'], callback: () => !isAgentQOpen && handleToggleAgentQ() },
       { command: ['reset view', 'minimize'], callback: () => setMaximizePanelId(null) },
       { command: ['immersive mode', 'cinema mode'], callback: () => setIsImmersive(true) },
       { command: ['standard mode', 'exit immersive'], callback: () => setIsImmersive(false) }
@@ -258,7 +280,7 @@ const DashboardContent: React.FC = () => {
       onOpenAppCreator: (p) => {},
       onSimulateApp: (id) => setConnectedAppId(id),
       connectedAppId,
-      toggleAgentQ
+      toggleAgentQ: handleToggleAgentQ
   });
 
   if (!isAuthenticated) {
@@ -459,7 +481,7 @@ const DashboardContent: React.FC = () => {
 
               <AgentQ 
                 isOpen={isAgentQOpen} 
-                onToggleOpen={toggleAgentQ} 
+                onToggleOpen={handleToggleAgentQ} 
                 triggerClassName={`fixed bottom-4 left-[24rem] z-50 pointer-events-auto group transition-opacity duration-500 ${hudVisibility}`}
                 {...agentQProps} 
               />
