@@ -3,13 +3,13 @@ import {
     Message, 
     fileToText,
     playAgentVoice
-} from '../utils/agentUtils';
+} from '../../src/utils/agentUtils';
 import { agentQService } from '../services/agentQService';
-import { UIStructure, SystemHealth } from '../types';
-import { DashboardAction } from '../types';
+import { UIStructure, SystemHealth } from '../../src/types';
+import { DashboardAction } from '../../src/types';
 import { Type } from '@google/genai';
-import { useSimulation } from '../context/SimulationContext';
-import { generateContentWithRetry } from '../utils/gemini';
+import { useSimulation } from '../../src/context/SimulationContext';
+import { generateContentWithRetry } from '../../src/utils/gemini';
 
 export interface FileSystemOps {
     listFiles: () => string[];

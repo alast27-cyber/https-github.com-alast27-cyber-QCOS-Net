@@ -12,6 +12,7 @@
     "start": "node server.ts",
     "build": "tsc && vite build",
     "build:web": "tsc && vite build",
+    "build:standalone": "tsc && vite build --config AgentQstandalone/vite.config.ts",
     "build:electron": "tsc && vite build && electron-builder",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",

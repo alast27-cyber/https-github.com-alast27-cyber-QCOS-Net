@@ -979,17 +979,17 @@ class QOSKernel:
 export const initialCodebase = {
   'index.tsx': index_tsx,
   'metadata.json': metadata_json,
-  'src/ai-core/cpp/CMakeLists.txt': cmake_lists_txt,
-  'src/ai-core/cpp/qcos_inference_stub.cpp': qcos_inference_stub_cpp,
-  'src/ai-core/system/bridge_server.py': bridge_server_py,
-  'src/ai-core/scripts/hybrid_model.py': hybrid_model_py,
-  'src/ai-core/models/clnn_qnn.py': clnn_qnn_py,
-  'src/ai-core/models/ipsnn_qnn.py': ipsnn_qnn_py,
-  'src/ai-core/models/os_kernel_net.py': os_kernel_net_py,
-  'src/ai-core/models/iai_ips_qnn.py': iai_ips_qnn_py,
-  'src/ai-core/training/instinct_synthesis.py': instinct_synthesis_py,
-  'src/ai-core/training/training_setup.py': training_setup_py,
-  'src/ai-core/training/save_weights.py': save_weights_py,
+  'AgentQstandalone/ai-core/cpp/CMakeLists.txt': cmake_lists_txt,
+  'AgentQstandalone/ai-core/cpp/qcos_inference_stub.cpp': qcos_inference_stub_cpp,
+  'AgentQstandalone/ai-core/system/bridge_server.py': bridge_server_py,
+  'AgentQstandalone/ai-core/scripts/hybrid_model.py': hybrid_model_py,
+  'AgentQstandalone/ai-core/models/clnn_qnn.py': clnn_qnn_py,
+  'AgentQstandalone/ai-core/models/ipsnn_qnn.py': ipsnn_qnn_py,
+  'AgentQstandalone/ai-core/models/os_kernel_net.py': os_kernel_net_py,
+  'AgentQstandalone/ai-core/models/iai_ips_qnn.py': iai_ips_qnn_py,
+  'AgentQstandalone/ai-core/training/instinct_synthesis.py': instinct_synthesis_py,
+  'AgentQstandalone/ai-core/training/training_setup.py': training_setup_py,
+  'AgentQstandalone/ai-core/training/save_weights.py': save_weights_py,
   'qllm/qllm_core.py': qllm_core_py,
   'qllm/QLLM.ts': qllm_ts,
   'agentq_upgrade_v2.1/install.sh': install_sh,
@@ -999,8 +999,8 @@ export const initialCodebase = {
   'agentq_upgrade_v2.1/config/agentq_config_patch.json': agentq_config_patch_json,
   
   // --- QOS KERNEL INJECTION ---
-  'src/ai-core/qos_kernel/types.py': qos_types_py,
-  'src/ai-core/qos_kernel/hal.py': qos_hal_py,
-  'src/ai-core/qos_kernel/scheduler.py': qos_scheduler_py,
-  'src/ai-core/qos_kernel/main.py': qos_kernel_py
+  'AgentQstandalone/ai-core/qos_kernel/types.py': qos_types_py,
+  'AgentQstandalone/ai-core/qos_kernel/hal.py': qos_hal_py,
+  'AgentQstandalone/ai-core/qos_kernel/scheduler.py': qos_scheduler_py,
+  'AgentQstandalone/ai-core/qos_kernel/main.py': qos_kernel_py
 };

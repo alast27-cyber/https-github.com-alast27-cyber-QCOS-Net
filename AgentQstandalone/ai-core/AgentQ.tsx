@@ -5,18 +5,18 @@ import {
     CheckCircle2Icon, SparklesIcon, ActivityIcon, LinkIcon, CpuChipIcon, 
     GalaxyIcon, AlertTriangleIcon, LayoutGridIcon, ArrowRightIcon, TerminalIcon, ShieldCheckIcon,
     Volume2Icon, VolumeXIcon
-} from '../components/Icons';
-import { Message, ChartData } from '../utils/agentUtils';
+} from '../../src/components/Icons';
+import { Message, ChartData } from '../../src/utils/agentUtils';
 import { 
     ResponsiveContainer, LineChart, Line, BarChart, Bar, AreaChart, Area, 
     XAxis, YAxis, CartesianGrid, Tooltip, Legend 
 } from 'recharts';
-import { useSimulation } from '../context/SimulationContext';
-import { useVoiceConversation } from '../hooks/useVoiceConversation';
+import { useSimulation } from '../../src/context/SimulationContext';
+import { useVoiceConversation } from '../../src/hooks/useVoiceConversation';
 
 // Local Component Import
-import MemoryMatrix from '../components/MemoryMatrix';
-import AudioSynthesizer from '../components/AudioSynthesizer';
+import MemoryMatrix from '../../src/components/MemoryMatrix';
+import AudioSynthesizer from '../../src/components/AudioSynthesizer';
 
 interface AgentQProps {
   isOpen: boolean;

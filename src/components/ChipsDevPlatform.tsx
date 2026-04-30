@@ -20,13 +20,13 @@ import { STANDARD_QLANG_TEMPLATES, QLangTemplate } from '../utils/agentUtils';
 import { SystemHealth, UIStructure } from '../types';
 import { useToast } from '../context/ToastContext';
 import { useSimulation } from '../context/SimulationContext';
-import { useAgentQ, FileSystemOps, ProjectOps } from '../ai-core/useAgentQ';
+import { useAgentQ, FileSystemOps, ProjectOps } from '../../AgentQstandalone/ai-core/useAgentQ';
 
 // Local Imports
 import SyntaxHighlighter from './SyntaxHighlighter';
 import GlassPanel from './GlassPanel';
 import GrandUniverseSimulator from './GrandUniverseSimulator';
-import AgentQ from '../ai-core/AgentQ';
+import AgentQ from '../../AgentQstandalone/ai-core/AgentQ';
 import HolographicPreviewRenderer from './HolographicPreviewRenderer';
 import MonacoEditorWrapper from './MonacoEditorWrapper';
 import LivePreviewFrame from './LivePreviewFrame';

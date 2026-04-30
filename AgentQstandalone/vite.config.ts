@@ -1,0 +1,51 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import { resolve } from 'path';
+
+/**
+ * Vite Configuration for AgentQ Standalone
+ * 
+ * This configuration focuses on building the AgentQ interface as an isolated
+ * production-ready application while maintaining symbolic links/references 
+ * to the parent src/ directory.
+ */
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
+  ],
+  root: resolve(__dirname, './'),
+  base: '/',
+  build: {
+    outDir: resolve(__dirname, '../dist-standalone'),
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+      },
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'framer-motion'],
+          ui: ['lucide-react', 'recharts'],
+        },
+      },
+    },
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './'),
+      '@src': resolve(__dirname, '../src'),
+    },
+  },
+  server: {
+    port: 3001,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
+});

@@ -6,10 +6,10 @@ import {
     FileCodeIcon, DocumentArrowUpIcon, LightBulbIcon, EyeIcon, 
     CpuChipIcon, ArrowRightIcon, GlobeIcon, LinkIcon, ClipboardIcon,
     BoxIcon, ShieldCheckIcon, KeyIcon
-} from '../components/Icons';
-import SyntaxHighlighter from '../components/SyntaxHighlighter';
-import { UIStructure } from '../types';
-import HolographicPreviewRenderer from '../components/HolographicPreviewRenderer';
+} from '../../src/components/Icons';
+import SyntaxHighlighter from '../../src/components/SyntaxHighlighter';
+import { UIStructure } from '../../src/types';
+import HolographicPreviewRenderer from '../../src/components/HolographicPreviewRenderer';
 
 interface AgentQAppCreatorProps {
     onDeployApp: (details: { name: string; description: string; code: string; uiStructure?: UIStructure }) => void;

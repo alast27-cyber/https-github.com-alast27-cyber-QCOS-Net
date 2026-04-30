@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "name": "agentq-standalone",
+  "builds": [
+    {
+      "src": "AgentQstandalone/vite.config.ts",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist-standalone"
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://ais-dev-3vyenztlmseo5wsqoabxvp-23731076667.us-east1.run.app/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/AgentQstandalone/index.html"
+    }
+  ]
+}
