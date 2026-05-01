@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "npm run build:vercel-standalone",
-  "outputDirectory": "AgentQstandalone/dist",
+  "outputDirectory": "dist-standalone",
   "rewrites": [
     {
       "source": "/api/(.*)",
