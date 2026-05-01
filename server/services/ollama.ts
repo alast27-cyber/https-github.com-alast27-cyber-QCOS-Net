@@ -125,7 +125,11 @@ export async function sendAgentQCommand(userInput: string, context?: string): Pr
             reasoning: reasoning || 'Quantum logic inferred from state vector analysis.'
         };
 
-        fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + '\n');
+        try {
+            fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + '\n');
+        } catch (fsError) {
+            console.warn("Could not write to training_data.jsonl (expected in serverless environments)");
+        }
 
         return { message, reasoning };
     } catch (error: any) {
@@ -151,7 +155,11 @@ export async function sendAgentQCommand(userInput: string, context?: string): Pr
                 reasoning: simulated.reasoning,
                 mode: 'SEAMLESS_FALLBACK'
             };
-            fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + '\n');
+            try {
+                fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + '\n');
+            } catch (fsError) {
+                console.warn("Could not write to training_data.jsonl (expected in serverless environments)");
+            }
             
             return simulated;
         }
@@ -165,7 +173,11 @@ export async function sendAgentQCommand(userInput: string, context?: string): Pr
             error: error.message,
             agentQResponse: errorMessage
         };
-        fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + '\n');
+        try {
+            fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + '\n');
+        } catch (fsError) {
+            console.warn("Could not write to training_data.jsonl (expected in serverless environments)");
+        }
 
         return { message: errorMessage, error: error.message };
     }

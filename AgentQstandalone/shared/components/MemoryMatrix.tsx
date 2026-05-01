@@ -50,7 +50,6 @@ const MemoryMatrix: React.FC<MemoryMatrixProps> = ({ lastActivity, memorySummary
             
             newBlocks[i] = {
                 id: i,
-                // @ts-ignore
                 type: msg.sender === 'user' ? 'user' : 'agent',
                 content: msg.text,
                 timestamp: Date.now(), 
@@ -71,7 +70,7 @@ const MemoryMatrix: React.FC<MemoryMatrixProps> = ({ lastActivity, memorySummary
              }
         }
 
-        setBlocks(newBlocks);
+        setTimeout(() => setBlocks(newBlocks), 0);
     }, [messages, lastActivity]);
 
     const getBlockColor = (type: string, activity: number) => {

@@ -1,5 +1,4 @@
 
-// @ts-ignore
 import { AppDefinition } from '../types';
 
 export type UserLevel = 1 | 2 | 3 | 4;

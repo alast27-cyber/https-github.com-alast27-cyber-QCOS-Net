@@ -5,7 +5,9 @@ import { SimulationProvider } from './shared/context/SimulationContext';
 import { ToastProvider } from './shared/context/ToastContext';
 import { AuthProvider } from './shared/context/AuthContext';
 import QAPI from './QAPI';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import CHIPSBrowser from '../src/components/CHIPSBrowser';
+import { BrainCircuitIcon } from '../src/components/Icons';
 
 /**
  * StandaloneApp: The isolated UI entry point for AgentQ.
@@ -45,21 +47,43 @@ const StandaloneContent: React.FC = () => {
         QAPI.resolveDecoherence();
     }, []);
 
+    const agentQComponent = (
+        <AgentQ 
+            {...agentQProps}
+            isOpen={true}
+            onToggleOpen={() => {}} // Standalone is persistent
+            fullScreen={true}
+            embedded={false}
+        />
+    );
+
+    const agentQApp = {
+        id: 'agent-q-standalone',
+        name: 'Agent Q Core',
+        description: 'Standalone High-Dimensional Quantum Reasoner',
+        category: 'system' as const,
+        q_uri: 'chips://agent-q',
+        status: 'installed' as const,
+        component: agentQComponent,
+        icon: BrainCircuitIcon,
+    };
+
     return (
-        <div className="w-full h-screen bg-slate-950 flex items-center justify-center overflow-hidden">
+        <div className="w-full h-screen bg-slate-950 flex items-center justify-center overflow-hidden relative">
             {/* Background Effect */}
-            <div className="fixed inset-0 pointer-events-none">
+            <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.1),transparent_70%)]" />
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-50" />
             </div>
             
-            <div className="w-full h-full max-w-5xl max-h-[90vh] shadow-[0_0_100px_rgba(6,182,212,0.2)] rounded-3xl overflow-hidden border border-cyan-500/20">
-                <AgentQ 
-                    {...agentQProps}
-                    isOpen={true}
-                    onToggleOpen={() => {}} // Standalone is persistent
-                    fullScreen={false}
-                    embedded={true}
+            <div className="w-full h-full z-10 relative">
+                <CHIPSBrowser
+                    initialApp={agentQApp}
+                    apps={[agentQApp]}
+                    onToggleAgentQ={() => {}}
+                    onInstallApp={() => {}}
+                    isFullScreen={true}
+                    onToggleFullScreen={() => {}}
                 />
             </div>
         </div>
@@ -76,11 +100,11 @@ const StandaloneContent: React.FC = () => {
 const StandaloneApp: React.FC = () => {
     return (
         <AuthProvider>
-            <SimulationProvider>
-                <ToastProvider>
+            <ToastProvider>
+                <SimulationProvider>
                    <StandaloneContent />
-                </ToastProvider>
-            </SimulationProvider>
+                </SimulationProvider>
+            </ToastProvider>
         </AuthProvider>
     );
 };

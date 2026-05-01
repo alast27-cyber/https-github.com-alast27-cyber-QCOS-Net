@@ -80,7 +80,9 @@ const AudioSynthesizer: React.FC<AudioSynthesizerProps> = ({ isActive, isSpeakin
             if (oscillatorRef.current) {
                 try {
                    oscillatorRef.current.stop();
-                } catch(e) {}
+                } catch(e) {
+                   // ignoring stop error
+                }
             }
         };
     }, [isActive, audioInitialized, isMuted]);
