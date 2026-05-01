@@ -1,9 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { ToastProvider, useToast } from './context/ToastContext';
-import { ToastProvider as StandaloneToastProvider } from '../AgentQstandalone/shared/context/ToastContext';
-import { SimulationProvider, useSimulation } from './context/SimulationContext';
-import { SimulationProvider as StandaloneSimulationProvider } from '../AgentQstandalone/shared/context/SimulationContext';
+import { useAuth } from './context/AuthContext';
+import { useToast } from './context/ToastContext';
+import { useSimulation } from './context/SimulationContext';
 import { useQuantumApps } from './hooks/useQuantumApps';
 import { useAgentQ } from '../AgentQstandalone/ai-core/useAgentQ';
 import { useAdminChat } from './hooks/useAdminChat';
@@ -96,7 +94,7 @@ const EntanglementBeams: React.FC<{ active: boolean; isLinked?: boolean }> = ({ 
     );
 };
 
-const DashboardContent: React.FC = () => {
+const App: React.FC = () => {
   const { isAuthenticated, adminLevel } = useAuth();
   const { addToast } = useToast();
   const { systemStatus, startAllSimulations, qllm, entanglementMesh } = useSimulation();
@@ -506,19 +504,5 @@ const DashboardContent: React.FC = () => {
     </div>
   );
 };
-
-const App: React.FC = () => (
-  <AuthProvider>
-    <ToastProvider>
-      <StandaloneToastProvider>
-        <StandaloneSimulationProvider>
-          <SimulationProvider>
-            <DashboardContent />
-          </SimulationProvider>
-        </StandaloneSimulationProvider>
-      </StandaloneToastProvider>
-    </ToastProvider>
-  </AuthProvider>
-);
 
 export default App;

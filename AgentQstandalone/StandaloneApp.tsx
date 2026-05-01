@@ -14,7 +14,7 @@ import { useEffect } from 'react';
  * as a standalone application while maintaining quantum entanglement with
  * the QCOS ecosystem.
  */
-const StandaloneApp: React.FC = () => {
+const StandaloneContent: React.FC = () => {
     const { agentQProps } = useAgentQ({
         focusedPanelId: 'standalone-quantum-core',
         panelInfoMap: { 
@@ -46,26 +46,39 @@ const StandaloneApp: React.FC = () => {
     }, []);
 
     return (
+        <div className="w-full h-screen bg-slate-950 flex items-center justify-center overflow-hidden">
+            {/* Background Effect */}
+            <div className="fixed inset-0 pointer-events-none">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.1),transparent_70%)]" />
+                <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-50" />
+            </div>
+            
+            <div className="w-full h-full max-w-5xl max-h-[90vh] shadow-[0_0_100px_rgba(6,182,212,0.2)] rounded-3xl overflow-hidden border border-cyan-500/20">
+                <AgentQ 
+                    {...agentQProps}
+                    isOpen={true}
+                    onToggleOpen={() => {}} // Standalone is persistent
+                    fullScreen={false}
+                    embedded={true}
+                />
+            </div>
+        </div>
+    );
+};
+
+/**
+ * StandaloneApp: The isolated UI entry point for AgentQ.
+ * 
+ * This component wraps AgentQ in the minimal necessary context to function
+ * as a standalone application while maintaining quantum entanglement with
+ * the QCOS ecosystem.
+ */
+const StandaloneApp: React.FC = () => {
+    return (
         <AuthProvider>
             <SimulationProvider>
                 <ToastProvider>
-                    <div className="w-full h-screen bg-slate-950 flex items-center justify-center overflow-hidden">
-                        {/* Background Effect */}
-                        <div className="fixed inset-0 pointer-events-none">
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.1),transparent_70%)]" />
-                            <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-50" />
-                        </div>
-                        
-                        <div className="w-full h-full max-w-5xl max-h-[90vh] shadow-[0_0_100px_rgba(6,182,212,0.2)] rounded-3xl overflow-hidden border border-cyan-500/20">
-                            <AgentQ 
-                                {...agentQProps}
-                                isOpen={true}
-                                onToggleOpen={() => {}} // Standalone is persistent
-                                fullScreen={false}
-                                embedded={true}
-                            />
-                        </div>
-                    </div>
+                   <StandaloneContent />
                 </ToastProvider>
             </SimulationProvider>
         </AuthProvider>
