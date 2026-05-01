@@ -39,7 +39,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': __dirname,
-      '@src': resolve(__dirname, '../src'),
     },
   },
   server: {

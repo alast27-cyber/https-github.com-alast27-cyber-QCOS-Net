@@ -14,10 +14,12 @@ import {
     Warehouse, Users, GraduationCap, Paperclip, File, MessageCircle, Plus, Phone, GitFork, Wifi, Save, Folder, LogIn, Crosshair, Thermometer, CalendarDays,
     Grid, GripVertical, GripHorizontal, ZoomIn, ZoomOut, Move, Ruler, Radio, Wind, Volume2, VolumeX
 } from 'lucide-react';
-import React from 'react';
 
+// --- SAFE FALLBACK ---
+// If an icon is missing from lucide-react (version mismatch), use Box as fallback to prevent crash
 const Fallback = Box || function FallbackIcon() { return <div style={{width: 24, height: 24, background: 'red'}} />; };
 
+// --- EXPORTS ---
 export const BoxIcon = Box || Fallback;
 export const SearchIcon = Search || Fallback;
 export const StarIcon = Star || Fallback;

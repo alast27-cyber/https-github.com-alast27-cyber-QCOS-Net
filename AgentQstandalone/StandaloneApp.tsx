@@ -6,8 +6,8 @@ import { ToastProvider } from './shared/context/ToastContext';
 import { AuthProvider } from './shared/context/AuthContext';
 import QAPI from './QAPI';
 import { useEffect, useState } from 'react';
-import CHIPSBrowser from '../src/components/CHIPSBrowser';
-import { BrainCircuitIcon } from '../src/components/Icons';
+import CHIPSBrowser from './shared/components/CHIPSBrowser';
+import { BrainCircuitIcon } from './shared/components/Icons';
 
 /**
  * StandaloneApp: The isolated UI entry point for AgentQ.
