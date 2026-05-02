@@ -132,7 +132,13 @@ const SUGGESTIONS_MAP: Record<string, string[]> = {
 export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHealth, onDashboardControl, fileSystemOps, projectOps }: UseAgentQProps) => {
     const { submitInquiry, universeConnections } = useSimulation();
 
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<Message[]>([
+        {
+            id: 'msg-init',
+            sender: 'ai',
+            text: "==================================================\n   AGENT Q: COMMAND & CONTROL INTERFACE (CCI)\n==================================================\nInitializing Quantum-Semantic Link...\n\nStatus: ONLINE\nType 'metrics' to simulate a system event, or just talk to Agent Q.\n--------------------------------------------------"
+        }
+    ]);
     const [isLoading, setIsLoading] = useState(false);
     const [isAgentQOpen, setIsAgentQOpen] = useState(false);
     const [lastActivity, setLastActivity] = useState(0);
@@ -266,18 +272,43 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
     const handleSendMessage = useCallback(async (input: string, attachedFile: File | null = null) => {
         if ((!input.trim() && !attachedFile) || isLoading) return;
 
+        const userMsg = input.trim();
         setMessages(prev => [...prev, { 
             id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             sender: 'user', 
-            text: input.trim(), 
+            text: userMsg, 
             attachment: attachedFile ? { name: attachedFile.name } : undefined 
         }]);
         setIsLoading(true);
         setLastActivity(Date.now());
 
         try {
+            // Special Command: metrics
+            if (userMsg.toLowerCase() === 'metrics') {
+                await new Promise(resolve => setTimeout(resolve, 800));
+                const eventLog = "CRITICAL_WARNING: Memory fragmentation at 88%. Page table walk latency high.";
+                setMessages(prev => [...prev, {
+                    id: `msg-event-${Date.now()}`,
+                    sender: 'system',
+                    text: `[SYSTEM EVENT]: ${eventLog}`
+                }]);
+                
+                await new Promise(resolve => setTimeout(resolve, 1200));
+                const vScore = 0.85 + Math.random() * 0.1;
+                const aiResponse = `[AGENT Q]: Event Processed. Mode: DEFENSE_RECOVERY. V-Score: ${vScore.toFixed(4)}. Memory compaction initiated. Entropy normalized.`;
+                
+                setMessages(prev => [...prev, {
+                    id: `msg-ai-event-${Date.now()}`,
+                    sender: 'ai',
+                    text: aiResponse
+                }]);
+                speak(aiResponse);
+                setIsLoading(false);
+                return;
+            }
+
             // Cognitive Mode Determination
-            const lowerInput = input.toLowerCase();
+            const lowerInput = userMsg.toLowerCase();
             let mode = 'CONSCIOUS_QIAI_IPS'; 
             let modeMessage = "";
             let processingDelay = 1000;

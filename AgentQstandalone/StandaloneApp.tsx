@@ -6,7 +6,6 @@ import { ToastProvider } from './shared/context/ToastContext';
 import { AuthProvider } from './shared/context/AuthContext';
 import QAPI from './QAPI';
 import { useEffect, useState } from 'react';
-import CHIPSBrowser from './shared/components/CHIPSBrowser';
 import { BrainCircuitIcon } from './shared/components/Icons';
 
 /**
@@ -18,11 +17,11 @@ import { BrainCircuitIcon } from './shared/components/Icons';
  */
 const StandaloneContent: React.FC = () => {
     const { agentQProps } = useAgentQ({
-        focusedPanelId: 'standalone-quantum-core',
+        focusedPanelId: 'agentq-core',
         panelInfoMap: { 
-            'standalone-quantum-core': { 
-                title: 'STANDALONE AGENTQ CORE', 
-                description: 'AgentQ operating in a dedicated high-dimensional manifold.' 
+            'agentq-core': { 
+                title: 'AGENT Q COMMAND & CONTROL', 
+                description: 'Supreme-level quantum semantic interface for QCOS.' 
             } 
         },
         qcosVersion: 4.5,
@@ -47,44 +46,33 @@ const StandaloneContent: React.FC = () => {
         QAPI.resolveDecoherence();
     }, []);
 
-    const agentQComponent = (
-        <AgentQ 
-            {...agentQProps}
-            isOpen={true}
-            onToggleOpen={() => {}} // Standalone is persistent
-            fullScreen={true}
-            embedded={false}
-        />
-    );
-
-    const agentQApp = {
-        id: 'agent-q-standalone',
-        name: 'Agent Q Core',
-        description: 'Standalone High-Dimensional Quantum Reasoner',
-        category: 'system' as const,
-        q_uri: 'chips://agent-q',
-        status: 'installed' as const,
-        component: agentQComponent,
-        icon: BrainCircuitIcon,
-    };
-
     return (
-        <div className="w-full h-screen bg-slate-950 flex items-center justify-center overflow-hidden relative">
+        <div className="w-full h-screen bg-slate-950 flex flex-col overflow-hidden relative">
             {/* Background Effect */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.1),transparent_70%)]" />
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-50" />
             </div>
             
-            <div className="w-full h-full z-10 relative">
-                <CHIPSBrowser
-                    initialApp={agentQApp}
-                    apps={[agentQApp]}
-                    onToggleAgentQ={() => {}}
-                    onInstallApp={() => {}}
-                    isFullScreen={true}
-                    onToggleFullScreen={() => {}}
+            <div className="flex-grow z-10 relative">
+                <AgentQ 
+                    {...agentQProps}
+                    isOpen={true}
+                    onToggleOpen={() => {}} // Standalone is persistent
+                    fullScreen={true}
+                    embedded={true}
+                    currentContextName="AGENT Q CCI"
                 />
+            </div>
+            
+            {/* Minimal Status Bar */}
+            <div className="z-20 p-1 px-3 bg-black/60 border-t border-cyan-900/50 flex justify-between text-[10px] font-mono text-cyan-800">
+                <div className="flex gap-4">
+                    <span>NODE: DQN-STANDALONE (Q-IAI CCI)</span>
+                    <span>FIDELITY: 99.99%</span>
+                    <span>STATUS: ONLINE</span>
+                </div>
+                <div>AGENT Q PRIME v4.5.0-STANDALONE</div>
             </div>
         </div>
     );
