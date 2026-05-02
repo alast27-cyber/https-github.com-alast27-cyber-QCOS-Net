@@ -1,5 +1,5 @@
 
-export async function safeFetch<T>(url: string, options?: RequestInit, retries = 5, backoff = 1000): Promise<T> {
+export async function safeFetch<T>(url: string, options?: RequestInit, retries = 10, backoff = 1500): Promise<T> {
     console.log(`[API] Fetching ${url}`);
     let response;
     try {

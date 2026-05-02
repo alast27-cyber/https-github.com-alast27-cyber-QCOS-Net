@@ -3,6 +3,7 @@ import cors from "cors";
 import { createServer as createViteServer } from "vite";
 import { fileURLToPath } from 'url';
 import path from 'path';
+import fs from 'fs';
 import { sendAgentQCommand } from './server/services/ollama';
 import { startSystemMonitor, systemMonitorState, trackRequest } from './server/services/monitor';
 import { startRoadmapSimulation, roadmapState, INITIAL_ROADMAP_STAGES } from './server/services/roadmap';
@@ -508,7 +509,7 @@ async function startServer() {
       res.json(files);
   });
 
-  // API 404 Handler - Prevent falling through to Vite SPA
+  // API 404 Handler - Prevent falling through to Vite SPA for /api routes
   app.use('/api', (req, res) => {
     console.warn(`[API] 404 Not Found: ${req.method} ${req.url}`);
     res.status(404).json({ 
@@ -532,10 +533,16 @@ async function startServer() {
     }
   });
 
-  // Vite middleware for development
+  // Start listening IMMEDIATELY to avoid platform timeouts
+  const server = app.listen(PORT, "0.0.0.0", () => {
+    console.log(`[SERVER] QCOS Backend active on http://0.0.0.0:${PORT}`);
+    console.log(`[SERVER] Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+
+  // Now initialize Vite or serve static files in the background
   if (process.env.NODE_ENV !== "production") {
     try {
-      console.log("[SERVER] Initializing Vite middleware...");
+      console.log("[SERVER] Initializing Vite middleware in background...");
       const vite = await createViteServer({
         server: { middlewareMode: true },
         appType: "spa",
@@ -548,19 +555,22 @@ async function startServer() {
   } else {
     // Production: Serve static files from dist
     const distPath = path.join(__dirname, 'dist');
-    console.log(`[SERVER] Serving static files from ${distPath}`);
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
+    if (fs.existsSync(distPath)) {
+      console.log(`[SERVER] Serving static files from ${distPath}`);
+      app.use(express.static(distPath));
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    } else {
+      console.warn(`[SERVER] Production build not found at ${distPath}. Falling back to default handler.`);
+      app.get('*', (req, res) => {
+        res.status(503).send("Application building... Please refresh in a few moments.");
+      });
+    }
   }
 
-  const server = app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[SERVER] Running on http://localhost:${PORT}`);
-  });
-
   server.on('error', (err: any) => {
-    console.error("[SERVER] Fatal error:", err);
+    console.error("[SERVER] Fatal server error:", err);
   });
 }
 
