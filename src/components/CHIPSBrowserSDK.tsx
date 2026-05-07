@@ -9,6 +9,7 @@ import {
     StarIcon
 } from './Icons';
 import { AppDefinition } from '../types';
+import QAPI from '../../AgentQstandaloneapp/AgentQstandalone/QAPI';
 import ChimeraCoreStatus from './ChimeraCoreStatus';
 import CHIPSAppStore from './CHIPSAppStore';
 import LivePreviewFrame from './LivePreviewFrame';
@@ -225,7 +226,9 @@ const CHIPSBrowserSDK: React.FC<CHIPSBrowserSDKProps> = ({ initialApp, onToggleA
         { uri: 'chips://qmc-finance', title: 'QMC Finance' }
     ]);
 
-
+    useEffect(() => {
+        QAPI.entangle('chips-browser-sdk-node');
+    }, []);
 
     // Update address bar when active tab changes
     useEffect(() => {
@@ -334,6 +337,14 @@ const CHIPSBrowserSDK: React.FC<CHIPSBrowserSDKProps> = ({ initialApp, onToggleA
         }));
 
         setIntentInput(uri);
+
+        // Dispatch navigation to QAPI mesh for AI awareness
+        QAPI.dispatch({
+            type: 'BROWSER_NAVIGATION_SDK',
+            uri,
+            title,
+            timestamp: Date.now()
+        });
 
         // Simulate Network/AI Load
         const fetchContext = async () => {

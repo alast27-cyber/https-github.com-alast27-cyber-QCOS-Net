@@ -10,6 +10,7 @@ import {
     TerminalIcon, DatabaseIcon, StopIcon
 } from './Icons';
 import { AppDefinition, UIStructure } from '../types';
+import QAPI from '../../AgentQstandaloneapp/AgentQstandalone/QAPI';
 
 // Local Imports
 import ChimeraCoreStatus from './ChimeraCoreStatus';
@@ -363,6 +364,23 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
     });
 
     useEffect(() => {
+        // Entangle this browser node with the QAPI ecosystem
+        QAPI.entangle('chips-browser-node');
+        
+        // Potential for more complex listener logic here if browser needs to react to AgentQ commands
+        const unsubscribe = QAPI.subscribe((payload) => {
+            if (payload.type === 'AGENT_INSIGHT' && payload.target === 'CHIPS_BROWSER') {
+                // We could show a notification or update current tab context
+                console.log("[CHIPS Browser] Received AI Insight:", payload);
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+
+    useEffect(() => {
         const interval = setInterval(() => {
             if (Math.random() > 0.7) {
                 setEksDetails(prev => ({ ...prev, status: 'ROTATING', fidelity: 85 }));
@@ -477,6 +495,14 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
         }));
 
         setIntentInput(uri);
+
+        // Dispatch navigation to QAPI mesh
+        QAPI.dispatch({
+            type: 'BROWSER_NAVIGATION',
+            uri,
+            title,
+            timestamp: Date.now()
+        });
 
         const fetchContext = async () => {
             try {

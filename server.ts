@@ -28,6 +28,7 @@ async function startServer() {
     'https://chipsqbrowser.vercel.app',
     'https://quantum-voice-qcos-1b63nh9d0.vercel.app',
     'https://https-github-com-alast27-cyber-qcos-7lz1sm1v7.vercel.app',
+    'https://https-github-com-alast27-cyber-qcos-net-pa8i-dfau8x9tg.vercel.app',
     'http://localhost:3000'
   ];
 
@@ -686,7 +687,7 @@ async function startServer() {
   });
 
   // --- CHIPS Browser SDK API ---
-  app.post("/api/browser/resolve", (req, res) => {
+  app.post("/api/browser/resolve", async (req, res) => {
     const { uri, title } = req.body;
     const lowerUri = uri.toLowerCase();
 
@@ -734,7 +735,26 @@ async function startServer() {
         actions: ["Execute", "Lint", "Optimize"],
         confidence: 99.5,
       };
+    } else {
+      // AI-Native Fallback: Use AgentQ to synthesize context
+      try {
+        const aiSynthesis = await sendAgentQCommand(
+          `Synthesize a brief quantum-tech summary for a browser tab titled "${title}" with URI "${uri}". Keep it cryptic, professional, and futuristic. Mention specific Q-Nodes if applicable.`,
+          "CHIPS-BROWSER-RESOLVER"
+        );
+        context.summary = aiSynthesis.message;
+        context.confidence = 92.0;
+      } catch (e) {
+        console.warn("[QAPI] AI Synthesis failed, using fallback template.");
+      }
     }
+
+    // Emit event to QAPI Mesh so AgentQ CCI can "see" navigation
+    await emitQState(
+      "BROWSER_NAVIGATION_RESOLVED",
+      { uri, title, context },
+      "CHIPS-BROWSER"
+    );
 
     setTimeout(() => {
       res.json(context);
@@ -788,6 +808,7 @@ async function startServer() {
       "https://chipsqbrowser.vercel.app/",
       "https://quantum-voice-qcos-1b63nh9d0.vercel.app/",
       "https://https-github-com-alast27-cyber-qcos-7lz1sm1v7.vercel.app/",
+      "https://https-github-com-alast27-cyber-qcos-net-pa8i-dfau8x9tg.vercel.app/"
     ],
     protocol: "DQN/1.0",
   };
@@ -815,8 +836,21 @@ async function startServer() {
     });
     if (qapiEvents.length > 20) qapiEvents.shift();
 
-    // Distribute to all entangled nodes (simulated in this environment)
-    // In a real production mesh, we would fetch() each node in QAPI_CONFIG.nodes
+    // Distribute to all entangled nodes
+    QAPI_CONFIG.nodes.forEach(node => {
+      // Don't emit to current origin if we could identify it
+      fetch(`${node.endsWith('/') ? node.slice(0, -1) : node}/api/q-receiver`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Q-Entanglement-Seed': QAPI_CONFIG.seed
+        },
+        body: JSON.stringify(qPacket)
+      }).catch(err => {
+        // Silent fail for offline nodes in the mesh
+        console.warn(`[QAPI] Node ${node} unreachable for entanglement sync.`);
+      });
+    });
   }
 
   const qapiAuthMiddleware = (
