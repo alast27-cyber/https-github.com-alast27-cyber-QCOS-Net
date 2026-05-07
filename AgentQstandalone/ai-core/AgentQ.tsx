@@ -263,12 +263,14 @@ const AgentQ: React.FC<AgentQProps> = ({
 
   const chatHistoryView = (
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-          {/* Live Audio Synthesizer Enhancement */}
-          <div className="px-4 py-2">
-              <AudioSynthesizer isActive={isOpen} isSpeaking={isSpeaking} />
-          </div>
+          {/* Live Audio Synthesizer Enhancement - Render only if not embedded (which has its own) */}
+          {!embedded && (
+            <div className="px-4 py-1">
+                <AudioSynthesizer isActive={isOpen} isSpeaking={isSpeaking} />
+            </div>
+          )}
           
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-cyan-900 scrollbar-track-transparent">
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin scrollbar-thumb-cyan-900 scrollbar-track-transparent">
               {filteredMessages.length === 0 && !isLoading && (
                   <div className="flex flex-col items-center justify-center h-full opacity-60 px-4">
                       <SparklesIcon className="w-12 h-12 text-cyan-500 mb-4 animate-pulse" />
@@ -301,7 +303,7 @@ const AgentQ: React.FC<AgentQProps> = ({
                         className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
                     >
                         <div 
-                            className={`max-w-[90%] p-3 rounded-lg text-sm font-mono leading-relaxed ${
+                            className={`max-w-[95%] p-2 rounded-lg text-xs font-mono leading-relaxed ${
                                 isUser 
                                     ? 'bg-cyan-900/40 text-cyan-50 border border-cyan-700/50 rounded-br-none' 
                                     : isSystem
@@ -350,12 +352,12 @@ const AgentQ: React.FC<AgentQProps> = ({
 
           <div className="flex-shrink-0">
               {!isLoading && suggestedActions && suggestedActions.length > 0 && filteredMessages.length > 0 && (
-                <div className="flex gap-2 p-2 overflow-x-auto no-scrollbar bg-black/40 border-t border-cyan-900/30">
+                <div className="flex gap-1.5 p-1.5 overflow-x-auto no-scrollbar bg-black/40 border-t border-cyan-900/30">
                   {suggestedActions.map((action, i) => (
                     <button 
                       key={i} 
                       onClick={() => onSendMessage(action, null)}
-                      className="whitespace-nowrap px-3 py-1 rounded-full bg-cyan-900/20 border border-cyan-700/50 text-[10px] text-cyan-400 hover:bg-cyan-800/40 hover:text-white transition-all"
+                      className="whitespace-nowrap px-2 py-0.5 rounded-full bg-cyan-900/20 border border-cyan-700/50 text-[9px] text-cyan-400 hover:bg-cyan-800/40 hover:text-white transition-all"
                     >
                       {action}
                     </button>
@@ -375,7 +377,7 @@ const AgentQ: React.FC<AgentQProps> = ({
                 </div>
               )}
 
-              <div className={`p-3 border-t flex items-center gap-2 ${viewMode === 'console' ? 'bg-black border-green-900/30' : 'bg-slate-950 border-cyan-900/50'}`}>
+              <div className={`p-2 border-t flex items-center gap-2 ${viewMode === 'console' ? 'bg-black border-green-900/30' : 'bg-slate-950 border-cyan-900/50'}`}>
                 <input 
                   type="file" 
                   ref={fileInputRef} 
@@ -384,21 +386,21 @@ const AgentQ: React.FC<AgentQProps> = ({
                 />
                 <button 
                   onClick={() => fileInputRef.current?.click()}
-                  className={`p-2 transition-colors ${viewMode === 'console' ? 'text-green-600 hover:text-green-400' : 'text-cyan-600 hover:text-cyan-400'}`}
+                  className={`p-1.5 transition-colors ${viewMode === 'console' ? 'text-green-600 hover:text-green-400' : 'text-cyan-600 hover:text-cyan-400'}`}
                   title="Attach File"
                 >
                   <PaperclipIcon className="w-5 h-5" />
                 </button>
                 
                 <div className="flex-grow relative">
-                    {viewMode === 'console' && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-green-500 font-mono text-sm">{'>'}</span>}
+                    {viewMode === 'console' && <span className="absolute left-2 top-1/2 -translate-y-1/2 text-green-500 font-mono text-sm">{'>'}</span>}
                     {isVoiceModeEnabled && voiceState === 'listening' && (
-                        <div className="absolute inset-0 bg-cyan-900/20 rounded-lg flex items-center px-3 pointer-events-none">
+                        <div className="absolute inset-0 bg-cyan-900/20 rounded-lg flex items-center px-2 pointer-events-none">
                             <div className="flex gap-1 items-center">
-                                <div className="w-1 h-3 bg-cyan-400 animate-voice-bar-1"></div>
-                                <div className="w-1 h-5 bg-cyan-400 animate-voice-bar-2"></div>
-                                <div className="w-1 h-2 bg-cyan-400 animate-voice-bar-3"></div>
-                                <span className="ml-2 text-[10px] text-cyan-400 font-mono uppercase animate-pulse">Listening...</span>
+                                <div className="w-1 h-2 bg-cyan-400 animate-voice-bar-1"></div>
+                                <div className="w-1 h-4 bg-cyan-400 animate-voice-bar-2"></div>
+                                <div className="w-1 h-3 bg-cyan-400 animate-voice-bar-3"></div>
+                                <span className="ml-1 text-[8px] text-cyan-400 font-mono uppercase animate-pulse">Listening...</span>
                             </div>
                         </div>
                     )}
@@ -408,9 +410,9 @@ const AgentQ: React.FC<AgentQProps> = ({
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder={viewMode === 'console' ? "Enter system command..." : "Ask Agent Q..."}
-                      className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none ${
+                      className={`w-full border rounded-lg px-2 py-1.5 text-xs focus:outline-none ${
                           viewMode === 'console' 
-                            ? 'bg-black border-green-900 text-green-400 placeholder-green-800 pl-6 font-mono' 
+                            ? 'bg-black border-green-900 text-green-400 placeholder-green-800 pl-5 font-mono' 
                             : 'bg-black/50 border-cyan-900/50 text-white placeholder-cyan-800'
                       }`}
                     />
@@ -458,50 +460,50 @@ const AgentQ: React.FC<AgentQProps> = ({
   if (embedded) {
     return (
         <div className="h-full flex flex-col bg-slate-950/40 backdrop-blur-md overflow-hidden">
-            <div className="p-4 border-b border-cyan-500/30 bg-black/80 flex justify-between items-center relative overflow-hidden">
+            <div className="p-3 border-b border-cyan-500/30 bg-black/80 flex justify-between items-center relative overflow-hidden">
                 {/* Visual Accent */}
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(6,182,212,0.1),transparent_50%)] pointer-events-none" />
                 
-                <div className="flex items-center gap-4 relative z-10">
-                    <div className="w-10 h-10 flex items-center justify-center bg-cyan-900/20 rounded-full border border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-                        <BrainCircuitIcon className={`w-6 h-6 text-cyan-400 ${isSpeaking ? 'animate-pulse' : ''}`} />
+                <div className="flex items-center gap-3 relative z-10">
+                    <div className="w-8 h-8 flex items-center justify-center bg-cyan-900/20 rounded-full border border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                        <BrainCircuitIcon className={`w-5 h-5 text-cyan-400 ${isSpeaking ? 'animate-pulse' : ''}`} />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
+                        <h3 className="text-xs font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
                             Agent Q CCI
-                            <span className="text-[8px] px-1.5 py-0.5 rounded bg-cyan-900/50 border border-cyan-500/30 text-cyan-300 font-mono tracking-normal">WEBAPP</span>
+                            <span className="text-[7px] px-1 py-0.2 rounded bg-cyan-900/50 border border-cyan-500/30 text-cyan-300 font-mono tracking-normal">WEBAPP</span>
                         </h3>
-                        <div className="flex items-center gap-1.5 mt-0.5">
+                        <div className="flex items-center gap-1.5 ">
                             <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse"></div>
-                            <span className="text-[9px] text-cyan-500 font-mono tracking-wider italic">QUANTUM-SEMANTIC UPLINK ACTIVE</span>
+                            <span className="text-[8px] text-cyan-500 font-mono tracking-wider italic">UPLINK ACTIVE</span>
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 relative z-10">
+                <div className="flex items-center gap-2 relative z-10">
                     {universeConnections.agentQ && (
-                         <div className="hidden sm:flex items-center gap-1.5 text-[9px] bg-purple-900/30 text-purple-200 px-3 py-1 rounded-full border border-purple-500/40 animate-pulse">
-                            <GalaxyIcon className="w-3 h-3" />
+                         <div className="hidden sm:flex items-center gap-1 text-[8px] bg-purple-900/30 text-purple-200 px-2 py-0.5 rounded-full border border-purple-500/40 animate-pulse">
+                            <GalaxyIcon className="w-2.5 h-2.5" />
                             UNIVERSE BRIDGE
                          </div>
                     )}
-                    <div className="flex items-center gap-2 border-l border-cyan-900/50 pl-3">
+                    <div className="flex items-center gap-2 border-l border-cyan-900/50 pl-2">
                         <button 
                             onClick={onToggleTts}
-                            className={`p-2 rounded-lg border transition-all ${isTtsEnabled ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-300' : 'bg-slate-900 border-slate-800 text-gray-600'}`}
+                            className={`p-1.5 rounded-lg border transition-all ${isTtsEnabled ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-300' : 'bg-slate-900 border-slate-800 text-gray-600'}`}
                             title={isTtsEnabled ? "Mute Agent" : "Enable Voice"}
                         >
-                            {isTtsEnabled ? <Volume2Icon className="w-4 h-4" /> : <VolumeXIcon className="w-4 h-4" />}
+                            {isTtsEnabled ? <Volume2Icon className="w-3.5 h-3.5" /> : <VolumeXIcon className="w-3.5 h-3.5" />}
                         </button>
-                        <button onClick={() => setShowMemory(!showMemory)} className={`p-2 rounded-lg transition-all border ${showMemory ? 'text-cyan-400 bg-cyan-900/30 border-cyan-400/50' : 'text-gray-500 border-slate-800 hover:text-cyan-400'}`}>
-                            <CpuChipIcon className="w-4 h-4" />
+                        <button onClick={() => setShowMemory(!showMemory)} className={`p-1.5 rounded-lg transition-all border ${showMemory ? 'text-cyan-400 bg-cyan-900/30 border-cyan-400/50' : 'text-gray-500 border-slate-800 hover:text-cyan-400'}`}>
+                            <CpuChipIcon className="w-3.5 h-3.5" />
                         </button>
                     </div>
                 </div>
             </div>
             
             {/* Live Audio Synthesizer Enhancement for Embedded View */}
-            <div className="px-4 py-2 border-b border-cyan-900/20 bg-black/20">
-                <AudioSynthesizer isActive={isOpen} isSpeaking={isSpeaking} />
+            <div className="px-3 py-1 border-b border-cyan-900/20 bg-black/20">
+                <AudioSynthesizer isActive={isOpen} isSpeaking={isSpeaking} minimal={true} />
             </div>
             
             <div className="flex-grow flex flex-col min-h-0 bg-slate-950/20">

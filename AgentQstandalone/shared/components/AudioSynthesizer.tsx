@@ -7,9 +7,10 @@ interface AudioSynthesizerProps {
     isActive: boolean;
     isSpeaking?: boolean;
     intensity?: number;
+    minimal?: boolean;
 }
 
-const AudioSynthesizer: React.FC<AudioSynthesizerProps> = ({ isActive, isSpeaking = false, intensity = 0.5 }) => {
+const AudioSynthesizer: React.FC<AudioSynthesizerProps> = ({ isActive, isSpeaking = false, intensity = 0.5, minimal = false }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
@@ -154,6 +155,33 @@ const AudioSynthesizer: React.FC<AudioSynthesizerProps> = ({ isActive, isSpeakin
             if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
         };
     }, [isActive, isSpeaking]);
+
+    if (minimal) {
+        return (
+            <div className="flex items-center gap-2 h-6 overflow-hidden">
+                {!audioInitialized && (
+                    <button 
+                        onClick={initAudio}
+                        className="text-[7px] bg-cyan-500/20 text-cyan-300 px-1 py-0.5 rounded border border-cyan-500/50 hover:bg-cyan-500/40 transition-all uppercase font-bold"
+                    >
+                        INIT
+                    </button>
+                )}
+                <div className="flex-grow h-full bg-black/20 rounded border border-cyan-900/20 relative">
+                    <canvas 
+                        ref={canvasRef} 
+                        width={200} 
+                        height={24} 
+                        className="w-full h-full opacity-60"
+                    />
+                </div>
+                <div className="flex gap-0.5">
+                    <div className={`w-1 h-1 rounded-full ${isActive ? 'bg-cyan-500 animate-pulse' : 'bg-gray-800'}`}></div>
+                    <div className={`w-1 h-1 rounded-full ${isSpeaking ? 'bg-purple-500 animate-ping' : 'bg-gray-800'}`}></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-black/40 border border-cyan-900/30 rounded-lg p-3 overflow-hidden relative group">

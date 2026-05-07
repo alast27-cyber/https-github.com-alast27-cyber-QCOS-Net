@@ -50,8 +50,8 @@ const StandaloneContent: React.FC = () => {
         <div className="w-full h-screen bg-slate-950 flex flex-col overflow-hidden relative">
             {/* Background Effect */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.1),transparent_70%)]" />
-                <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-50" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.08),transparent_70%)]" />
+                <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] brightness-50 contrast-150" />
             </div>
             
             <div className="flex-grow z-10 relative">
@@ -66,13 +66,13 @@ const StandaloneContent: React.FC = () => {
             </div>
             
             {/* Minimal Status Bar */}
-            <div className="z-20 p-1 px-3 bg-black/60 border-t border-cyan-900/50 flex justify-between text-[10px] font-mono text-cyan-800">
+            <div className="z-20 p-0.5 px-3 bg-black/80 border-t border-cyan-900/40 flex justify-between text-[9px] font-mono text-cyan-900/70">
                 <div className="flex gap-4">
-                    <span>NODE: DQN-STANDALONE (Q-IAI CCI)</span>
+                    <span>NODE: DQN-STANDALONE</span>
                     <span>FIDELITY: 99.99%</span>
                     <span>STATUS: ONLINE</span>
                 </div>
-                <div>AGENT Q PRIME v4.5.0-STANDALONE</div>
+                <div>AGENT Q PRIME v4.5.0</div>
             </div>
         </div>
     );

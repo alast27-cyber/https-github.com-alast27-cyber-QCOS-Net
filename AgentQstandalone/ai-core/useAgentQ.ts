@@ -136,7 +136,7 @@ export const useAgentQ = ({ focusedPanelId, panelInfoMap, qcosVersion, systemHea
         {
             id: 'msg-init',
             sender: 'ai',
-            text: "==================================================\n   AGENT Q: COMMAND & CONTROL INTERFACE (CCI)\n==================================================\nInitializing Quantum-Semantic Link...\n\nStatus: ONLINE\nType 'metrics' to simulate a system event, or just talk to Agent Q.\n--------------------------------------------------"
+            text: "[AGENT Q: CCI - ONLINE]\nInitializing Quantum-Semantic Link... Success.\n\nStatus: STANDALONE ACTIVE\nType 'metrics' for system simulation or begin inquiry."
         }
     ]);
     const [isLoading, setIsLoading] = useState(false);
