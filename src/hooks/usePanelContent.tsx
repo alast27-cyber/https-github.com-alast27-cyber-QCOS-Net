@@ -3,8 +3,8 @@ import { AppDefinition, URIAssignment, LogEntry, UIStructure, SystemHealth } fro
 import { getPanelMetadata, FaceData } from '../utils/dashboardConfig';
 
 // Standardize imports to relative paths for browser ESM compatibility
-import AgentQCore from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/AgentQCore.tsx';
-import AgentQ from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/AgentQ.tsx';
+import AgentQCore from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/AgentQCore';
+import AgentQ from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/AgentQ';
 import SystemDiagnostic from '../components/SystemDiagnostic';
 import QCOSGateway from '../components/QCOSGateway';
 import CHIPSBrowserSDK from '../components/CHIPSBrowserSDK';

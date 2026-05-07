@@ -1,6 +1,7 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import GlassPanel from './GlassPanel';
+import { safeFetch } from '../utils/api';
 import { 
     ShieldCheckIcon, LockIcon, ZapIcon, ActivityIcon, 
     AlertTriangleIcon, CheckCircle2Icon, RefreshCwIcon, 
@@ -47,8 +48,7 @@ const UserRegistryView: React.FC = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const res = await fetch('/api/security');
-                const data = await res.json();
+                const data = await safeFetch<any>('/api/security');
                 setUsers(data.users);
             } catch (e) {
                 console.error("Failed to fetch security users", e);
@@ -81,12 +81,11 @@ const UserRegistryView: React.FC = () => {
 
     const toggleAdminRights = async (userId: string) => {
         try {
-            const res = await fetch('/api/security/users/toggle', {
+            const data = await safeFetch<any>('/api/security/users/toggle', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: userId })
             });
-            const data = await res.json();
             setUsers(prev => prev.map(u => u.id === userId ? data : u));
         } catch (e) {
             console.error("Failed to toggle admin rights", e);
@@ -191,7 +190,7 @@ const SecurityMonitorAndSimulator: React.FC<SecurityMonitorProps> = ({ onMaximiz
     };
 
     // --- Simulator Logic ---
-    const runSimulation = () => {
+    const runSimulation = useCallback(() => {
         setIsSimulating(true);
         setSimResult(null);
         setSimProgress(0);
@@ -222,15 +221,14 @@ const SecurityMonitorAndSimulator: React.FC<SecurityMonitorProps> = ({ onMaximiz
                 });
             }
         }, 100);
-    };
+    }, [humanOverride, selectedAttack, selectedDefense]);
 
 
     // --- Monitor Logic (AI Agent Simulation) ---
     useEffect(() => {
         const fetchSecurity = async () => {
             try {
-                const res = await fetch('/api/security');
-                const data = await res.json();
+                const data = await safeFetch<any>('/api/security');
                 setThreatLevel(data.threatLevel);
                 setLogs(data.logs);
             } catch (e) {
@@ -268,7 +266,7 @@ const SecurityMonitorAndSimulator: React.FC<SecurityMonitorProps> = ({ onMaximiz
         }
 
         return () => clearTimeout(timer);
-    }, [isAutoSimulating, isSimulating, simResult]);
+    }, [isAutoSimulating, isSimulating, simResult, runSimulation]);
 
 
     // --- Radar Chart Data ---

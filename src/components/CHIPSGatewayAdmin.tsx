@@ -13,6 +13,7 @@ import {
 import { URIAssignment } from '../types';
 import GlassPanel from './GlassPanel';
 import LoadingSkeleton from './LoadingSkeleton';
+import { safeFetch } from '../utils/api';
 
 interface CHIPSGatewayAdminProps {
     uriAssignments: URIAssignment[];
@@ -117,9 +118,9 @@ const CHIPSGatewayAdmin: React.FC<CHIPSGatewayAdminProps> = ({ uriAssignments })
     useEffect(() => {
         const fetchData = async () => {
             const [appsRes, dsRes, podsRes] = await Promise.all([
-                fetch('/api/gateway/apps').then(r => r.json()),
-                fetch('/api/gateway/datasources').then(r => r.json()),
-                fetch('/api/gateway/pods').then(r => r.json())
+                safeFetch<GatewayApp[]>('/api/gateway/apps'),
+                safeFetch<any[]>('/api/gateway/datasources'),
+                safeFetch<any[]>('/api/gateway/pods')
             ]);
             setApps(appsRes);
             setDataSources(dsRes);
@@ -316,8 +317,7 @@ const CHIPSGatewayAdmin: React.FC<CHIPSGatewayAdminProps> = ({ uriAssignments })
         if (activeTab === 'protocol' && activePacket) {
             const fetchProtocol = async () => {
                 try {
-                    const res = await fetch('/api/gateway/protocol');
-                    const steps = await res.json();
+                    const steps = await safeFetch<any[]>('/api/gateway/protocol');
                     
                     const timers: ReturnType<typeof setTimeout>[] = [];
 
@@ -355,8 +355,7 @@ const CHIPSGatewayAdmin: React.FC<CHIPSGatewayAdminProps> = ({ uriAssignments })
             setNetStatus('TRANSFER');
             addNetLog('FETCH: Request Sent. Waiting for response...');
             
-            const res = await fetch('/api/gateway/fetch');
-            const data = await res.json();
+            const data = await safeFetch<any>('/api/gateway/fetch');
             
             addNetLog('FETCH: Response received. Status: 200 OK');
             setNetResponse(JSON.stringify(data, null, 2));
@@ -383,8 +382,7 @@ const CHIPSGatewayAdmin: React.FC<CHIPSGatewayAdminProps> = ({ uriAssignments })
              setNetStatus('TRANSFER');
              addNetLog('XHR: readyState 3 (LOADING)');
              
-             const res = await fetch('/api/gateway/xhr');
-             const data = await res.json();
+             const data = await safeFetch<any>('/api/gateway/xhr');
              
              addNetLog('XHR: readyState 4 (DONE)');
              addNetLog('XHR: Status 200');

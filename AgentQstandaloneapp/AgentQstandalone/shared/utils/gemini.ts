@@ -112,15 +112,6 @@ export const generateContentWithRetry = async (ai: any, params: any, retries = 5
                 }
             };
         }
-
-    // Original logic for non-local mode (if applicable)
-    if (!ai) {
-        const localResponse = generateLocalResponse(params);
-        return {
-            text: localResponse.text,
-            candidates: [{ content: { parts: [{ text: localResponse.text }] } }]
-        };
-    }
 };
 
 export const generateLocalCode = async (prompt: string, currentCode: string): Promise<string> => {

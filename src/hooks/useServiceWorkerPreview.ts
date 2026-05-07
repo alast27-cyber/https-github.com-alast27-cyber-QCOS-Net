@@ -138,7 +138,7 @@ export const useServiceWorkerPreview = ({ files, onTerminalOutput }: UseWebConta
              boot();
         }
         
-    }, []); // Run once on mount for this specific implementation to establish the container
+    }, [files, iframeUrl, onTerminalOutput]); // Run once on mount for this specific implementation to establish the container
 
     // --- 3. Hot Updates (Write File) ---
     // This allows the editor to push changes without restarting the container

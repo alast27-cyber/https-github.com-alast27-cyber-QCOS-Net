@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LogInIcon, CpuChipIcon, FileCodeIcon, CrosshairIcon, SendIcon, CheckCircle2Icon } from './Icons';
+import { safeFetch } from '../utils/api';
 
 type Stage = 'idle' | 'ingestion' | 'activation' | 'compilation' | 'targeting' | 'dispatch' | 'complete';
 
@@ -26,8 +27,7 @@ const QANExecutionSimulator: React.FC = () => {
     useEffect(() => {
         const fetchQan = async () => {
             try {
-                const res = await fetch('/api/qan');
-                const data = await res.json();
+                const data = await safeFetch<any>('/api/qan');
                 setCurrentStage(data.currentStage);
             } catch (e) {
                 console.error("Failed to fetch QAN status", e);
@@ -41,8 +41,7 @@ const QANExecutionSimulator: React.FC = () => {
     const handleDispatch = async () => {
         if(currentStage === 'idle') {
             try {
-                const res = await fetch('/api/qan/dispatch', { method: 'POST' });
-                const data = await res.json();
+                const data = await safeFetch<any>('/api/qan/dispatch', { method: 'POST' });
                 setCurrentStage(data.currentStage);
             } catch (e) {
                 console.error("Failed to dispatch QAN", e);

@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import { safeFetch } from '../utils/api';
 import { 
     GlobeIcon, ArrowRightIcon, MessageSquareIcon, CpuChipIcon, 
     PlusIcon, XIcon, ChevronLeftIcon, ChevronRightIcon, ArrowPathIcon,
@@ -479,12 +480,11 @@ const CHIPSBrowser: React.FC<CHIPSBrowserProps> = ({ initialApp, onToggleAgentQ,
 
         const fetchContext = async () => {
             try {
-                const res = await fetch('/api/browser/resolve', {
+                const analysis = await safeFetch<any>('/api/browser/resolve', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ uri, title })
                 });
-                const analysis = await res.json();
                 setTabs(prev => prev.map(t => {
                     if (t.id === tabId) {
                         return { ...t, isLoading: false, aiContext: analysis };

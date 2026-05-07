@@ -5,7 +5,7 @@ import {
     CheckCircle2Icon, SparklesIcon, ActivityIcon, LinkIcon, CpuChipIcon, 
     GalaxyIcon, AlertTriangleIcon, LayoutGridIcon, ArrowRightIcon, TerminalIcon, ShieldCheckIcon,
     Volume2Icon, VolumeXIcon
-} from '../shared/components/Icons.tsx';
+} from '../shared/components/Icons';
 import { Message, ChartData } from '../shared/utils/agentUtils';
 import { 
     ResponsiveContainer, LineChart, Line, BarChart, Bar, AreaChart, Area, 

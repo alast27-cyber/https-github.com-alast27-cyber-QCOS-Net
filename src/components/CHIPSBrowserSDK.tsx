@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { safeFetch } from '../utils/api';
 import { 
     GlobeIcon, ArrowRightIcon, MessageSquareIcon, CpuChipIcon, 
     PlusIcon, XIcon, ChevronLeftIcon, ChevronRightIcon, ArrowPathIcon,
@@ -343,12 +344,11 @@ const CHIPSBrowserSDK: React.FC<CHIPSBrowserSDKProps> = ({ initialApp, onToggleA
                 (uri.startsWith('chips://') && a.q_uri?.includes(uri.split('chips://')[1]))
             );
             try {
-                const res = await fetch('/api/browser/resolve', {
+                const context = await safeFetch<any>('/api/browser/resolve', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ uri, title: app ? app.name : title })
                 });
-                const context = await res.json();
                 setTabs(prev => prev.map(t => t.id === tabId ? { 
                     ...t, 
                     isLoading: false, 

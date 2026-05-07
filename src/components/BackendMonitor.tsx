@@ -5,6 +5,7 @@ import {
     CheckCircle2Icon, UsersIcon, LayersIcon, ZapIcon
 } from './Icons';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Cell } from 'recharts';
+import { safeFetch } from '../utils/api';
 
 const BackendMonitor: React.FC = () => {
     const [roadmap, setRoadmap] = useState<any>(null);
@@ -31,10 +32,7 @@ const BackendMonitor: React.FC = () => {
                 '/api/system/monitor'
             ];
 
-            const results = await Promise.allSettled(endpoints.map(url => fetch(url).then(r => {
-                if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-                return r.json();
-            })));
+            const results = await Promise.allSettled(endpoints.map(url => safeFetch<any>(url)));
 
             const [roadmapRes, qceRes, ingestionRes, securityRes, podsRes, insightsRes, systemRes] = results;
 

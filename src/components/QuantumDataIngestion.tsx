@@ -50,7 +50,7 @@ const QuantumDataIngestion: React.FC<{ onMaximize?: () => void }> = ({ onMaximiz
 
     // Update chart history
     useEffect(() => {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
             setTick(t => t + 1);
             setChartHistory(prev => {
                 const newData = [...prev, { time: tick, val: totalThroughput }];
@@ -58,7 +58,8 @@ const QuantumDataIngestion: React.FC<{ onMaximize?: () => void }> = ({ onMaximiz
                 return newData;
             });
         }, 0);
-    }, [totalThroughput]); 
+        return () => clearTimeout(timer);
+    }, [totalThroughput, tick]); 
 
     return (
         <GlassPanel 
