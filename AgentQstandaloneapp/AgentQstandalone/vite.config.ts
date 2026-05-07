@@ -22,10 +22,9 @@ export default defineConfig({
   root: __dirname,
   base: '/',
   build: {
-    outDir: 'dist',
+    outDir: '../dist-standalone',
     emptyOutDir: true,
     rollupOptions: {
-      input: resolve(__dirname, 'index.html'),
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'framer-motion'],
