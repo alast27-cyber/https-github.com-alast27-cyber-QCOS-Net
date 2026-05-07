@@ -19,8 +19,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  root: __dirname,
-  base: '/',
+  root: resolve(__dirname),
+  publicDir: resolve(__dirname, 'public'),
+  base: './',
   build: {
     outDir: '../dist-standalone',
     emptyOutDir: true,
