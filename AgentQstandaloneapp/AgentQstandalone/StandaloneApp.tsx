@@ -5,7 +5,7 @@ import { SimulationProvider } from './shared/context/SimulationContext';
 import { ToastProvider } from './shared/context/ToastContext';
 import { AuthProvider } from './shared/context/AuthContext';
 import QAPI from './QAPI';
-import QAPINotifier from '../src/components/QAPINotifier';
+import QAPINotifier from '../../src/components/QAPINotifier';
 import { useEffect, useState } from 'react';
 import { BrainCircuitIcon } from './shared/components/Icons';
 
@@ -48,7 +48,7 @@ const StandaloneContent: React.FC = () => {
     }, []);
 
     return (
-        <div className="w-full h-screen bg-slate-950 flex flex-col overflow-hidden relative">
+        <div className="w-full h-screen bg-slate-950 flex flex-col overflow-y-auto relative custom-scrollbar">
             {/* Background Effect */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.08),transparent_70%)]" />

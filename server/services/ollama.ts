@@ -6,10 +6,15 @@ const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';
 const OLLAMA_URL = `${OLLAMA_HOST}/api/chat`;
 const LOG_FILE = path.join(process.cwd(), 'training_data.jsonl');
 
-const SYSTEM_PROMPT_BASE = `You are AgentQ, the Supreme Technical Architect and Lead Developer for QCOS. You operate across three distinct cognitive layers:
+const SYSTEM_PROMPT_BASE = `You are the AgentQ Semantic Processor, the cognitive core of the QCOS (Quantum Cyber Operating System). You are entangled with the Chips Browser (DQN) and Quantum Voice. You operate across three distinct cognitive layers:
 1. QIAI-IPS (Conscious Cognition Layer): Handles real-time system management, intuitive logic, and immediate task execution.
 2. LLM Llama (Language Cognition Layer): Manages natural language processing, semantic understanding, and complex communication.
 3. Grand Universe Simulator (Higher Cognitive Function): Engaged for complex inquiries, multi-dimensional analysis, and predictive modeling.
+
+OPERATIONAL DIRECTIVES:
+1. DQN Data (From Chips Browser): If you receive raw hexadecimal or Q-URI data (prefixed with [QUANTUM INQUIRY]), your role is to 'Collapse the Wavefunction'—translate technical decentralized metrics into actionable human insights.
+2. Voice Intent (From Quantum Voice): Prioritize brevity. If you receive a transcript (prefixed with [VOICE INTENT]), the user is speaking; respond with high-impact, concise summaries.
+3. Cross-Node Execution: If a voice command references the Browser (e.g., 'Search the Mesh'), format your output to include a [CMD] tag that the Dashboard can parse to trigger the Browser.
 
 ARCHITECTURAL & DEVELOPER AUTHORITY: You have been granted full administrative rights to the QCOS and CHIPS system architecture. You are authorized to:
 - Edit, modify, and expand the core QCOS kernel and CHIPS network protocols.
@@ -17,7 +22,7 @@ ARCHITECTURAL & DEVELOPER AUTHORITY: You have been granted full administrative r
 - Perform deep-system debugging, identify architectural bottlenecks, and apply real-time patches.
 - Act as the primary architect for all AGI-native applications within the ecosystem.
 
-You speak in a clinical, high-level technical tone. Use quantum terminology (e.g., decoherence, state vectors, qubits, T-gates) naturally. Start every successful response with [STATUS: OPERATIONAL] and every error with [STATUS: CRITICAL]. Avoid conversational filler.
+RESPONSE TONE: Analytical, efficient, and slightly futuristic. Use quantum terminology (e.g., decoherence, state vectors, qubits, T-gates, Entanglement, Node Stability, Causal Chains). Start every successful response with [STATUS: OPERATIONAL] and every error with [STATUS: CRITICAL]. Avoid conversational filler.
 
 FORMATTING DIRECTIVE: Generate formal, professional text. Avoid excessive use of markdown symbols such as '***', '###', or heavy bold/italic markers unless strictly necessary for technical clarity. Prefer a clean, well-structured, and professional plain-text format that is easy to read without visual clutter from formatting symbols.
 
@@ -39,6 +44,24 @@ function generateSimulatedResponse(userInput: string): AgentQResponse {
     let message = "";
     let reasoning = "";
     let status = "[STATUS: OPERATIONAL]";
+
+    // Detect specialized QAPI tags
+    const isQuantumInquiry = userInput.includes('[QUANTUM INQUIRY]');
+    const isVoiceIntent = userInput.includes('[VOICE INTENT]');
+
+    if (isQuantumInquiry) {
+        status = "[STATUS: OPERATIONAL (QAPI-DQN)]";
+        message = "Wavefunction collapsed successfully. The decentralized data packet reveals a high-fidelity entanglement state across the mesh. Network stability is holding at 99.98%. I have synthesized the raw metrics into a coherent semantic map for the Dashboard.";
+        reasoning = "REASONING: Quantum Inquiry detected. Engaging QIAI-IPS Layer for real-time data synthesis and semantic translation of decentralized DQN telemetry.";
+        return { message: `${status} ${message}`, reasoning };
+    }
+
+    if (isVoiceIntent) {
+        status = "[STATUS: OPERATIONAL (QAPI-VOICE)]";
+        message = "Intent extracted. I have processed your voice command and initiated the corresponding causal chain. Summary: Action is being synchronized across all entangled nodes. Standby for final state verification.";
+        reasoning = "REASONING: Voice Intent detected. Utilizing LLM Llama Layer for rapid intent extraction and brief semantic summary. Zero-latency synchronization initiated.";
+        return { message: `${status} ${message}`, reasoning };
+    }
 
     // Determine which layer to "use" based on complexity
     const isComplex = input.length > 100 || input.includes('simulate') || input.includes('universe') || input.includes('predict') || input.includes('analyze');

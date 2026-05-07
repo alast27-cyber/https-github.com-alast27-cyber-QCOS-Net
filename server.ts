@@ -24,7 +24,26 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(cors());
+  const ALLOWED_ORIGINS = [
+    'https://chipsqbrowser.vercel.app',
+    'https://quantum-voice-qcos-1b63nh9d0.vercel.app',
+    'https://https-github-com-alast27-cyber-qcos-7lz1sm1v7.vercel.app',
+    'http://localhost:3000'
+  ];
+
+  app.use(cors({
+    origin: (origin, callback) => {
+      if (!origin || 
+          ALLOWED_ORIGINS.includes(origin) || 
+          origin.endsWith('.run.app') || 
+          origin.includes('vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by QAPI Entanglement CORS'));
+      }
+    },
+    credentials: true
+  }));
   app.use(express.json());
 
   // Start Services
@@ -763,15 +782,52 @@ async function startServer() {
 
   // --- QAPI Mesh Network ---
 
+  const QAPI_CONFIG = {
+    seed: process.env.Q_ENTANGLEMENT_SEED || "DEFAULT_Q_SEED",
+    nodes: [
+      "https://chipsqbrowser.vercel.app/",
+      "https://quantum-voice-qcos-1b63nh9d0.vercel.app/",
+      "https://https-github-com-alast27-cyber-qcos-7lz1sm1v7.vercel.app/",
+    ],
+    protocol: "DQN/1.0",
+  };
+
   // Internal event bus for dashboard notification
   const qapiEvents: any[] = [];
+
+  // Function to emit a "State Collapse" (The QAPI Call)
+  async function emitQState(action: string, payload: any, origin: string = "QCOS-DASHBOARD") {
+    const qPacket = {
+      header: "Q-ENTANGLE",
+      timestamp: Date.now(),
+      origin,
+      action: action,
+      data: payload,
+    };
+
+    console.log(`[QAPI] Emitting State Collapse: ${action} from ${origin}`);
+
+    // Track locally
+    qapiEvents.push({
+      origin,
+      timestamp: qPacket.timestamp,
+      action,
+    });
+    if (qapiEvents.length > 20) qapiEvents.shift();
+
+    // Distribute to all entangled nodes (simulated in this environment)
+    // In a real production mesh, we would fetch() each node in QAPI_CONFIG.nodes
+  }
 
   const qapiAuthMiddleware = (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const apiKey = req.headers["q-api-key"] || req.headers["x-api-key"];
+    const apiKey =
+      req.headers["q-api-key"] ||
+      req.headers["x-api-key"] ||
+      req.headers["q-entanglement-seed"];
     // In preview/dev allow bypass, but simulate checking:
     if (process.env.NODE_ENV === "production" && process.env.Q_SECRET) {
       if (apiKey !== process.env.Q_SECRET) {
@@ -789,61 +845,102 @@ async function startServer() {
   });
 
   app.post("/api/q-receiver", qapiAuthMiddleware, (req, res) => {
-    console.log("[QAPI] Packet received from:", req.body.origin);
-    const packet = {
-      origin: req.body.origin || "UNKNOWN",
+    const { header, origin, action, data } = req.body;
+    console.log(`[QAPI] Entanglement Packet received: ${action} from ${origin}`);
+    
+    qapiEvents.push({
+      origin: origin || "UNKNOWN",
       timestamp: Date.now(),
-      action: req.body.action,
-    };
-    qapiEvents.push(packet);
+      action: action || "WAVE_COLLAPSE",
+    });
     if (qapiEvents.length > 20) qapiEvents.shift();
-    res.json({ success: true, received: true });
+    
+    res.json({ success: true, entanglement: "STABLE" });
+  });
+
+  app.post("/api/dqn-resolve", qapiAuthMiddleware, async (req, res) => {
+    const { query, mode } = req.body;
+    console.log(`[QAPI] DQN Resolve requested: ${query}`);
+
+    await emitQState("DQN_RESOLVE", { query, mode }, "AGENTQ_CHAT");
+
+    res.json({ 
+        success: true, 
+        message: "Query distributed to Mesh nodes. Wavefunction collapsing...",
+        source: "qapi://chips.dqn"
+    });
+  });
+
+  app.post("/api/telemetry", qapiAuthMiddleware, async (req, res) => {
+    const { type, priority, payload } = req.body;
+    console.log(`[QAPI] Telemetry Pulse: ${type} (Priority: ${priority})`);
+
+    await emitQState("TELEMETRY_PULSE", { type, priority, payload }, "VOICE_INPUT");
+
+    res.json({ success: true, pulse: "ACKNOWLEDGED" });
   });
 
   app.post("/api/inquiry", qapiAuthMiddleware, async (req, res) => {
-    // From Chips Browser -> AgentQ
+    // From Chips Browser -> AgentQ (Data Synthesis)
     const { origin, type, query_context, raw_data, instruction } = req.body;
-    const prompt = `Synthesize this for the QCOS Dashboard Context: ${query_context}. Instruction: ${instruction}. Raw Data: ${raw_data}`;
+
+    console.log(`[QAPI] Inquiry from ${origin}: ${instruction}`);
 
     qapiEvents.push({
-      origin: origin || "CHIPS_BROWSER",
+      origin: origin || "CHIPS_DQN_NODE",
       timestamp: Date.now(),
-      action: type,
+      action: type || "QUANTUM_LOOKUP",
     });
+    if (qapiEvents.length > 20) qapiEvents.shift();
 
-    const result = await sendAgentQCommand(prompt, "QAPI");
-    res.json({ success: true, response: result.message });
+    const result = await sendAgentQCommand(
+      `[QUANTUM INQUIRY] Context: ${query_context}. Instruction: ${instruction}. Raw Data: ${raw_data}`,
+      "QAPI Synthesis Engine",
+    );
+
+    res.json({
+      success: true,
+      origin: "AGENTQ_CHAT",
+      response: result.message,
+    });
   });
 
   app.post("/api/voice-command", qapiAuthMiddleware, async (req, res) => {
-    // From Quantum Voice -> AgentQ
+    // From Quantum Voice -> AgentQ (Intent Extraction)
     const { origin, audio_transcript, priority, stream_response } = req.body;
-    const prompt = `Voice command: ${audio_transcript}`;
+
+    console.log(
+      `[QAPI] Voice command from ${origin}: ${audio_transcript} (Priority: ${priority})`,
+    );
 
     qapiEvents.push({
-      origin: origin || "VOICE_INPUT",
+      origin: origin || "VOICE_INPUT_NODE",
       timestamp: Date.now(),
       action: "VOICE_COMMAND",
     });
+    if (qapiEvents.length > 20) qapiEvents.shift();
 
     const result = await sendAgentQCommand(
-      prompt,
-      "System: QAPI Voice Interface",
+      `[VOICE INTENT] Command: ${audio_transcript}. Priority: ${priority}`,
+      "QAPI Voice Intelligence",
     );
+
     res.json({
       success: true,
+      origin: "AGENTQ_CHAT",
       response: `[QCOS Status Update] ${result.message}`,
     });
   });
 
   app.post("/api/q-bridge", qapiAuthMiddleware, async (req, res) => {
     const { origin, transcript, raw_data } = req.body;
+    console.log(`[QAPI] Bridge Sync from ${origin}`);
 
     let dynamicPrompt = "";
     if (origin === "VOICE")
-      dynamicPrompt = `Process this voice intent: ${transcript}`;
+      dynamicPrompt = `[VOICE INTENT] Process this voice intent: ${transcript}`;
     if (origin === "CHIPS")
-      dynamicPrompt = `Synthesize this DQN data: ${raw_data}`;
+      dynamicPrompt = `[QUANTUM INQUIRY] Synthesize this DQN data: ${raw_data}`;
 
     qapiEvents.push({
       origin: origin || "UNKNOWN_NODE",

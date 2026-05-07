@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
-import { ToastProvider as StandaloneToastProvider } from '../AgentQstandalone/shared/context/ToastContext';
+import { ToastProvider as StandaloneToastProvider } from '../AgentQstandaloneapp/AgentQstandalone/shared/context/ToastContext';
 import { SimulationProvider } from './context/SimulationContext';
-import { SimulationProvider as StandaloneSimulationProvider } from '../AgentQstandalone/shared/context/SimulationContext';
+import { SimulationProvider as StandaloneSimulationProvider } from '../AgentQstandaloneapp/AgentQstandalone/shared/context/SimulationContext';
 import './index.css';
 import { loader } from "@monaco-editor/react";
 
