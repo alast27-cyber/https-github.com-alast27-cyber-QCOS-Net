@@ -48,7 +48,7 @@ const StandaloneContent: React.FC = () => {
     }, []);
 
     return (
-        <div className="w-full h-screen bg-slate-950 flex flex-col overflow-y-auto relative custom-scrollbar">
+        <div className="w-full min-h-screen bg-slate-950 flex flex-col relative custom-scrollbar">
             {/* Background Effect */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.08),transparent_70%)]" />
