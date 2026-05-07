@@ -20,7 +20,7 @@ import { STANDARD_QLANG_TEMPLATES, QLangTemplate } from '../utils/agentUtils';
 import { SystemHealth, UIStructure } from '../types';
 import { useToast } from '../context/ToastContext';
 import { useSimulation } from '../context/SimulationContext';
-import { useAgentQ, FileSystemOps, ProjectOps } from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/useAgentQ';
+import { useAgentQ, FileSystemOps, ProjectOps } from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/useAgentQ.ts';
 
 // Local Imports
 import SyntaxHighlighter from './SyntaxHighlighter';
