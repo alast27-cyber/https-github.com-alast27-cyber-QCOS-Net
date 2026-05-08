@@ -21,7 +21,7 @@ import {
   TimelineIcon
 } from '../shared/components/Icons';
 import { SystemHealth } from '../shared/types';
-import { useToast } from '../shared/context/ToastContext';
+import { useToast } from '../../../src/context/ToastContext';
 import { useSimulation } from '../shared/context/SimulationContext';
 import GlassPanel from '../shared/components/GlassPanel';
 

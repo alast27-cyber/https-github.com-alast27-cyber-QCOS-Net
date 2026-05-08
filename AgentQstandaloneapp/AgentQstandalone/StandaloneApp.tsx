@@ -2,7 +2,7 @@ import React from 'react';
 import AgentQ from './ai-core/AgentQ';
 import { useAgentQ } from './ai-core/useAgentQ';
 import { SimulationProvider } from './shared/context/SimulationContext';
-import { ToastProvider } from './shared/context/ToastContext';
+import { ToastProvider } from '../../src/context/ToastContext';
 import { AuthProvider } from './shared/context/AuthContext';
 import QAPI from './QAPI';
 import QAPINotifier from '../../src/components/QAPINotifier';

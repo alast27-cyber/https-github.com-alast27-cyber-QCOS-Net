@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
-import { ToastProvider as StandaloneToastProvider } from '../AgentQstandaloneapp/AgentQstandalone/shared/context/ToastContext';
 import { SimulationProvider } from './context/SimulationContext';
 import { SimulationProvider as StandaloneSimulationProvider } from '../AgentQstandaloneapp/AgentQstandalone/shared/context/SimulationContext';
 import './index.css';
@@ -76,13 +75,11 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <AuthProvider>
     <ToastProvider>
-      <StandaloneToastProvider>
-        <StandaloneSimulationProvider>
-          <SimulationProvider>
-            <App />
-          </SimulationProvider>
-        </StandaloneSimulationProvider>
-      </StandaloneToastProvider>
+      <StandaloneSimulationProvider>
+        <SimulationProvider>
+          <App />
+        </SimulationProvider>
+      </StandaloneSimulationProvider>
     </ToastProvider>
   </AuthProvider>
 );

@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NetworkIcon, GalaxyIcon, BrainCircuitIcon, AtomIcon, SparklesIcon, RocketLaunchIcon, CodeBracketIcon, StopIcon, PlayIcon, AcademicCapIcon, CheckCircle2Icon, ActivityIcon } from './Icons';
 import { useSimulation } from '../context/SimulationContext';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../../../../src/context/ToastContext';
 
 interface EngineConfig {
     id: string;
