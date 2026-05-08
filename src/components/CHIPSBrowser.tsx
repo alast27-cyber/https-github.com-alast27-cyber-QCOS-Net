@@ -10,7 +10,7 @@ import {
     TerminalIcon, DatabaseIcon, StopIcon
 } from './Icons';
 import { AppDefinition, UIStructure } from '../types';
-import QAPI from '../../AgentQstandaloneapp/AgentQstandalone/QAPI.ts';
+import QAPI from '../../AgentQstandaloneapp/AgentQstandalone/QAPI';
 
 // Local Imports
 import ChimeraCoreStatus from './ChimeraCoreStatus';

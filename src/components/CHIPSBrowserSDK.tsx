@@ -9,7 +9,7 @@ import {
     StarIcon
 } from './Icons';
 import { AppDefinition } from '../types';
-import QAPI from '../../AgentQstandaloneapp/AgentQstandalone/QAPI.ts';
+import QAPI from '../../AgentQstandaloneapp/AgentQstandalone/QAPI';
 import ChimeraCoreStatus from './ChimeraCoreStatus';
 import CHIPSAppStore from './CHIPSAppStore';
 import LivePreviewFrame from './LivePreviewFrame';

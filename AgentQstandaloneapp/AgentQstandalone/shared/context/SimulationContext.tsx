@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import { useToast } from './ToastContext.tsx';
-import { safeFetch } from '../utils/api.ts';
+import { useToast } from './ToastContext';
+import { safeFetch } from '../utils/api';
 
 // --- Types (Re-defined for standalone isolation) ---
 

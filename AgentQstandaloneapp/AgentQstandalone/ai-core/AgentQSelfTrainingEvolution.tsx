@@ -20,10 +20,10 @@ import {
   LinkIcon,
   TimelineIcon
 } from '../shared/components/Icons';
-import { SystemHealth } from '../shared/types.ts';
-import { useToast } from '../shared/context/ToastContext.tsx';
-import { useSimulation } from '../shared/context/SimulationContext.tsx';
-import GlassPanel from '../shared/components/GlassPanel.tsx';
+import { SystemHealth } from '../shared/types';
+import { useToast } from '../shared/context/ToastContext';
+import { useSimulation } from '../shared/context/SimulationContext';
+import GlassPanel from '../shared/components/GlassPanel';
 
 interface AgentQSelfTrainingEvolutionProps {
     isRecalibrating: boolean;

@@ -9,7 +9,7 @@ import {
     ServerStackIcon, CheckCircle2Icon
 } from './Icons';
 import MemoryMatrix from './MemoryMatrix';
-import { useAgentQ } from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/useAgentQ.ts';
+import { useAgentQ } from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/useAgentQ';
 import { useSimulation, QIAIIPSState } from '../context/SimulationContext';
 import { useToast } from '../context/ToastContext';
 

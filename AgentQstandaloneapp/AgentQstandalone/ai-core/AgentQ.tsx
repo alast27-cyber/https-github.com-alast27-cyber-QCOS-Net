@@ -6,17 +6,17 @@ import {
     GalaxyIcon, AlertTriangleIcon, LayoutGridIcon, ArrowRightIcon, TerminalIcon, ShieldCheckIcon,
     Volume2Icon, VolumeXIcon
 } from '../shared/components/Icons';
-import { Message, ChartData } from '../shared/utils/agentUtils.ts';
+import { Message, ChartData } from '../shared/utils/agentUtils';
 import { 
     ResponsiveContainer, LineChart, Line, BarChart, Bar, AreaChart, Area, 
     XAxis, YAxis, CartesianGrid, Tooltip, Legend 
 } from 'recharts';
-import { useSimulation } from '../shared/context/SimulationContext.tsx';
-import { useVoiceConversation } from '../shared/hooks/useVoiceConversation.ts';
+import { useSimulation } from '../shared/context/SimulationContext';
+import { useVoiceConversation } from '../shared/hooks/useVoiceConversation';
 
 // Local Component Import
-import MemoryMatrix from '../shared/components/MemoryMatrix.tsx';
-import AudioSynthesizer from '../shared/components/AudioSynthesizer.tsx';
+import MemoryMatrix from '../shared/components/MemoryMatrix';
+import AudioSynthesizer from '../shared/components/AudioSynthesizer';
 
 interface AgentQProps {
   isOpen: boolean;
