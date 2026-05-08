@@ -7,11 +7,11 @@ import {
     RefreshCwIcon, PlayIcon, ActivityIcon, ArrowTrendingUpIcon,
     LockIcon, ShieldCheckIcon, EyeIcon
 } from '../shared/components/Icons';
-import { SystemHealth } from '../shared/types';
-import IAIKernelStatus from '../shared/components/IAIKernelStatus';
-import DistributedCognitiveArchitecture from '../shared/components/DistributedCognitiveArchitecture';
-import { useSimulation } from '../shared/context/SimulationContext';
-import GlassPanel from '../shared/components/GlassPanel';
+import { SystemHealth } from '../shared/types.ts';
+import IAIKernelStatus from '../shared/components/IAIKernelStatus.tsx';
+import DistributedCognitiveArchitecture from '../shared/components/DistributedCognitiveArchitecture.tsx';
+import { useSimulation } from '../shared/context/SimulationContext.tsx';
+import GlassPanel from '../shared/components/GlassPanel.tsx';
 
 interface AgentQCoreProps {
     systemHealth: SystemHealth;

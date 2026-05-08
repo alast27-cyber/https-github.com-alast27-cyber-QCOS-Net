@@ -3,8 +3,8 @@ import { AppDefinition, URIAssignment, LogEntry, UIStructure, SystemHealth } fro
 import { getPanelMetadata, FaceData } from '../utils/dashboardConfig';
 
 // Standardize imports to relative paths for browser ESM compatibility
-import AgentQCore from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/AgentQCore';
-import AgentQ from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/AgentQ';
+import AgentQCore from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/AgentQCore.tsx';
+import AgentQ from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/AgentQ.tsx';
 import SystemDiagnostic from '../components/SystemDiagnostic';
 import QCOSGateway from '../components/QCOSGateway';
 import CHIPSBrowserSDK from '../components/CHIPSBrowserSDK';
@@ -46,7 +46,7 @@ import QuantumEngineeringDesign from '../components/QuantumEngineeringDesign';
 import GoldDatasetCuration from '../components/GoldDatasetCuration';
 import KernelDebugger from '../components/KernelDebugger';
 import SystemArchitectureMap from '../components/SystemArchitectureMap';
-import AgentQSelfTrainingEvolution from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/AgentQSelfTrainingEvolution';
+import AgentQSelfTrainingEvolution from '../../AgentQstandaloneapp/AgentQstandalone/ai-core/AgentQSelfTrainingEvolution.tsx';
 
 const ChipsDevPlatform = React.lazy(() => import('../components/ChipsDevPlatform'));
 
