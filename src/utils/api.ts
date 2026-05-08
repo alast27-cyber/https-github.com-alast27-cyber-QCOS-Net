@@ -24,8 +24,6 @@ export async function safeFetch<T>(url: string, options?: RequestInit, retries =
     const responseText = await response.text();
 
     if (!response.ok) {
-        console.error(`[API] Fetch error for ${url}: ${response.status} - ${responseText.substring(0, 200)}...`);
-        
         // Check if the response is HTML and contains "Starting Server" or is a common platform standby page
         const isStartupHTML = responseText.toLowerCase().includes('starting server') || 
                             responseText.toLowerCase().includes('please wait') ||
@@ -37,12 +35,11 @@ export async function safeFetch<T>(url: string, options?: RequestInit, retries =
             return safeFetch(url, options, retries - 1, backoff * 1.5);
         }
 
+        console.error(`[API] Fetch error for ${url}: ${response.status} - ${responseText.substring(0, 200)}...`);
         throw new Error(`API error: ${response.status} - ${responseText.substring(0, 200)}...`);
     }
 
     if (!contentType || !contentType.includes('application/json')) {
-        console.error(`[API] Expected JSON for ${url} but got ${contentType}: ${responseText.substring(0, 200)}...`);
-        
         // Check if the response is HTML and contains "Starting Server" or similar
         const isStartupHTML = responseText.toLowerCase().includes('starting server') || 
                             responseText.toLowerCase().includes('please wait') ||
@@ -55,6 +52,7 @@ export async function safeFetch<T>(url: string, options?: RequestInit, retries =
             return safeFetch(url, options, retries - 1, backoff * 1.5);
         }
 
+        console.error(`[API] Expected JSON for ${url} but got ${contentType}: ${responseText.substring(0, 200)}...`);
         throw new Error(`Expected JSON response but received ${contentType || 'unknown'} content type. Response body: ${responseText.substring(0, 200)}...`);
     }
 
