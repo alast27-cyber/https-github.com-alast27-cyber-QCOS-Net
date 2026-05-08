@@ -29,6 +29,7 @@ async function startServer() {
     'https://quantum-voice-qcos-1b63nh9d0.vercel.app',
     'https://https-github-com-alast27-cyber-qcos-7lz1sm1v7.vercel.app',
     'https://https-github-com-alast27-cyber-qcos-net-pa8i-dfau8x9tg.vercel.app',
+    'https://https-github-com-alast27-cyber-qcos-341uc5tmq.vercel.app',
     'http://localhost:3000'
   ];
 
@@ -694,7 +695,7 @@ async function startServer() {
   // --- CHIPS Browser SDK API ---
   app.post("/api/browser/resolve", async (req, res) => {
     const { uri, title } = req.body;
-    const lowerUri = uri.toLowerCase();
+    const lowerUri = uri?.toLowerCase() || '';
 
     let context = {
       summary: `Analyzing semantic content of ${title}... Content vector mapped to 12-D Hilbert Space.`,
@@ -703,55 +704,40 @@ async function startServer() {
       confidence: 85.0,
     };
 
-    if (lowerUri.includes("store")) {
-      context = {
-        summary:
-          "Decentralized Registry Access. Analyzing 15 new Q-App submissions. Network trust score for this node is 99.8%.",
-        entities: ["Registry Contract", "DQN-Manifest", "Verification-Sig"],
-        actions: ["Scan for Updates", "Verify Signatures"],
-        confidence: 99.9,
-      };
-    } else if (lowerUri.includes("economy") || lowerUri.includes("finance")) {
-      context = {
-        summary:
-          "Streaming QMC financial data. Volatility vectors detected in Sector 7. Recommendation: Hedging via Smart Contract.",
-        entities: ["Q-Credits", "Liquidity Pool", "Risk Vector"],
-        actions: ["Run Risk Sim", "Export Ledger"],
-        confidence: 98.4,
-      };
-    } else if (lowerUri.includes("protocols") || lowerUri.includes("dev")) {
-      context = {
-        summary:
-          "Development Environment Active. Q-Lang compiler v4.2 standing by. Zero syntax errors detected in local cache.",
-        entities: ["Compiler", "Q-Lang", "Debugger"],
-        actions: ["Compile Source", "Debug Stream"],
-        confidence: 100,
-      };
-    } else if (
-      lowerUri.includes(".py") ||
-      lowerUri.includes(".rs") ||
-      lowerUri.includes(".cpp") ||
-      lowerUri.includes(".q")
-    ) {
-      context = {
-        summary:
-          "Polyglot Source Detected. Analyzing syntax tree for logical coherence and quantum-compatibility.",
-        entities: ["Source Code", "AST", "Runtime Env"],
-        actions: ["Execute", "Lint", "Optimize"],
-        confidence: 99.5,
-      };
-    } else {
-      // AI-Native Fallback: Use AgentQ to synthesize context
+    try {
+      const prompt = `You are a Quantum Semantic Processor. Analyze the following browser tab details:
+Title: "${title}"
+URI: "${uri}"
+
+Return a JSON object with exactly the following structure (do NOT include markdown formatting or backticks around the JSON):
+{
+  "summary": "A brief, 2-sentence cryptic and futuristic quantum-tech summary of this context.",
+  "entities": ["Entity1", "Entity2", "Entity3"],
+  "actions": ["Suggested Action 1", "Suggested Action 2"]
+}
+
+The 'entities' represent Semantic Primitives extracted from the context. Keep them short (1-3 words).
+The 'actions' are what the system should intuitively offer to do next based on the URI. Keep them short (1-4 words).`;
+
+      const aiSynthesis = await sendAgentQCommand(prompt, "CHIPS-BROWSER-RESOLVER");
+      
       try {
-        const aiSynthesis = await sendAgentQCommand(
-          `Synthesize a brief quantum-tech summary for a browser tab titled "${title}" with URI "${uri}". Keep it cryptic, professional, and futuristic. Mention specific Q-Nodes if applicable.`,
-          "CHIPS-BROWSER-RESOLVER"
-        );
+        // Attempt to parse the AI output as JSON
+        // Clean out any common markdown formats
+        const cleanedOutput = aiSynthesis.message.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const parsed = JSON.parse(cleanedOutput);
+        
+        context.summary = parsed.summary || context.summary;
+        context.entities = Array.isArray(parsed.entities) ? parsed.entities : context.entities;
+        context.actions = Array.isArray(parsed.actions) ? parsed.actions : context.actions;
+        context.confidence = 96.0;
+      } catch (parseError) {
+        console.warn("[QAPI] Failed to parse AI JSON for semantic primitives. Using raw text as summary.");
         context.summary = aiSynthesis.message;
-        context.confidence = 92.0;
-      } catch (e) {
-        console.warn("[QAPI] AI Synthesis failed, using fallback template.");
+        context.confidence = 90.0;
       }
+    } catch (e) {
+      console.warn("[QAPI] AI Synthesis failed, using fallback template.");
     }
 
     // Emit event to QAPI Mesh so AgentQ CCI can "see" navigation
@@ -761,9 +747,7 @@ async function startServer() {
       "CHIPS-BROWSER"
     );
 
-    setTimeout(() => {
-      res.json(context);
-    }, 800);
+    res.json(context);
   });
 
   // --- Voice Chat API ---
@@ -786,7 +770,7 @@ async function startServer() {
     });
   });
 
-  app.get("/api/agentq/insights", (req, res) => {
+  app.get("/api/agentq/insights", async (req, res) => {
     let efficiency = 0.95;
     let load = 0.12;
 
@@ -795,14 +779,32 @@ async function startServer() {
       load = 0.45; // Higher load due to universe simulation
     }
 
-    res.json({
-      message: "AgentQ insights",
-      data: {
-        efficiency,
-        load,
-        entangled: universeState.isEntangledWithAgentQ,
-      },
-    });
+    try {
+      const insightGen = await sendAgentQCommand(
+        "Analyze the current state of the QCOS mesh network, QLLM integration, and quantum telemetry. Provide a dense, cryptic 2-sentence summary of the active cognitive state.",
+        "AgentQ Insight Generator"
+      );
+
+      res.json({
+        message: insightGen.message,
+        data: {
+          efficiency,
+          load,
+          entangled: universeState.isEntangledWithAgentQ,
+          reasoning: insightGen.reasoning
+        },
+      });
+    } catch (e) {
+      console.error("[QAPI] Failed to generate insight:", e);
+      res.json({
+        message: "Quantum telemetry unavailable. Decoupling core systems...",
+        data: {
+          efficiency,
+          load,
+          entangled: universeState.isEntangledWithAgentQ,
+        },
+      });
+    }
   });
 
   // --- QAPI Mesh Network ---
@@ -813,7 +815,8 @@ async function startServer() {
       "https://chipsqbrowser.vercel.app/",
       "https://quantum-voice-qcos-1b63nh9d0.vercel.app/",
       "https://https-github-com-alast27-cyber-qcos-7lz1sm1v7.vercel.app/",
-      "https://https-github-com-alast27-cyber-qcos-net-pa8i-dfau8x9tg.vercel.app/"
+      "https://https-github-com-alast27-cyber-qcos-net-pa8i-dfau8x9tg.vercel.app/",
+      "https://https-github-com-alast27-cyber-qcos-341uc5tmq.vercel.app/"
     ],
     protocol: "DQN/1.0",
   };
