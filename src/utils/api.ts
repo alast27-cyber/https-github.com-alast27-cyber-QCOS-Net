@@ -20,37 +20,47 @@ export async function safeFetch<T>(url: string, options?: RequestInit, retries =
         return safeFetch(url, options, retries - 1, backoff * 2);
     }
 
+    const contentType = response.headers.get('content-type');
+    const responseText = await response.text();
+
     if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`[API] Fetch error for ${url}: ${response.status} - ${errorText}`);
-        // Check if the response is HTML (likely an error page or "Starting Server...")
-        if (errorText.trim().toLowerCase().startsWith('<!doctype html>')) {
-            if (errorText.includes('Starting Server...')) {
-                if (retries > 0) {
-                    console.warn(`Server starting, retrying in ${backoff}ms...`);
-                    await new Promise(resolve => setTimeout(resolve, backoff));
-                    return safeFetch(url, options, retries - 1, backoff * 2);
-                }
-            }
-            throw new Error(`Received HTML response from backend: ${response.status} - ${errorText.substring(0, 200)}...`);
+        console.error(`[API] Fetch error for ${url}: ${response.status} - ${responseText.substring(0, 200)}...`);
+        
+        // Check if the response is HTML and contains "Starting Server" or is a common platform standby page
+        const isStartupHTML = responseText.toLowerCase().includes('starting server') || 
+                            responseText.toLowerCase().includes('please wait') ||
+                            responseText.toLowerCase().includes('application building');
+
+        if (isStartupHTML && retries > 0) {
+            console.warn(`[API] Server is starting or building, retrying in ${backoff}ms... (${retries} retries left)`);
+            await new Promise(resolve => setTimeout(resolve, backoff));
+            return safeFetch(url, options, retries - 1, backoff * 1.5);
         }
-        throw new Error(`API error: ${response.status} - ${errorText}`);
+
+        throw new Error(`API error: ${response.status} - ${responseText.substring(0, 200)}...`);
     }
 
-    const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
-        const responseText = await response.text();
         console.error(`[API] Expected JSON for ${url} but got ${contentType}: ${responseText.substring(0, 200)}...`);
-        // Check if the response is HTML (likely "Starting Server...")
-        if (responseText.trim().toLowerCase().includes('starting server...')) {
-            if (retries > 0) {
-                console.warn(`Server starting, retrying in ${backoff}ms...`);
-                await new Promise(resolve => setTimeout(resolve, backoff));
-                return safeFetch(url, options, retries - 1, backoff * 2);
-            }
+        
+        // Check if the response is HTML and contains "Starting Server" or similar
+        const isStartupHTML = responseText.toLowerCase().includes('starting server') || 
+                            responseText.toLowerCase().includes('please wait') ||
+                            responseText.toLowerCase().includes('application building') ||
+                            responseText.trim().startsWith('<!doctype html>');
+
+        if (isStartupHTML && retries > 0) {
+            console.warn(`[API] Server returned HTML (likely standby/boot), retrying in ${backoff}ms... (${retries} retries left)`);
+            await new Promise(resolve => setTimeout(resolve, backoff));
+            return safeFetch(url, options, retries - 1, backoff * 1.5);
         }
+
         throw new Error(`Expected JSON response but received ${contentType || 'unknown'} content type. Response body: ${responseText.substring(0, 200)}...`);
     }
 
-    return response.json();
+    try {
+        return JSON.parse(responseText);
+    } catch (e) {
+        throw new Error(`Failed to parse JSON response for ${url}. Body segment: ${responseText.substring(0, 200)}...`);
+    }
 }

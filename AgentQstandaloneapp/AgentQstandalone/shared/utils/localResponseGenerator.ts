@@ -177,7 +177,7 @@ export const generateLocalResponse = (params: any): LocalResponse => {
         };
     }
 
-    let category: keyof typeof LOCAL_KNOWLEDGE_BASE = 'default';
+    let category: string = 'default';
 
     // 3.5 Mode Injection Handling
     if (prompt.includes('[mode: higher_cognition_gus]')) {
@@ -285,7 +285,7 @@ export const generateLocalResponse = (params: any): LocalResponse => {
         }
     }
 
-    const responses = LOCAL_KNOWLEDGE_BASE[category];
+    const responses = (LOCAL_KNOWLEDGE_BASE as any)[category] || LOCAL_KNOWLEDGE_BASE.default;
     let response = responses[Math.floor(Math.random() * responses.length)];
 
     response = response.replace('{coherence}', (95 + Math.random() * 5).toFixed(1));

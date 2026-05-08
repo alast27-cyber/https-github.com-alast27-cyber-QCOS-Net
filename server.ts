@@ -46,6 +46,7 @@ async function startServer() {
     credentials: true
   }));
   app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   // Start Services
   console.log("Starting QCOS Backend Services...");
@@ -56,13 +57,17 @@ async function startServer() {
   // Request Logging Middleware & Metrics
   app.use((req, res, next) => {
     const start = Date.now();
+    // LOG ALL REQUESTS FOR DEBUGGING
+    console.log(`[REQ] ${new Date().toISOString()} - ${req.method} ${req.url}`);
+    
     if (req.url.startsWith("/api")) {
-      console.log(`[API] ${req.method} ${req.url}`);
+      console.log(`[API-IN] ${req.method} ${req.url}`);
     }
 
     res.on("finish", () => {
+      const duration = Date.now() - start;
       if (req.url.startsWith("/api")) {
-        const duration = Date.now() - start;
+        console.log(`[API-OUT] ${req.method} ${req.url} - ${res.statusCode} (${duration}ms)`);
         trackRequest(duration, res.statusCode >= 400);
       }
     });
@@ -1064,18 +1069,10 @@ async function startServer() {
     },
   );
 
-  // Start listening IMMEDIATELY to avoid platform timeouts
-  const server = app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[SERVER] QCOS Backend active on http://0.0.0.0:${PORT}`);
-    console.log(
-      `[SERVER] Environment: ${process.env.NODE_ENV || "development"}`,
-    );
-  });
-
-  // Now initialize Vite or serve static files in the background
+  // Now initialize Vite or serve static files
   if (process.env.NODE_ENV !== "production") {
     try {
-      console.log("[SERVER] Initializing Vite middleware in background...");
+      console.log("[SERVER] Initializing Vite middleware...");
       const vite = await createViteServer({
         server: { middlewareMode: true },
         appType: "spa",
@@ -1105,6 +1102,14 @@ async function startServer() {
       });
     }
   }
+
+  // Start listening only AFTER everything is ready
+  const server = app.listen(PORT, "0.0.0.0", () => {
+    console.log(`[SERVER] QCOS Backend active on http://0.0.0.0:${PORT}`);
+    console.log(
+      `[SERVER] Environment: ${process.env.NODE_ENV || "development"}`,
+    );
+  });
 
   server.on("error", (err: any) => {
     console.error("[SERVER] Fatal server error:", err);
