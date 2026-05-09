@@ -28,6 +28,7 @@ export async function safeFetch<T>(url: string, options?: RequestInit, retries =
         const lowerBody = responseText.toLowerCase();
         const isStartupHTML = lowerBody.includes('starting server') || 
                             lowerBody.includes('starting server...') ||
+                            lowerBody.includes('building') ||
                             lowerBody.includes('please wait') ||
                             lowerBody.includes('application building');
 
@@ -46,6 +47,7 @@ export async function safeFetch<T>(url: string, options?: RequestInit, retries =
         const lowerBody = responseText.toLowerCase();
         const isStartupHTML = lowerBody.includes('starting server') || 
                             lowerBody.includes('starting server...') ||
+                            lowerBody.includes('building') ||
                             lowerBody.includes('please wait') ||
                             lowerBody.includes('application building') ||
                             lowerBody.trim().startsWith('<!doctype html>');
