@@ -25,9 +25,11 @@ export async function safeFetch<T>(url: string, options?: RequestInit, retries =
 
     if (!response.ok) {
         // Check if the response is HTML and contains "Starting Server" or is a common platform standby page
-        const isStartupHTML = responseText.toLowerCase().includes('starting server') || 
-                            responseText.toLowerCase().includes('please wait') ||
-                            responseText.toLowerCase().includes('application building');
+        const lowerBody = responseText.toLowerCase();
+        const isStartupHTML = lowerBody.includes('starting server') || 
+                            lowerBody.includes('starting server...') ||
+                            lowerBody.includes('please wait') ||
+                            lowerBody.includes('application building');
 
         if (isStartupHTML && retries > 0) {
             console.warn(`[API] Server is starting or building, retrying in ${backoff}ms... (${retries} retries left)`);
@@ -41,10 +43,12 @@ export async function safeFetch<T>(url: string, options?: RequestInit, retries =
 
     if (!contentType || !contentType.includes('application/json')) {
         // Check if the response is HTML and contains "Starting Server" or similar
-        const isStartupHTML = responseText.toLowerCase().includes('starting server') || 
-                            responseText.toLowerCase().includes('please wait') ||
-                            responseText.toLowerCase().includes('application building') ||
-                            responseText.trim().startsWith('<!doctype html>');
+        const lowerBody = responseText.toLowerCase();
+        const isStartupHTML = lowerBody.includes('starting server') || 
+                            lowerBody.includes('starting server...') ||
+                            lowerBody.includes('please wait') ||
+                            lowerBody.includes('application building') ||
+                            lowerBody.trim().startsWith('<!doctype html>');
 
         if (isStartupHTML && retries > 0) {
             console.warn(`[API] Server returned HTML (likely standby/boot), retrying in ${backoff}ms... (${retries} retries left)`);
