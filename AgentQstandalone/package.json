@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:vercel-standalone": "vite build",
-    "build:vercel-gus": "vite build",
+    "build:vercel-gus": "vite build --outDir dist",
     "preview": "vite preview"
   },
   "dependencies": {
