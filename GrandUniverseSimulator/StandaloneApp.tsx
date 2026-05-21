@@ -1,5 +1,6 @@
 import React from 'react';
 import GrandUniverseSimulator from './src/components/GrandUniverseSimulator';
+import QuantumCognitiveArchitecture from '../src/components/QuantumCognitiveArchitecture';
 import { SimulationProvider } from './src/context/SimulationContext';
 import { ToastProvider } from './src/context/ToastContext';
 import ToastContainer from './src/components/ToastContainer';
@@ -12,8 +13,13 @@ const StandaloneContent: React.FC = () => {
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] brightness-50 contrast-150" />
             </div>
             
-            <div className="flex-grow z-10 relative">
-                <GrandUniverseSimulator embedded={true} qubitCount={1024} />
+            <div className="flex flex-row flex-grow z-10 relative">
+                <div className="w-2/3 h-full p-2 pr-1">
+                    <GrandUniverseSimulator embedded={true} qubitCount={1024} />
+                </div>
+                <div className="w-1/3 h-full p-2 pl-1">
+                    <QuantumCognitiveArchitecture />
+                </div>
             </div>
             
             <div className="z-20 p-0.5 px-3 bg-black/80 border-t border-purple-900/40 flex justify-between text-[9px] font-mono text-purple-900/70">
