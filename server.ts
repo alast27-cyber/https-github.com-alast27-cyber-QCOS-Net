@@ -697,7 +697,7 @@ async function startServer() {
     const { uri, title } = req.body;
     const lowerUri = uri?.toLowerCase() || '';
 
-    let context = {
+    const context = {
       summary: `Analyzing semantic content of ${title}... Content vector mapped to 12-D Hilbert Space.`,
       entities: ["Unknown Content", "Raw Data"],
       actions: ["Deep Scan", "Save to Memory"],
