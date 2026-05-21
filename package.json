@@ -14,7 +14,8 @@
     "build:web": "tsc && vite build",
     "build:standalone": "tsc && vite build --config AgentQstandaloneapp/AgentQstandalone/vite.config.ts",
     "build:vercel-standalone": "vite build --config AgentQstandaloneapp/AgentQstandalone/vite.config.ts",
-    "build:all": "npm run build && npm run build:standalone",
+    "build:vercel-gus": "cd GrandUniverseSimulator && npm install && npm run build",
+    "build:all": "npm run build && npm run build:standalone && npm run build:vercel-gus",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "cleanup": "node scripts/cleanup.js"

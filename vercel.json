@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "npm run build:vercel-standalone",
-  "outputDirectory": "AgentQstandaloneapp/dist-standalone",
+  "buildCommand": "npm run build:vercel-gus",
+  "outputDirectory": "GrandUniverseSimulator/dist",
   "rewrites": [
     {
       "source": "/api/(.*)",

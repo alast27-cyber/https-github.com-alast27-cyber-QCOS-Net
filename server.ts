@@ -724,7 +724,14 @@ The 'actions' are what the system should intuitively offer to do next based on t
       try {
         // Attempt to parse the AI output as JSON
         // Clean out any common markdown formats
-        const cleanedOutput = aiSynthesis.message.replace(/```json/gi, '').replace(/```/g, '').trim();
+        let cleanedOutput = aiSynthesis.message.replace(/```json/gi, '').replace(/```/g, '').trim();
+        
+        // Try to extract just the JSON object if there's surrounding text
+        const jsonMatch = cleanedOutput.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          cleanedOutput = jsonMatch[0];
+        }
+        
         const parsed = JSON.parse(cleanedOutput);
         
         context.summary = parsed.summary || context.summary;
@@ -733,6 +740,8 @@ The 'actions' are what the system should intuitively offer to do next based on t
         context.confidence = 96.0;
       } catch (parseError) {
         console.warn("[QAPI] Failed to parse AI JSON for semantic primitives. Using raw text as summary.");
+        // If it's a parse error, log it
+        console.error("Parse error details:", parseError, "Raw output:", aiSynthesis.message);
         context.summary = aiSynthesis.message;
         context.confidence = 90.0;
       }
