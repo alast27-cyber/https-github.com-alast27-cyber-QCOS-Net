@@ -6,7 +6,6 @@
     "dev": "vite",
     "build": "vite build",
     "build:vercel-standalone": "vite build",
-    "build:vercel-gus": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {

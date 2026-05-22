@@ -16,8 +16,7 @@ import {
   INITIAL_ROADMAP_STAGES,
 } from "./server/services/roadmap";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// REMOVED __dirname and __filename to avoid ESM vs CJS esbuild bug
 
 async function startServer() {
   console.log("[SERVER] Starting QCOS Backend...");
@@ -1096,7 +1095,7 @@ The 'actions' are what the system should intuitively offer to do next based on t
     }
   } else {
     // Production: Serve static files from dist
-    const distPath = path.join(__dirname, "dist");
+    const distPath = path.join(process.cwd(), "dist");
     if (fs.existsSync(distPath)) {
       console.log(`[SERVER] Serving static files from ${distPath}`);
       app.use(express.static(distPath));
