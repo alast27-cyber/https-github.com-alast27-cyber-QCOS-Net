@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "build:vercel-standalone": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:vercel-gus": "vite build"
   },
   "dependencies": {
     "react": "^18.2.0",
