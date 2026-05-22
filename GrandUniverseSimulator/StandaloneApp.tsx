@@ -1,22 +1,46 @@
-import React from 'react';
-import GrandUniverseSimulator from './src/components/GrandUniverseSimulator';
-import { SimulationProvider } from './src/context/SimulationContext';
-import { ToastProvider } from './src/context/ToastContext';
-import ToastContainer from './src/components/ToastContainer';
+import React from "react";
+import GrandUniverseSimulator from "./src/components/GrandUniverseSimulator";
+import QuantumLargeLanguageModel from "./src/components/QuantumLargeLanguageModel";
+import QuantumMachineLearning from "./src/components/QuantumMachineLearning";
+import QuantumReinforcementLearning from "./src/components/QuantumReinforcementLearning";
+import QuantumDeepLearning from "./src/components/QuantumDeepLearning";
+import QuantumGenerativeLearningModel from "./src/components/QuantumGenerativeLearningModel";
+import { SimulationProvider } from "./src/context/SimulationContext";
+import { ToastProvider } from "./src/context/ToastContext";
+import ToastContainer from "./src/components/ToastContainer";
 
-const StandaloneContent: React.FC = () => {
+const StandaloneContent = () => {
     return (
-        <div className="w-full h-screen bg-slate-950 flex flex-col overflow-hidden relative">
+        <div className="w-full h-screen bg-slate-950 flex flex-col overflow-y-auto relative">
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.08),transparent_70%)]" />
-                <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] brightness-50 contrast-150" />
+                <div className="absolute top-0 left-0 w-full h-full bg-[url(https://grainy-gradients.vercel.app/noise.svg)] opacity-[0.03] brightness-50 contrast-150" />
             </div>
             
-            <div className="flex-grow z-10 relative">
-                <GrandUniverseSimulator embedded={true} qubitCount={1024} />
+            <div className="flex-grow z-10 relative p-6 mb-8 mt-4">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 pb-20 max-w-7xl mx-auto">
+                    <div className="xl:col-span-2 h-[500px]">
+                        <GrandUniverseSimulator embedded={true} qubitCount={1024} />
+                    </div>
+                    <div className="h-[400px]">
+                        <QuantumLargeLanguageModel />
+                    </div>
+                    <div className="h-[400px]">
+                        <QuantumMachineLearning />
+                    </div>
+                    <div className="h-[400px]">
+                        <QuantumReinforcementLearning />
+                    </div>
+                    <div className="h-[400px]">
+                        <QuantumDeepLearning />
+                    </div>
+                    <div className="h-[400px]">
+                        <QuantumGenerativeLearningModel />
+                    </div>
+                </div>
             </div>
             
-            <div className="z-20 p-0.5 px-3 bg-black/80 border-t border-purple-900/40 flex justify-between text-[9px] font-mono text-purple-900/70">
+            <div className="z-20 fixed bottom-0 left-0 w-full p-0.5 px-3 bg-black/80 border-t border-purple-900/40 flex justify-between text-[9px] font-mono text-purple-900/70">
                 <div className="flex gap-4">
                     <span>NODE: GUS-STANDALONE</span>
                     <span>ENTANGLEMENT: ACTIVE</span>
@@ -30,7 +54,7 @@ const StandaloneContent: React.FC = () => {
     );
 };
 
-const StandaloneApp: React.FC = () => {
+const StandaloneApp = () => {
     return (
         <ToastProvider>
             <SimulationProvider>
