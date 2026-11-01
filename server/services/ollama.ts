@@ -63,6 +63,14 @@ function generateSimulatedResponse(userInput: string): AgentQResponse {
         return { message: `${status} ${message}`, reasoning };
     }
 
+    if (input.includes('json object')) {
+        reasoning = "REASONING: JSON output schema requested. Synthesizing mockup json to match requested format.";
+        return {
+            message: `{\n  "summary": "[STATUS: OPERATIONAL (GUS-LAYER)] Analysis simulated successfully.",\n  "entities": ["Q-Node", "Fallback Data"],\n  "actions": ["Verify State", "Standby"]\n}`,
+            reasoning
+        };
+    }
+
     // Determine which layer to "use" based on complexity
     const isComplex = input.length > 100 || input.includes('simulate') || input.includes('universe') || input.includes('predict') || input.includes('analyze');
     const isLanguage = input.includes('write') || input.includes('explain') || input.includes('tell') || input.includes('translate');

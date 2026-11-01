@@ -115,8 +115,11 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
         try {
             // Disable JSON schema validation to avoid the "Cannot read properties of undefined (reading 'schemas')" error
             if (monaco.languages && monaco.languages.json && monaco.languages.json.jsonDefaults) {
+                const currentOptions = monaco.languages.json.jsonDefaults.diagnosticsOptions || {};
                 monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-                    validate: false
+                    ...currentOptions,
+                    validate: false,
+                    schemas: currentOptions.schemas || []
                 });
             }
         } catch (e) {
